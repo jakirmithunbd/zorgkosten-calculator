@@ -671,7 +671,7 @@ class ZKC_Cost_Calculator_Widget extends Widget_Base {
 		$this->add_control( 'step5_content', [
 			'label'   => esc_html__( 'Content', 'zorgkosten-calculator' ),
 			'type'    => Controls_Manager::WYSIWYG,
-			'default' => '<p>De tarieven voor diagnostiek en behandeling in de specialistische GGZ worden landelijk vastgesteld door de Nederlandse Zorgautoriteit (NZa). Deze standaardtarieven gelden voor alle GGZ-instellingen; ADHD Medisch Centrum heeft hier geen invloed op.</p><p>De kosten hangen af van het type zorg en de tijd die wordt besteed. Er wordt gewerkt volgens het zorgprestatiemodel, waarbij onder andere de duur en het type contact en de betrokken zorgverleners bepalend zijn. Hierdoor kan het totale bedrag per patiënt verschillen.</p><p>Meer informatie over de tarieven vastgesteld door de NZa vindt u <a href="https://www.nza.nl/onderwerpen/geestelijke-gezondheidszorg" target="_blank" rel="noopener">hier</a>.</p>',
+			'default' => '<p>De tarieven voor diagnostiek en behandeling in de specialistische GGZ worden landelijk vastgesteld door de Nederlandse Zorgautoriteit (NZa). Deze standaardtarieven gelden voor alle GGZ-instellingen; ADHD Medisch Centrum heeft hier geen invloed op.</p><p>De kosten hangen af van het type zorg en de tijd die wordt besteed. Er wordt gewerkt volgens het zorgprestatiemodel, waarbij onder andere de duur en het type contact en de betrokken zorgverleners bepalend zijn. Hierdoor kan het totale bedrag per patiënt verschillen.</p><p>Meer informatie over de tarieven vastgesteld door de NZa vindt u <a href="https://www.nza.nl/onderwerpen/geestelijke-gezondheidszorg" target="_blank" rel="noopener noreferrer">hier</a>.</p>',
 		] );
 
 		$this->add_control( 'step5_panel', [
@@ -1162,7 +1162,7 @@ class ZKC_Cost_Calculator_Widget extends Widget_Base {
 		$this->add_control( 'signup_link', [
 			'label'   => esc_html__( 'Sign-up button link', 'zorgkosten-calculator' ),
 			'type'    => Controls_Manager::URL,
-			'default' => [ 'url' => '#' ],
+			'default' => [ 'url' => '#aanmelden' ],
 		] );
 
 		$this->end_controls_section();
