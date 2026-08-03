@@ -101,7 +101,7 @@ class ZKC_Cost_Calculator_Widget extends Widget_Base {
 
 	private function default_policies() {
 		$rows = [
-			// insurer, policy, percentage, basis, note
+			// insurer, policy, percentage, basis, note, [percentage max]
 			[ 'FBTO', 'Zorgverzekering Basis', 65, 'gemiddeld_gecontracteerd', '' ],
 			[ 'FBTO', 'Zorgverzekering Basis Plus', 75, 'gemiddeld_gecontracteerd', '' ],
 			[ 'FBTO', 'Zorgverzekering Basis Vrij', 75, 'marktconform', 'van het marktconforme of wettelijke tarief bij de meeste zorgverleners' ],
@@ -146,6 +146,7 @@ class ZKC_Cost_Calculator_Widget extends Widget_Base {
 			[ 'CZdirect (label CZ)', 'CZdirect', 65, 'afgesproken_andere_zorgverleners', '' ],
 			[ 'Just (label CZ)', 'Basic', 60, 'gemiddeld_gecontracteerd', '' ],
 			[ 'VinkVink', 'Basisverzekering', 70, 'gemiddeld_gecontracteerd', '' ],
+			[ 'Anderzorg', 'Anderzorg Basis', 60, 'gemiddeld_gecontracteerd', '60-100% afhankelijk van soort zorg', 100 ],
 			[ 'Menzis', 'Basis Voordelig', 70, 'gemiddeld_gecontracteerd', 'afhankelijk van soort zorg' ],
 			[ 'Menzis', 'Basis', 70, 'gemiddeld_gecontracteerd', 'afhankelijk van soort zorg' ],
 			[ 'Menzis', 'Basis Vrij', 75, 'gemiddeld_gecontracteerd', '' ],
@@ -176,11 +177,12 @@ class ZKC_Cost_Calculator_Widget extends Widget_Base {
 		$defaults = [];
 		foreach ( $rows as $r ) {
 			$defaults[] = [
-				'pol_insurer'    => $r[0],
-				'pol_name'       => $r[1],
-				'pol_percentage' => $r[2],
-				'pol_basis'      => $r[3],
-				'pol_note'       => $r[4],
+				'pol_insurer'        => $r[0],
+				'pol_name'           => $r[1],
+				'pol_percentage'     => $r[2],
+				'pol_percentage_max' => $r[5] ?? '',
+				'pol_basis'          => $r[3],
+				'pol_note'           => $r[4],
 			];
 		}
 		return $defaults;
@@ -425,11 +427,21 @@ class ZKC_Cost_Calculator_Widget extends Widget_Base {
 		] );
 
 		$repeater->add_control( 'pol_percentage', [
-			'label'   => esc_html__( 'Reimbursement %', 'zorgkosten-calculator' ),
-			'type'    => Controls_Manager::NUMBER,
-			'min'     => 0,
-			'max'     => 100,
-			'default' => 70,
+			'label'       => esc_html__( 'Reimbursement %', 'zorgkosten-calculator' ),
+			'description' => esc_html__( 'For a range, this is the lowest percentage.', 'zorgkosten-calculator' ),
+			'type'        => Controls_Manager::NUMBER,
+			'min'         => 0,
+			'max'         => 100,
+			'default'     => 70,
+		] );
+
+		$repeater->add_control( 'pol_percentage_max', [
+			'label'       => esc_html__( 'Reimbursement % (highest, optional)', 'zorgkosten-calculator' ),
+			'description' => esc_html__( 'Leave empty for a single percentage. Fill it in to show a range such as 60–100%. The estimated amount then uses the middle of the range.', 'zorgkosten-calculator' ),
+			'type'        => Controls_Manager::NUMBER,
+			'min'         => 0,
+			'max'         => 100,
+			'default'     => '',
 		] );
 
 		$repeater->add_control( 'pol_basis', [
@@ -623,6 +635,20 @@ class ZKC_Cost_Calculator_Widget extends Widget_Base {
 			'label'   => esc_html__( 'Field placeholder', 'zorgkosten-calculator' ),
 			'type'    => Controls_Manager::TEXT,
 			'default' => 'bedrag',
+		] );
+
+		$this->add_control( 'step4_error_invalid', [
+			'label'       => esc_html__( 'Error: no / invalid amount', 'zorgkosten-calculator' ),
+			'type'        => Controls_Manager::TEXT,
+			'default'     => 'Vul een geldig bedrag in.',
+			'label_block' => true,
+		] );
+
+		$this->add_control( 'step4_error_max', [
+			'label'       => esc_html__( 'Error: higher than the total deductible', 'zorgkosten-calculator' ),
+			'type'        => Controls_Manager::TEXT,
+			'default'     => 'Het gebruikte bedrag kan niet hoger zijn dan uw totale eigen risico.',
+			'label_block' => true,
 		] );
 
 		$this->end_controls_section();
