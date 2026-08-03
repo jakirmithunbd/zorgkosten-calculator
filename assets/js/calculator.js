@@ -1,11 +1,25 @@
 /* Zorgkosten Calculator – frontend stepper
- * Renders an 8-step cost calculator from the JSON config produced by the
- * Elementor widget. No dependencies.
+ * Renders the cost calculator from the JSON config produced by the Elementor
+ * widget. No dependencies.
+ *
+ * The flow has 9 steps, but the authorization ("machtiging") step is only
+ * part of it when the chosen insurer needs one — for every other insurer the
+ * flow is 8 steps and the counter adjusts accordingly.
  */
 (function () {
 	'use strict';
 
-	var TOTAL_STEPS = 8;
+	var BASE_STEPS = [
+		'insurer',
+		'policy',
+		'deductible',
+		'used',
+		'info',
+		'reimbursement',
+		'invoices',
+		'machtiging',
+		'coulance'
+	];
 
 	function fmt(amount) {
 		try {
@@ -46,16 +60,65 @@
 		}
 		this.root = root;
 		this.inner = root.querySelector('.zkc-inner') || root;
-		this.state = {
-			step: 0, // 0 = intro, 1..8 = steps, 9 = result
+		this.state = this.blankState();
+		this.render();
+	}
+
+	Calculator.prototype.blankState = function () {
+		return {
+			screen: 'intro',      // 'intro' | a step key | 'result'
 			insurer: null,
-			policy: null,          // policy object or 'unknown'
-			deductible: null,      // number or 'unknown'
+			policy: null,         // policy object, 'unknown', or null
+			deductible: null,     // number, 'unknown', or null
 			usedDeductible: 0,
 			usedUnknown: false
 		};
+	};
+
+	/* ------------------------------------------------------------------ flow */
+
+	/* The machtiging step only exists for insurers that may need one. */
+	Calculator.prototype.steps = function () {
+		var needsMachtiging = !!(this.state.insurer && this.state.insurer.machtiging);
+		return BASE_STEPS.filter(function (key) {
+			return key !== 'machtiging' || needsMachtiging;
+		});
+	};
+
+	Calculator.prototype.stepIndex = function () {
+		return this.steps().indexOf(this.state.screen);
+	};
+
+	Calculator.prototype.goTo = function (screen) {
+		this.state.screen = screen;
 		this.render();
-	}
+		var rect = this.root.getBoundingClientRect();
+		if (rect.top < 0) {
+			this.root.scrollIntoView({ behavior: 'smooth', block: 'start' });
+		}
+	};
+
+	Calculator.prototype.goNext = function () {
+		var steps = this.steps();
+		var i = steps.indexOf(this.state.screen);
+		this.goTo(i === -1 || i >= steps.length - 1 ? 'result' : steps[i + 1]);
+	};
+
+	Calculator.prototype.goBack = function () {
+		var steps = this.steps();
+		if (this.state.screen === 'result') {
+			return this.goTo(steps[steps.length - 1]);
+		}
+		var i = steps.indexOf(this.state.screen);
+		this.goTo(i <= 0 ? 'intro' : steps[i - 1]);
+	};
+
+	Calculator.prototype.restart = function () {
+		this.state = this.blankState();
+		this.render();
+	};
+
+	/* ------------------------------------------------------------------ data */
 
 	Calculator.prototype.basisInfo = function (key) {
 		var bases = this.cfg.bases || [];
@@ -65,37 +128,75 @@
 		return { key: key, label: key, title: key, text: '' };
 	};
 
-	Calculator.prototype.currentPolicy = function () {
-		var c = this.cfg.calc;
-		if (this.state.policy && this.state.policy !== 'unknown') {
-			return this.state.policy;
-		}
-		return {
-			name: this.cfg.general.unknown,
-			percentage: c.defaultPercentage,
-			basis: c.defaultBasis,
-			note: ''
-		};
-	};
-
 	Calculator.prototype.policiesFor = function (insurerName) {
 		return (this.cfg.policies || []).filter(function (p) {
 			return p.insurer === insurerName;
 		});
 	};
 
-	Calculator.prototype.setStep = function (n) {
-		this.state.step = n;
-		this.render();
-		var rect = this.root.getBoundingClientRect();
-		if (rect.top < 0) {
-			this.root.scrollIntoView({ behavior: 'smooth', block: 'start' });
+	/* Resolves the chosen policy into a percentage label ("70" or "60–100"),
+	 * the fraction used for the money (the middle of a range) and the basis. */
+	Calculator.prototype.reimbursement = function () {
+		var c = this.cfg.calc;
+		var pol = this.state.policy;
+		var unknown = !pol || pol === 'unknown';
+		var min, max, fraction, label, basis, note;
+
+		if (unknown) {
+			min = c.defaultPercentage;
+			fraction = min / 100;
+			label = String(Math.round(min));
+			basis = c.defaultBasis;
+			note = '';
+		} else {
+			min = pol.percentage;
+			max = (pol.percentageMax === null || pol.percentageMax === undefined) ? null : pol.percentageMax;
+			if (max !== null) {
+				fraction = (min + max) / 200;
+				label = Math.round(min) + '–' + Math.round(max);
+			} else {
+				fraction = min / 100;
+				label = String(Math.round(min));
+			}
+			basis = pol.basis;
+			note = pol.note || '';
 		}
+
+		return {
+			unknown: unknown,
+			label: label,
+			fraction: fraction,
+			basis: basis,
+			basisLabel: this.basisInfo(basis).label,
+			note: note,
+			expected: Math.round(c.avgInvoice * fraction)
+		};
 	};
 
-	Calculator.prototype.restart = function () {
-		this.state = { step: 0, insurer: null, policy: null, deductible: null, usedDeductible: 0, usedUnknown: false };
-		this.render();
+	/* The own-costs figures. When either the total deductible or the amount
+	 * already used is unknown we can only show a range. */
+	Calculator.prototype.ownCosts = function () {
+		var c = this.cfg.calc;
+		var totalKnown = this.state.deductible !== null && this.state.deductible !== 'unknown';
+		var known = totalKnown && !this.state.usedUnknown;
+
+		if (known) {
+			var remaining = Math.max(0, this.state.deductible - (this.state.usedDeductible || 0));
+			return {
+				known: true,
+				deductible: remaining,
+				total: c.contribution + remaining
+			};
+		}
+
+		var ceiling = totalKnown ? this.state.deductible : c.maxDeductible;
+		return {
+			known: false,
+			deductibleMin: 0,
+			deductibleMax: ceiling,
+			totalMin: c.contribution,
+			totalMax: c.contribution + ceiling
+		};
 	};
 
 	/* ---------------------------------------------------------------- render */
@@ -105,11 +206,10 @@
 		var g = this.cfg.general;
 		this.inner.innerHTML = '';
 
-		// Header.
 		if (g.showHeader) {
 			var header = el('div', 'zkc-header');
 			header.appendChild(el('div', 'zkc-brand', esc(g.brand)));
-			if (this.state.step > 0) {
+			if (this.state.screen !== 'intro') {
 				var restart = el('button', 'zkc-restart', esc(g.restart));
 				restart.type = 'button';
 				restart.addEventListener('click', function () { self.restart(); });
@@ -118,12 +218,16 @@
 			this.inner.appendChild(header);
 		}
 
-		// Progress (steps 1..8).
-		if (this.state.step >= 1 && this.state.step <= TOTAL_STEPS) {
-			var pct = Math.round(((this.state.step - 1) / (TOTAL_STEPS - 1)) * 100);
+		var steps = this.steps();
+		var index = this.stepIndex();
+		if (index !== -1) {
+			var pct = steps.length > 1 ? Math.round((index / (steps.length - 1)) * 100) : 0;
 			var prog = el('div', 'zkc-progress');
 			var meta = el('div', 'zkc-progress-meta');
-			meta.appendChild(el('span', '', esc(tpl(g.stepCounter, { current: this.state.step, total: TOTAL_STEPS }))));
+			meta.appendChild(el('span', '', esc(tpl(g.stepCounter, {
+				current: index + 1,
+				total: steps.length
+			}))));
 			meta.appendChild(el('span', '', pct + '%'));
 			prog.appendChild(meta);
 			var bar = el('div', 'zkc-progress-bar');
@@ -134,24 +238,23 @@
 			this.inner.appendChild(prog);
 		}
 
-		// Card.
 		var card = el('div', 'zkc-card');
 		this.inner.appendChild(card);
 
-		switch (this.state.step) {
-			case 0: this.renderIntro(card); break;
-			case 1: this.renderInsurers(card); break;
-			case 2: this.renderPolicies(card); break;
-			case 3: this.renderDeductible(card); break;
-			case 4: this.renderUsedDeductible(card); break;
-			case 5: this.renderInfo(card); break;
-			case 6: this.renderReimbursement(card); break;
-			case 7: this.renderInvoices(card); break;
-			case 8: this.renderCoulance(card); break;
-			case 9: this.renderResult(card); break;
+		switch (this.state.screen) {
+			case 'intro':         this.renderIntro(card); break;
+			case 'insurer':       this.renderInsurers(card); break;
+			case 'policy':        this.renderPolicies(card); break;
+			case 'deductible':    this.renderDeductible(card); break;
+			case 'used':          this.renderUsedDeductible(card); break;
+			case 'info':          this.renderInfo(card); break;
+			case 'reimbursement': this.renderReimbursement(card); break;
+			case 'invoices':      this.renderInvoices(card); break;
+			case 'machtiging':    this.renderMachtiging(card); break;
+			case 'coulance':      this.renderCoulance(card); break;
+			case 'result':        this.renderResult(card); break;
 		}
 
-		// Footer.
 		if (g.showFooter) {
 			this.inner.appendChild(el('div', 'zkc-footer', esc(g.footer)));
 		}
@@ -168,7 +271,7 @@
 		var row = el('div', 'zkc-nav');
 		var back = el('button', 'zkc-btn zkc-btn-ghost', esc(this.cfg.general.back));
 		back.type = 'button';
-		back.addEventListener('click', function () { self.setStep(self.state.step - 1); });
+		back.addEventListener('click', function () { self.goBack(); });
 		row.appendChild(back);
 		if (opts.next) {
 			var next = el('button', 'zkc-btn zkc-btn-primary', esc(opts.nextLabel || this.cfg.general.next));
@@ -179,7 +282,7 @@
 		card.appendChild(row);
 	};
 
-	/* Step 0 — intro */
+	/* Intro */
 	Calculator.prototype.renderIntro = function (card) {
 		var self = this;
 		var i = this.cfg.intro;
@@ -189,7 +292,7 @@
 		wrap.appendChild(el('p', 'zkc-intro-text', esc(i.text)));
 		var btn = el('button', 'zkc-btn zkc-btn-primary', esc(i.button));
 		btn.type = 'button';
-		btn.addEventListener('click', function () { self.setStep(1); });
+		btn.addEventListener('click', function () { self.goTo('insurer'); });
 		wrap.appendChild(btn);
 		card.appendChild(wrap);
 	};
@@ -246,14 +349,15 @@
 			grp.insurers.forEach(function (ins) {
 				var tile = el('button', 'zkc-tile');
 				tile.type = 'button';
+				tile.title = ins.name;
 				var logoHtml = ins.logo
 					? '<img class="zkc-tile-logo" src="' + esc(ins.logo) + '" alt="' + esc(ins.name) + '" loading="lazy">'
-					: '<span class="zkc-tile-initial">' + esc((ins.name || '?').charAt(0)) + '</span>';
+					: '<span class="zkc-tile-initial">' + esc((ins.name || '?').slice(0, 3)) + '</span>';
 				tile.innerHTML = '<span class="zkc-tile-media">' + logoHtml + '</span><span class="zkc-tile-name">' + esc(ins.name) + '</span>';
 				tile.addEventListener('click', function () {
 					self.state.insurer = ins;
 					self.state.policy = null;
-					self.setStep(2);
+					self.goTo('policy');
 				});
 				grid.appendChild(tile);
 			});
@@ -278,7 +382,7 @@
 		window.addEventListener('resize', function () {
 			clearTimeout(self._resizeTimer);
 			self._resizeTimer = setTimeout(function () {
-				if (self.state.step === 1 && self.columnCount() !== self._lastColCount) {
+				if (self.state.screen === 'insurer' && self.columnCount() !== self._lastColCount) {
 					self.render();
 				}
 			}, 150);
@@ -301,7 +405,7 @@
 			btn.type = 'button';
 			btn.addEventListener('click', function () {
 				self.state.policy = p;
-				self.setStep(3);
+				self.goTo('deductible');
 			});
 			list.appendChild(btn);
 		});
@@ -309,7 +413,7 @@
 		unknown.type = 'button';
 		unknown.addEventListener('click', function () {
 			self.state.policy = 'unknown';
-			self.setStep(3);
+			self.goTo('deductible');
 		});
 		list.appendChild(unknown);
 		card.appendChild(list);
@@ -317,7 +421,7 @@
 		this.navRow(card, {});
 	};
 
-	/* Step 3 — deductible */
+	/* Step 3 — total deductible */
 	Calculator.prototype.renderDeductible = function (card) {
 		var self = this;
 		var s = this.cfg.steps.s3;
@@ -332,7 +436,7 @@
 			btn.type = 'button';
 			btn.addEventListener('click', function () {
 				self.state.deductible = amount;
-				self.setStep(4);
+				self.goTo('used');
 			});
 			grid.appendChild(btn);
 		});
@@ -342,14 +446,14 @@
 		unknown.type = 'button';
 		unknown.addEventListener('click', function () {
 			self.state.deductible = 'unknown';
-			self.setStep(4);
+			self.goTo('used');
 		});
 		card.appendChild(unknown);
 
 		this.navRow(card, {});
 	};
 
-	/* Step 4 — used deductible */
+	/* Step 4 — used deductible (validated) */
 	Calculator.prototype.renderUsedDeductible = function (card) {
 		var self = this;
 		var s = this.cfg.steps.s4;
@@ -364,12 +468,17 @@
 		var input = el('input', 'zkc-input');
 		input.type = 'number';
 		input.min = '0';
+		input.inputMode = 'decimal';
 		input.placeholder = s.placeholder || '';
 		if (!this.state.usedUnknown && this.state.usedDeductible) {
 			input.value = this.state.usedDeductible;
 		}
 		fieldWrap.appendChild(input);
 		card.appendChild(fieldWrap);
+
+		var error = el('p', 'zkc-error');
+		error.hidden = true;
+		card.appendChild(error);
 
 		var checkWrap = el('label', 'zkc-check');
 		var check = el('input', '');
@@ -379,17 +488,45 @@
 		checkWrap.appendChild(el('span', '', esc(this.cfg.general.unknown)));
 		card.appendChild(checkWrap);
 
+		function clearError() {
+			error.hidden = true;
+			error.textContent = '';
+		}
+
 		check.addEventListener('change', function () {
 			input.disabled = check.checked;
+			if (check.checked) input.value = '';
+			clearError();
 		});
+		input.addEventListener('input', clearError);
 		input.disabled = check.checked;
+
+		// The amount already used can never exceed the chosen total.
+		var ceiling = (this.state.deductible === null || this.state.deductible === 'unknown')
+			? Infinity
+			: this.state.deductible;
 
 		this.navRow(card, {
 			next: function () {
-				self.state.usedUnknown = check.checked;
-				var v = parseFloat(input.value);
-				self.state.usedDeductible = (check.checked || isNaN(v) || v < 0) ? 0 : v;
-				self.setStep(5);
+				if (check.checked) {
+					self.state.usedUnknown = true;
+					self.state.usedDeductible = 0;
+					return self.goNext();
+				}
+				var v = parseFloat(String(input.value).replace(',', '.'));
+				if (isNaN(v) || v < 0) {
+					error.textContent = s.errorInvalid;
+					error.hidden = false;
+					return;
+				}
+				if (v > ceiling) {
+					error.textContent = s.errorMax;
+					error.hidden = false;
+					return;
+				}
+				self.state.usedUnknown = false;
+				self.state.usedDeductible = Math.round(v);
+				self.goNext();
 			}
 		});
 	};
@@ -401,25 +538,41 @@
 		card.appendChild(el('h2', 'zkc-title', esc(s.title)));
 		card.appendChild(el('div', 'zkc-rich', s.content));
 		if (s.panel) card.appendChild(el('div', 'zkc-panel zkc-rich', s.panel));
-		this.navRow(card, { next: function () { self.setStep(6); } });
+		this.navRow(card, { next: function () { self.goNext(); } });
 	};
 
-	/* Step 6 — reimbursement */
+	/* Step 6 — reimbursement, led by the dark result hero */
 	Calculator.prototype.renderReimbursement = function (card) {
 		var self = this;
 		var s = this.cfg.steps.s6;
-		var pol = this.currentPolicy();
-		var basis = this.basisInfo(pol.basis);
-		card.appendChild(el('h2', 'zkc-title', esc(s.title)));
+		var r = this.reimbursement();
+		var basis = this.basisInfo(r.basis);
+		var insurer = this.state.insurer;
 
-		var msg = tpl(s.message, {
-			percentage: Math.round(pol.percentage),
-			basis: basis.label,
-			note: pol.note || ''
+		var hero = el('div', 'zkc-hero');
+		hero.appendChild(el('div', 'zkc-hero-kicker', esc(s.heroKicker)));
+		hero.appendChild(el('h2', 'zkc-hero-title', esc(
+			insurer ? tpl(s.heroTitle, { insurer: insurer.name }) : s.heroTitleFallback
+		)));
+		hero.appendChild(el('div', 'zkc-hero-pct', esc(r.label + '%')));
+		hero.appendChild(el('div', 'zkc-hero-basis', esc(tpl(s.heroBasis, { basis: r.basisLabel }))));
+
+		var estimate = el('div', 'zkc-hero-estimate');
+		estimate.appendChild(el('div', 'zkc-hero-kicker', esc(s.estimateKicker)));
+		estimate.appendChild(el('div', 'zkc-hero-amount', '± ' + esc(fmt(r.expected))));
+		estimate.appendChild(el('div', 'zkc-hero-note', esc(tpl(s.estimateNote, {
+			invoice: fmt(this.cfg.calc.avgInvoice)
+		}))));
+		hero.appendChild(estimate);
+
+		if (r.note) hero.appendChild(el('p', 'zkc-hero-policy-note', esc(r.note)));
+		card.appendChild(hero);
+
+		var msg = tpl(r.unknown ? s.messageUnknown : s.message, {
+			percentage: r.label,
+			basis: r.basisLabel,
+			note: r.note
 		});
-		if (pol.note && s.message.indexOf('{note}') === -1) {
-			msg += ' (' + pol.note + ')';
-		}
 		card.appendChild(el('div', 'zkc-highlight', esc(msg)));
 
 		var box = el('div', 'zkc-panel');
@@ -428,7 +581,6 @@
 		box.appendChild(el('p', 'zkc-text-sm', esc(basis.text)));
 		card.appendChild(box);
 
-		// Accordion with all bases.
 		var det = el('details', 'zkc-accordion');
 		det.appendChild(el('summary', '', esc(s.accordionLabel)));
 		(this.cfg.bases || []).forEach(function (b) {
@@ -438,39 +590,52 @@
 		card.appendChild(det);
 
 		if (s.footnote) card.appendChild(el('p', 'zkc-muted', esc(s.footnote)));
-		this.navRow(card, { next: function () { self.setStep(7); } });
+		this.navRow(card, { next: function () { self.goNext(); } });
 	};
 
 	/* Step 7 — invoices */
 	Calculator.prototype.renderInvoices = function (card) {
 		var self = this;
 		var s = this.cfg.steps.s7;
-		var insurer = this.state.insurer || { name: '', agreement: false, machtiging: false };
+		var insurer = this.state.insurer || { name: '', agreement: false };
 		card.appendChild(el('h2', 'zkc-title', esc(s.title)));
 
 		var yes = !!insurer.agreement;
-		var badge = el('div', 'zkc-badge-box' + (yes ? '' : ' zkc-badge-warn'));
+		var badge = el('div', 'zkc-badge-box ' + (yes ? 'zkc-badge-ok' : 'zkc-badge-alert'));
 		badge.appendChild(el('div', 'zkc-badge-kicker', esc(yes ? s.yesBadge : s.noBadge)));
 		badge.appendChild(el('p', '', esc(tpl(yes ? s.yesIntro : s.noIntro, { insurer: insurer.name }))));
 		card.appendChild(badge);
 
-		var content = el('div', 'zkc-panel zkc-rich', yes ? s.yesContent : s.noContent);
-		card.appendChild(content);
+		card.appendChild(el('div', 'zkc-panel zkc-rich', yes ? s.yesContent : s.noContent));
 
 		var note = yes ? s.yesNote : s.noNote;
 		if (note) card.appendChild(el('div', 'zkc-note zkc-rich', note));
 
-		if (insurer.machtiging && s.machtigingContent) {
-			var m = el('div', 'zkc-panel zkc-machtiging');
-			m.appendChild(el('h3', 'zkc-h3', esc(s.machtigingTitle)));
-			m.appendChild(el('div', 'zkc-rich', s.machtigingContent));
-			card.appendChild(m);
-		}
-
-		this.navRow(card, { next: function () { self.setStep(8); } });
+		this.navRow(card, { next: function () { self.goNext(); } });
 	};
 
-	/* Step 8 — coulance */
+	/* Step 8 — authorization, only reached for insurers that may need one */
+	Calculator.prototype.renderMachtiging = function (card) {
+		var self = this;
+		var m = this.cfg.machtiging;
+		card.appendChild(el('h2', 'zkc-title', esc(m.title)));
+		card.appendChild(el('div', 'zkc-rich', m.content));
+
+		if (m.asks && m.asks.length) {
+			var box = el('div', 'zkc-panel');
+			box.appendChild(el('h4', 'zkc-h4', esc(m.asksTitle)));
+			var ul = el('ul', 'zkc-list');
+			m.asks.forEach(function (line) { ul.appendChild(el('li', '', esc(line))); });
+			box.appendChild(ul);
+			card.appendChild(box);
+		}
+
+		if (m.footnote) card.appendChild(el('p', 'zkc-muted', esc(m.footnote)));
+
+		this.navRow(card, { next: function () { self.goNext(); } });
+	};
+
+	/* Step 9 — coulance */
 	Calculator.prototype.renderCoulance = function (card) {
 		var self = this;
 		var s = this.cfg.steps.s8;
@@ -496,28 +661,23 @@
 		}
 
 		this.navRow(card, {
-			next: function () { self.setStep(9); },
+			next: function () { self.goNext(); },
 			nextLabel: s.button
 		});
 	};
 
-	/* Step 9 — result */
+	/* Result */
 	Calculator.prototype.renderResult = function (card) {
 		var self = this;
 		var r = this.cfg.result;
 		var c = this.cfg.calc;
-		var pol = this.currentPolicy();
-		var basis = this.basisInfo(pol.basis);
+		var reimb = this.reimbursement();
+		var own = this.ownCosts();
 
-		var pct = Math.round(pol.percentage);
 		var invoice = c.avgInvoice;
-		var reimbursed = Math.round(invoice * (pct / 100));
-		var waived = Math.round(invoice - reimbursed);
-		var totalDeductible = (this.state.deductible === 'unknown' || this.state.deductible === null)
-			? c.defaultDeductible
-			: this.state.deductible;
-		var remainingDeductible = Math.max(0, totalDeductible - (this.state.usedDeductible || 0));
-		var total = c.contribution + remainingDeductible;
+		var reimbursed = reimb.expected;
+		var waived = Math.max(0, invoice - reimbursed);
+		var pct = invoice > 0 ? Math.round((reimbursed / invoice) * 100) : 0;
 
 		card.classList.add('zkc-card-result');
 		var head = el('div', 'zkc-result-head');
@@ -540,50 +700,74 @@
 		bar.appendChild(right);
 		avgBox.appendChild(bar);
 
+		var map = { amount: fmt(reimbursed), percentage: reimb.label, basis: reimb.basisLabel };
 		var legend = el('div', 'zkc-legend');
 		var l1 = el('div', 'zkc-legend-item');
-		l1.appendChild(el('h4', 'zkc-h4 zkc-dot zkc-dot-primary', esc(tpl(r.reimbursedLabel, { amount: fmt(reimbursed), percentage: pct, basis: basis.label }))));
-		l1.appendChild(el('p', 'zkc-text-sm', esc(tpl(r.reimbursedText, { amount: fmt(reimbursed), percentage: pct, basis: basis.label }))));
+		l1.appendChild(el('h4', 'zkc-h4 zkc-dot zkc-dot-primary', esc(tpl(r.reimbursedLabel, map))));
+		l1.appendChild(el('p', 'zkc-text-sm', esc(tpl(r.reimbursedText, map))));
+		var mapW = { amount: fmt(waived), percentage: reimb.label, basis: reimb.basisLabel };
 		var l2 = el('div', 'zkc-legend-item');
-		l2.appendChild(el('h4', 'zkc-h4 zkc-dot zkc-dot-dark', esc(tpl(r.waivedLabel, { amount: fmt(waived), percentage: 100 - pct, basis: basis.label }))));
-		l2.appendChild(el('p', 'zkc-text-sm', esc(tpl(r.waivedText, { amount: fmt(waived), percentage: 100 - pct, basis: basis.label }))));
+		l2.appendChild(el('h4', 'zkc-h4 zkc-dot zkc-dot-dark', esc(tpl(r.waivedLabel, mapW))));
+		l2.appendChild(el('p', 'zkc-text-sm', esc(tpl(r.waivedText, mapW))));
 		legend.appendChild(l1);
 		legend.appendChild(l2);
 		avgBox.appendChild(legend);
 		card.appendChild(avgBox);
 
 		// Own costs.
-		var own = el('div', 'zkc-own');
-		own.appendChild(el('div', 'zkc-kicker', esc(r.ownKicker)));
-		own.appendChild(el('h3', 'zkc-h3', esc(r.ownTitle)));
+		var deductibleText = own.known
+			? fmt(own.deductible)
+			: fmt(own.deductibleMin) + ' – ' + fmt(own.deductibleMax);
+		var totalText = own.known
+			? fmt(own.total)
+			: fmt(own.totalMin) + ' – ' + fmt(own.totalMax);
+
+		var ownBox = el('div', 'zkc-own');
+		ownBox.appendChild(el('div', 'zkc-kicker', esc(r.ownKicker)));
+		ownBox.appendChild(el('h3', 'zkc-h3', esc(r.ownTitle)));
 
 		var row1 = el('div', 'zkc-own-row');
 		row1.appendChild(el('div', '', '<strong>' + esc(r.contributionLabel) + '</strong><span class="zkc-own-sub">' + esc(r.contributionText) + '</span>'));
 		row1.appendChild(el('div', 'zkc-own-amount', esc(fmt(c.contribution))));
-		own.appendChild(row1);
+		ownBox.appendChild(row1);
 
 		var row2 = el('div', 'zkc-own-row');
 		row2.appendChild(el('div', '', '<strong>' + esc(r.deductibleLabel) + '</strong><span class="zkc-own-sub">' + esc(r.deductibleText) + '</span>'));
-		row2.appendChild(el('div', 'zkc-own-amount', esc(fmt(remainingDeductible))));
-		own.appendChild(row2);
+		row2.appendChild(el('div', 'zkc-own-amount', esc(deductibleText)));
+		ownBox.appendChild(row2);
 
 		var totalRow = el('div', 'zkc-own-row zkc-own-total');
 		totalRow.appendChild(el('div', '', esc(r.totalLabel)));
-		totalRow.appendChild(el('div', 'zkc-own-amount', esc(fmt(total))));
-		own.appendChild(totalRow);
-		card.appendChild(own);
+		totalRow.appendChild(el('div', 'zkc-own-amount', esc(totalText)));
+		ownBox.appendChild(totalRow);
+		card.appendChild(ownBox);
 
-		// Summary.
+		// Summary — a different sentence when the used deductible is unknown.
 		var bold = function (t) { return '<strong>' + esc(t) + '</strong>'; };
-		var summary = tpl(esc(r.summary), {
+		var summaryMap = {
 			invoice: bold(fmt(invoice)),
 			reimbursed: bold(fmt(reimbursed)),
 			waived: bold(fmt(waived)),
-			contribution: bold(fmt(c.contribution)),
-			deductible: bold(fmt(remainingDeductible)),
-			total: bold(fmt(total))
-		});
+			contribution: bold(fmt(c.contribution))
+		};
+		if (own.known) {
+			summaryMap.deductible = bold(fmt(own.deductible));
+			summaryMap.total = bold(fmt(own.total));
+		} else {
+			summaryMap.totalMin = bold(fmt(own.totalMin));
+			summaryMap.totalMax = bold(fmt(own.totalMax));
+		}
+		var summary = tpl(esc(own.known ? r.summary : r.summaryUnknown), summaryMap);
 		card.appendChild(el('div', 'zkc-summary', summary));
+
+		// Accuracy warnings for anything the visitor could not answer.
+		var warnings = [];
+		if (reimb.unknown && r.notePolicyUnknown) warnings.push(r.notePolicyUnknown);
+		if (!own.known && r.noteDeductibleUnknown) warnings.push(r.noteDeductibleUnknown);
+		warnings.forEach(function (text) {
+			card.appendChild(el('div', 'zkc-warning', esc(text)));
+		});
+
 		card.appendChild(el('p', 'zkc-muted zkc-disclaimer', esc(r.disclaimer)));
 
 		// Buttons.
@@ -593,12 +777,6 @@
 		restart.addEventListener('click', function () { self.restart(); });
 		nav.appendChild(restart);
 
-		var group = el('div', 'zkc-nav-group');
-		var back = el('button', 'zkc-btn zkc-btn-ghost', esc(this.cfg.general.back));
-		back.type = 'button';
-		back.addEventListener('click', function () { self.setStep(8); });
-		group.appendChild(back);
-
 		if (r.signupLabel) {
 			var signup = el('a', 'zkc-btn zkc-btn-primary', esc(r.signupLabel));
 			signup.href = r.signupUrl || '#';
@@ -606,10 +784,16 @@
 				signup.target = r.signupTarget;
 				signup.rel = 'noopener';
 			}
-			group.appendChild(signup);
+			nav.appendChild(signup);
 		}
-		nav.appendChild(group);
 		card.appendChild(nav);
+
+		var backWrap = el('div', 'zkc-result-back');
+		var back = el('button', 'zkc-restart', esc(this.cfg.general.back));
+		back.type = 'button';
+		back.addEventListener('click', function () { self.goBack(); });
+		backWrap.appendChild(back);
+		card.appendChild(backWrap);
 	};
 
 	/* ---------------------------------------------------------------- boot */

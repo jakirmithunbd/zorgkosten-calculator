@@ -11,6 +11,25 @@ https://zorgkosten-inzicht.lovable.app/ as a fully backend-editable widget.
 
 Requires Elementor 3.5+ (tested with 4.2.1).
 
+## The step flow
+
+The calculator has **9 steps**, but the authorization step is only part of the
+flow when the chosen insurer may require one — for every other insurer it is
+**8 steps** and the "Stap X van Y" counter adjusts automatically.
+
+| # | Step | Notes |
+|---|---|---|
+| 1 | Insurer | Logo tiles grouped by concern |
+| 2 | Policy | Only the policies of the chosen insurer, plus "Ik weet het niet" |
+| 3 | Total deductible | 385–885, plus "Ik weet het niet" |
+| 4 | Used deductible | Required; cannot exceed the total chosen in step 3 |
+| 5 | How costs are determined | Static content |
+| 6 | Reimbursement | Dark hero with the percentage and the estimated amount |
+| 7 | Invoices | Two variants: with / without a payment agreement |
+| 8 | Authorization (machtiging) | **Only for insurers that may need one** |
+| 9 | Goodwill scheme (coulance) | Ends with "Bekijk uw kosteninschatting" |
+| — | Result | Costs breakdown |
+
 ## What is editable from Elementor
 
 Everything ships pre-filled with the exact content and data of the original app.
@@ -18,11 +37,20 @@ Everything ships pre-filled with the exact content and data of the original app.
 **Content tab**
 - **General** – brand name, "start over" link, step counter format, Back/Next labels, help prefix, "I don't know" label, footer.
 - **Intro screen** – kicker, title, description, start button.
-- **Insurers** (repeater) – group/concern name, insurer name, logo (media upload), payment-agreement toggle (betaalovereenkomst), authorization toggle (machtiging). 32 insurers pre-filled.
-- **Policies & reimbursement** (repeater) – insurer name (must match an insurer), policy name, reimbursement %, tariff basis, optional note. All 65+ policies pre-filled with the original percentages. Plus fallback % and basis for "I don't know".
-- **Step 1–8** – every title, help text, description, WYSIWYG content block, both step-7 variants (with/without payment agreement), machtiging section, coulance conditions/exclusions (one per line).
-- **Calculation** – average invoice amount (€2000), personal contribution (€250), deductible options (385–885), default deductible for "unknown".
-- **Result screen** – every label and the summary paragraph with `{invoice} {reimbursed} {waived} {contribution} {deductible} {total}` placeholders, disclaimer, restart + sign-up buttons (sign-up URL is a link control).
+- **Insurers** (repeater) – group/concern name, insurer name, logo (media upload), payment-agreement toggle (betaalovereenkomst), authorization toggle (machtiging). 32 insurers pre-filled. The authorization toggle is what adds step 8 for that insurer.
+- **Policies & reimbursement** (repeater) – insurer name (must match an insurer), policy name, reimbursement %, an optional **highest %** for policies that reimburse a range, tariff basis, optional note. All 70 policies pre-filled with the original percentages. Plus fallback % and basis for "I don't know".
+- **Step 1–9** – every title, help text, description, WYSIWYG content block, both step-7 variants (with/without payment agreement), the machtiging step, coulance conditions/exclusions (one per line).
+- **Step 4** – both validation messages ("Vul een geldig bedrag in.", "Het gebruikte bedrag kan niet hoger zijn dan uw totale eigen risico.").
+- **Step 6** – hero kicker/title/basis line, estimate box kicker and note, and two messages: one for a known policy and one for "Ik weet het niet".
+- **Calculation** – average invoice amount (€2000), personal contribution (€250), deductible options (385–885), highest deductible assumed when the total is unknown (€885).
+- **Result screen** – every label, two summary paragraphs (one for known values with `{invoice} {reimbursed} {waived} {contribution} {deductible} {total}`, one for an unknown used deductible with `{totalMin} {totalMax}`), both accuracy warnings, disclaimer, restart + sign-up buttons (sign-up URL is a link control).
+
+### Reimbursement percentages
+
+Most policies reimburse a single percentage. A few reimburse a **range** — for
+example Anderzorg Basis at 60–100% depending on the type of care. Fill in the
+optional "highest %" field for those: the step-6 hero and the result then show
+`60–100%`, and the money is calculated with the middle of the range (80%).
 
 **Style tab**
 - Colors (primary, dark, headings, text, muted, page/card background, borders)
@@ -32,49 +60,24 @@ Everything ships pre-filled with the exact content and data of the original app.
 
 ## Calculation logic (same as the original)
 
-- Reimbursed = average invoice × policy % (default 70% when policy unknown)
-- Waived (coulance) = average invoice − reimbursed
-- Remaining deductible = chosen deductible − already-used amount (min 0; unknown deductible → default €385, unknown used → €0)
+- Reimbursed = average invoice x policy % (the middle of the range for range policies; 70% when the policy is unknown)
+- Waived (coulance) = average invoice - reimbursed
+- Remaining deductible = chosen deductible - already-used amount (min 0)
 - Total own costs = personal contribution + remaining deductible
+
+When the visitor answered "Ik weet het niet" for the total deductible or for
+the amount already used, the remaining deductible cannot be pinned down, so the
+result shows a **range** instead of one number (EUR 0 up to the total, or up to the
+configured EUR 885 ceiling when the total itself is unknown) and an amber note
+explains why.
 
 ## Insurer logos
 
-Each insurer row has two logo fields: a **Logo** media control (upload to the
-site's own media library — recommended for production) and a **Logo URL
-(fallback)** text field, pre-filled with the original app's logo URLs so the
-widget looks right out of the box. An uploaded logo always wins over the URL.
-The original URLs for reference:
+All 31 logos ship with the plugin in `assets/logos/` and are used by default,
+so the calculator does not depend on any external CDN. Each insurer row still
+has two logo fields: a **Logo** media control (upload to the site's own media
+library) and a **Logo URL (fallback)** text field, pre-filled with the bundled
+file. An uploaded logo always wins over the URL.
 
-| Insurer | Original logo URL |
-|---|---|
-| FBTO | https://zorgkosten-inzicht.lovable.app/__l5e/assets-v1/57775fcc-c437-422e-b6fa-fe93f9224647/FBTO-logo-liggend-2019.svg |
-| De Friesland | https://zorgkosten-inzicht.lovable.app/__l5e/assets-v1/a9a5962f-321c-4960-beba-185b3340383c/logo_defriesland.svg |
-| Interpolis | https://zorgkosten-inzicht.lovable.app/__l5e/assets-v1/3a766be2-1e77-40dc-8c31-7a959841db99/logo_interpolis.svg |
-| Zilveren Kruis | https://zorgkosten-inzicht.lovable.app/__l5e/assets-v1/274d913b-5677-42f7-a5f6-955065909042/logo_zilverenkruis.svg |
-| ZieZo | https://zorgkosten-inzicht.lovable.app/__l5e/assets-v1/921f9603-42ac-4785-ac3b-1010a2813e54/ziezo.svg |
-| De Christelijke Zorgverzekeraar | https://zorgkosten-inzicht.lovable.app/__l5e/assets-v1/e0da6dcb-948c-4483-b793-caac4e7a51eb/logo_dechristelijkezorgverzekeraar.svg |
-| Univé | https://zorgkosten-inzicht.lovable.app/__l5e/assets-v1/dfccd5c1-029a-405b-9e12-9a15ec6b2c6a/unive-logo-payoff.svg |
-| VGZ | https://zorgkosten-inzicht.lovable.app/__l5e/assets-v1/fb112d4c-096c-41b4-960d-979d2078afc3/Logo_VGZ_nieuw.png |
-| VGZbewuzt | https://zorgkosten-inzicht.lovable.app/__l5e/assets-v1/fde61534-f309-4204-a391-b72daf65fb0c/VGZbewuzt_logo_RGB_2022.png |
-| ZEKUR | https://zorgkosten-inzicht.lovable.app/__l5e/assets-v1/db7b7145-a294-4fe3-8156-9140d8c2fc17/zekur_logo.svg |
-| United Consumers | https://zorgkosten-inzicht.lovable.app/__l5e/assets-v1/36734bfd-4f8d-45da-b6ed-69c15902a513/unitedconsumers-logo-uc.svg |
-| IZA | https://zorgkosten-inzicht.lovable.app/__l5e/assets-v1/a618c5eb-5bb9-4007-8caf-2ad2fed2b41c/IZA_van_VGZ_Compact.png |
-| UMC Zorgverzekering | https://zorgkosten-inzicht.lovable.app/__l5e/assets-v1/e3061a30-8796-4ffc-bdb3-5d1c14b7c71e/Logo_umczorgverzekering.png |
-| IZZ Zorgverzekering | https://zorgkosten-inzicht.lovable.app/__l5e/assets-v1/07c87920-c7ef-40b3-b7e0-9cbc2a0a47f0/IZZCombinatielogo_IZZ-VGZ_FC_RGB-1.png |
-| Nationale-Nederlanden | https://zorgkosten-inzicht.lovable.app/__l5e/assets-v1/294a0dd1-4353-4f02-b7cd-f61ac4052622/logo-nationalenederlanden.svg |
-| Ohra | https://zorgkosten-inzicht.lovable.app/__l5e/assets-v1/5269230b-1017-4f46-8c49-8c89441fe723/logo-ohra.svg |
-| CZ / CZdirect | https://zorgkosten-inzicht.lovable.app/__l5e/assets-v1/1923c4eb-d1f9-49a0-96f3-eaac393ab145/logo_CZ.svg |
-| Just | https://zorgkosten-inzicht.lovable.app/__l5e/assets-v1/d74972fd-d9d0-4923-af27-f2c44e8c622d/logo-JUSTCZ.svg |
-| VinkVink | https://zorgkosten-inzicht.lovable.app/__l5e/assets-v1/f7c2d8ad-dda1-49d7-8662-6377a9adc910/logo-VINKVINK.svg |
-| Anderzorg | https://zorgkosten-inzicht.lovable.app/__l5e/assets-v1/97f74821-1a8f-4739-b0eb-2f0525e7f13d/logo-ANDERZORG.svg |
-| Menzis | https://zorgkosten-inzicht.lovable.app/__l5e/assets-v1/c2bb9a93-b29d-4888-99a0-4012ebf1c521/logo-MENZIS.svg |
-| DSW | https://zorgkosten-inzicht.lovable.app/__l5e/assets-v1/3b9cb72f-648a-4fca-8d77-daa4a5db1738/dsw-tablet-plus-logo.svg |
-| Stad Holland | https://zorgkosten-inzicht.lovable.app/__l5e/assets-v1/1256f2cc-f02f-466c-8318-db57ced14bd6/stadholland-tablet-plus-logo.svg |
-| a.s.r. | https://zorgkosten-inzicht.lovable.app/__l5e/assets-v1/87bbac93-73d4-457e-81b7-e2cf0897f018/a.s.r.zorgverzekering.svg |
-| Ik kies zelf van a.s.r. | https://zorgkosten-inzicht.lovable.app/__l5e/assets-v1/e002c0b2-1d3d-4b56-9135-a7b80dd7f88f/ikkieszelfasr.svg |
-| Zorg en Zekerheid | https://zorgkosten-inzicht.lovable.app/__l5e/assets-v1/db93c499-421b-49c8-9238-10e97234d852/logo-zorgenzekerheid.svg |
-| ONVZ | https://zorgkosten-inzicht.lovable.app/__l5e/assets-v1/514c3577-9f33-48bd-82f3-69185cc517b4/onvz-logo.png |
-| VvAA | https://zorgkosten-inzicht.lovable.app/__l5e/assets-v1/10f53aef-e311-40c9-9697-21a6af1fd3e3/idwzGV5qgk_1785212821621.jpeg |
-| Salland | https://zorgkosten-inzicht.lovable.app/__l5e/assets-v1/0165638b-2ad7-4d98-a023-2a729bbcb2be/Logo-Salland-Zorgverzekeraar.png |
-| Aevitae | https://zorgkosten-inzicht.lovable.app/__l5e/assets-v1/21f057e0-e6f7-4286-84e6-cd1e96cefa18/logo-aevitae.webp |
-| Care4life | https://zorgkosten-inzicht.lovable.app/__l5e/assets-v1/7e04e2d5-a118-4525-bba7-3ef57b0a8fe4/logo-care4life.png |
+To swap a logo for every new widget at once, replace the file in
+`assets/logos/` keeping the same filename.
