@@ -414,6 +414,12 @@
 	margin: 0;
 }
 
+.zkc-error {
+	color: #C4453B;
+	font-size: 14px;
+	margin: -6px 0 12px;
+}
+
 .zkc-check {
 	display: flex;
 	align-items: center;
@@ -488,9 +494,18 @@
 	color: var(--zkc-heading);
 }
 
-.zkc-badge-warn {
-	border-left-color: #E5A33B;
-	background: rgba(229, 163, 59, .07);
+/* With a payment agreement the news is good, without it the visitor has work
+ * to do — the two states are colour-coded like the reference app. */
+.zkc-badge-ok {
+	border-color: rgba(45, 150, 105, .3);
+	border-left-color: #2D9669;
+	background: rgba(45, 150, 105, .07);
+}
+
+.zkc-badge-alert {
+	border-color: rgba(232, 117, 107, .3);
+	border-left-color: var(--zkc-primary);
+	background: rgba(232, 117, 107, .07);
 }
 
 .zkc-badge-kicker {
@@ -499,6 +514,72 @@
 	text-transform: uppercase;
 	letter-spacing: .1em;
 	color: var(--zkc-muted);
+}
+
+/* -------------------------------------------------------------------- hero */
+
+.zkc-hero {
+	background: var(--zkc-dark);
+	border-radius: 18px;
+	padding: clamp(24px, 4vw, 40px);
+	text-align: center;
+	margin-bottom: 26px;
+}
+
+.zkc-hero-kicker {
+	font-size: 12px;
+	font-weight: 600;
+	text-transform: uppercase;
+	letter-spacing: .2em;
+	color: rgba(255, 255, 255, .55);
+}
+
+.zkc .zkc-hero-title {
+	color: #fff;
+	font-size: clamp(19px, 2.4vw, 24px);
+	font-weight: 600;
+	margin: 8px 0 0;
+}
+
+.zkc-hero-pct {
+	color: var(--zkc-primary);
+	font-size: clamp(44px, 7vw, 60px);
+	font-weight: 700;
+	line-height: 1;
+	margin-top: 16px;
+}
+
+.zkc-hero-basis {
+	margin-top: 8px;
+	font-size: 14px;
+	color: rgba(255, 255, 255, .7);
+}
+
+.zkc-hero-estimate {
+	display: inline-block;
+	background: rgba(255, 255, 255, .1);
+	border-radius: 12px;
+	padding: 16px 32px;
+	margin-top: 24px;
+}
+
+.zkc-hero-amount {
+	color: #fff;
+	font-size: 24px;
+	font-weight: 600;
+}
+
+.zkc-hero-note {
+	margin-top: 2px;
+	font-size: 12px;
+	color: rgba(255, 255, 255, .6);
+}
+
+.zkc-hero-policy-note {
+	max-width: 640px;
+	margin: 20px auto 0;
+	font-size: 14px;
+	color: rgba(255, 255, 255, .7);
 }
 
 /* --------------------------------------------------------------- accordion */
@@ -771,8 +852,26 @@
 	font-size: 11px;
 }
 
+/* Shown when the visitor answered "Ik weet het niet" somewhere, so the
+ * numbers above are a range or an estimate rather than a calculation. */
+.zkc-warning {
+	border: 1px solid rgba(229, 163, 59, .4);
+	background: rgba(229, 163, 59, .1);
+	border-radius: 10px;
+	padding: 12px 14px;
+	margin-top: 14px;
+	font-size: 14px;
+	color: var(--zkc-heading);
+}
+
 .zkc-nav-result {
 	margin-top: 26px;
+	justify-content: center;
+}
+
+.zkc-result-back {
+	margin-top: 16px;
+	text-align: center;
 }
 
 /* -------------------------------------------------------------- responsive */
@@ -792,13 +891,8 @@
 		align-items: stretch;
 	}
 
-	.zkc-nav-result .zkc-btn,
-	.zkc-nav-group {
+	.zkc-nav-result .zkc-btn {
 		width: 100%;
-	}
-
-	.zkc-nav-group .zkc-btn {
-		flex: 1;
 		text-align: center;
 	}
 }

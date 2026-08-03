@@ -599,10 +599,11 @@ class ZKC_Cost_Calculator_Widget extends Widget_Base {
 		] );
 
 		$this->add_control( 'default_deductible', [
-			'label'       => esc_html__( 'Default deductible (when unknown)', 'zorgkosten-calculator' ),
+			'label'       => esc_html__( 'Highest deductible assumed when unknown (€)', 'zorgkosten-calculator' ),
+			'description' => esc_html__( 'When the visitor does not know their total deductible, the result shows a range from € 0 up to this amount.', 'zorgkosten-calculator' ),
 			'type'        => Controls_Manager::NUMBER,
 			'min'         => 0,
-			'default'     => 385,
+			'default'     => 885,
 		] );
 
 		$this->end_controls_section();
@@ -684,18 +685,61 @@ class ZKC_Cost_Calculator_Widget extends Widget_Base {
 			'label' => esc_html__( 'Step 6 – Reimbursement', 'zorgkosten-calculator' ),
 		] );
 
-		$this->add_control( 'step6_title', [
-			'label'   => esc_html__( 'Title', 'zorgkosten-calculator' ),
+		$this->add_control( 'step6_hero_kicker', [
+			'label'   => esc_html__( 'Hero kicker', 'zorgkosten-calculator' ),
 			'type'    => Controls_Manager::TEXT,
-			'default' => 'Wat vergoedt uw zorgverzekeraar?',
+			'default' => 'Uw uitkomst',
+		] );
+
+		$this->add_control( 'step6_hero_title', [
+			'label'       => esc_html__( 'Hero title', 'zorgkosten-calculator' ),
+			'description' => esc_html__( 'Use {insurer} for the chosen insurer.', 'zorgkosten-calculator' ),
+			'type'        => Controls_Manager::TEXT,
+			'default'     => '{insurer} vergoedt naar verwachting',
+			'label_block' => true,
+		] );
+
+		$this->add_control( 'step6_hero_title_fallback', [
+			'label'       => esc_html__( 'Hero title (no insurer chosen)', 'zorgkosten-calculator' ),
+			'type'        => Controls_Manager::TEXT,
+			'default'     => 'Uw verzekeraar vergoedt naar verwachting',
+			'label_block' => true,
+		] );
+
+		$this->add_control( 'step6_hero_basis', [
+			'label'       => esc_html__( 'Line under the percentage', 'zorgkosten-calculator' ),
+			'description' => esc_html__( 'Placeholder: {basis}.', 'zorgkosten-calculator' ),
+			'type'        => Controls_Manager::TEXT,
+			'default'     => 'van het {basis}',
+			'label_block' => true,
+		] );
+
+		$this->add_control( 'step6_estimate_kicker', [
+			'label'   => esc_html__( 'Estimate box kicker', 'zorgkosten-calculator' ),
+			'type'    => Controls_Manager::TEXT,
+			'default' => 'Geschatte vergoeding',
+		] );
+
+		$this->add_control( 'step6_estimate_note', [
+			'label'       => esc_html__( 'Estimate box note', 'zorgkosten-calculator' ),
+			'description' => esc_html__( 'Placeholder: {invoice}.', 'zorgkosten-calculator' ),
+			'type'        => Controls_Manager::TEXT,
+			'default'     => 'bij een gemiddeld factuurbedrag van ± {invoice}',
 			'label_block' => true,
 		] );
 
 		$this->add_control( 'step6_message', [
-			'label'       => esc_html__( 'Message', 'zorgkosten-calculator' ),
-			'description' => esc_html__( 'Placeholders: {percentage}, {basis}, {note}.', 'zorgkosten-calculator' ),
+			'label'       => esc_html__( 'Message (policy known)', 'zorgkosten-calculator' ),
+			'description' => esc_html__( 'Placeholders: {percentage} (a number or a range such as 60–100), {basis}, {note}.', 'zorgkosten-calculator' ),
 			'type'        => Controls_Manager::TEXTAREA,
 			'default'     => 'Uw zorgverzekeraar vergoedt bij deze basisverzekering naar verwachting {percentage}% van het {basis} voor ongecontracteerde GGZ.',
+		] );
+
+		$this->add_control( 'step6_message_unknown', [
+			'label'       => esc_html__( 'Message (policy unknown)', 'zorgkosten-calculator' ),
+			'description' => esc_html__( 'Placeholders: {percentage}, {basis}.', 'zorgkosten-calculator' ),
+			'type'        => Controls_Manager::TEXTAREA,
+			'default'     => 'Op basis van een algemene inschatting gaan wij uit van een vergoeding van ongeveer {percentage}% van het {basis} voor ongecontracteerde GGZ.',
 		] );
 
 		$this->add_control( 'step6_basis_kicker', [
@@ -822,19 +866,26 @@ class ZKC_Cost_Calculator_Widget extends Widget_Base {
 		$this->add_control( 'step7_no_content', [
 			'label'   => esc_html__( 'Content', 'zorgkosten-calculator' ),
 			'type'    => Controls_Manager::WYSIWYG,
-			'default' => '<h4>Wat betekent dit voor u?</h4><ul><li>U ontvangt van ADHD Medisch Centrum een digitale of papieren declaratiefactuur.</li><li>U dient deze declaratiefactuur zelf in bij uw zorgverzekeraar.</li><li>U betaalt de vergoeding die uw zorgverzekeraar rechtstreeks aan u uitbetaalt binnen 14 dagen door aan ADHD Medisch Centrum.</li></ul><h4>Hoe dient u de factuur in?</h4><p>Omdat wij ongecontracteerde zorg leveren, dient u de factuur eerst zelf in bij uw zorgverzekeraar. Dit kan meestal via de app of website. Na beoordeling ontvangt u een declaratieoverzicht en wordt de vergoeding op uw eigen rekening gestort.</p><h4>Declaratieoverzicht</h4><p>Stuur het declaratieoverzicht per e-mail naar <a href="mailto:facturen@adhdmc.nl">facturen@adhdmc.nl</a>. Aan de hand hiervan bepalen wij:</p><ul><li>welk bedrag door uw zorgverzekeraar is vergoed;</li><li>welk bedrag met uw eigen risico is verrekend;</li><li>welk deel onder onze coulanceregeling valt;</li><li>welk totaalbedrag u aan ADHD Medisch Centrum betaalt.</li></ul>',
+			'default' => '<h4>Wat betekent dit voor u?</h4><ul><li>U ontvangt van ADHD Medisch Centrum een digitale of papieren declaratiefactuur.</li><li>U dient deze factuur tijdig zelf in bij uw zorgverzekeraar.</li><li>U levert het volledige vergoedingenoverzicht bij ons aan.</li><li>U betaalt de vergoeding die uw zorgverzekeraar rechtstreeks aan u uitbetaalt binnen 14 dagen door aan ADHD Medisch Centrum.</li></ul><h4>Hoe dient u de factuur in?</h4><p>Omdat wij ongecontracteerde zorg leveren, dient u de factuur eerst zelf in bij uw zorgverzekeraar. Dit kan meestal via de app of website. Na beoordeling ontvangt u een declaratieoverzicht en wordt de vergoeding op uw eigen rekening gestort.</p><h4>Declaratieoverzicht</h4><p>Stuur het declaratieoverzicht per e-mail naar <a href="mailto:facturen@adhdmc.nl">facturen@adhdmc.nl</a>. Aan de hand van dit overzicht stellen wij vast:</p><ul><li>welk bedrag door uw zorgverzekeraar is vergoed;</li><li>welk bedrag met uw eigen risico is verrekend;</li><li>welk deel onder onze coulanceregeling valt;</li><li>welk totaalbedrag u aan ADHD Medisch Centrum betaalt.</li></ul>',
 		] );
 
 		$this->add_control( 'step7_no_note', [
 			'label'   => esc_html__( 'Note panel (Let op)', 'zorgkosten-calculator' ),
 			'type'    => Controls_Manager::WYSIWYG,
-			'default' => '<h4>Let op: eigen risico</h4><p>Uw zorgverzekeraar kan uw openstaande eigen risico met de vergoeding verrekenen. Het bedrag dat als eigen risico wordt ingehouden, blijft voor uw eigen rekening en valt niet onder de coulanceregeling.</p>',
+			'default' => '<h4>Let op: eigen risico</h4><p>Uw zorgverzekeraar kan uw openstaande eigen risico met de vergoeding verrekenen. Het bedrag dat als eigen risico wordt ingehouden, blijft u aan ADHD Medisch Centrum verschuldigd. Het eigen risico valt niet onder de coulanceregeling.</p>',
 		] );
 
-		$this->add_control( 'heading_step7_machtiging', [
-			'label'     => esc_html__( 'Authorization (machtiging) section', 'zorgkosten-calculator' ),
-			'type'      => Controls_Manager::HEADING,
-			'separator' => 'before',
+		$this->end_controls_section();
+
+		/* ---- Step 8: authorization (only for insurers that need one) ---- */
+		$this->start_controls_section( 'section_step8_machtiging', [
+			'label' => esc_html__( 'Step 8 – Authorization (machtiging)', 'zorgkosten-calculator' ),
+		] );
+
+		$this->add_control( 'machtiging_note', [
+			'type'            => Controls_Manager::RAW_HTML,
+			'raw'             => esc_html__( 'This step is only shown for insurers with "Authorization (machtiging) may be required" switched on. For every other insurer the calculator has 8 steps instead of 9.', 'zorgkosten-calculator' ),
+			'content_classes' => 'elementor-descriptor',
 		] );
 
 		$this->add_control( 'step7_machtiging_title', [
@@ -847,14 +898,35 @@ class ZKC_Cost_Calculator_Widget extends Widget_Base {
 		$this->add_control( 'step7_machtiging_content', [
 			'label'   => esc_html__( 'Content', 'zorgkosten-calculator' ),
 			'type'    => Controls_Manager::WYSIWYG,
-			'default' => '<p>Voor verzekerden van onder andere a.s.r., Zorg en Zekerheid, ONVZ, VvAA, Salland en Aevitae kan vooraf toestemming van de zorgverzekeraar nodig zijn voordat de zorg kan starten of worden voortgezet. Deze toestemming wordt een <strong>machtiging</strong> genoemd.</p><p>U bent zelf verantwoordelijk voor het controleren of voor uw zorgverzekering, polis of behandeling een machtiging vereist is en voor het tijdig verkrijgen daarvan. ADHD Medisch Centrum verleent hierbij binnen redelijke grenzen medewerking.</p>',
+			'default' => '<p>Voor verzekerden van onder andere a.s.r., Zorg en Zekerheid, ONVZ, VvAA, Salland en Aevitae kan vooraf toestemming van de zorgverzekeraar nodig zijn voordat de zorg kan starten of worden voortgezet. Deze toestemming wordt een <strong>machtiging</strong> genoemd.</p><p>U bent zelf verantwoordelijk voor het controleren of voor uw zorgverzekering, polis of behandeling een machtiging vereist is en voor het tijdig verkrijgen daarvan. ADHD Medisch Centrum verleent binnen redelijke grenzen medewerking en kan, wanneer dit mogelijk is, de machtigingsaanvraag namens u voorbereiden en indienen.</p><p>Uw zorgverzekeraar beoordeelt de aanvraag en beslist of de machtiging wordt verleend. Een aangevraagde of verleende machtiging betekent niet automatisch dat alle zorgkosten volledig worden vergoed.</p>',
+		] );
+
+		$this->add_control( 'machtiging_asks_title', [
+			'label'   => esc_html__( 'Framed box heading', 'zorgkosten-calculator' ),
+			'type'    => Controls_Manager::TEXT,
+			'default' => 'Wat vragen wij van u?',
+			'label_block' => true,
+		] );
+
+		$this->add_control( 'machtiging_asks', [
+			'label'   => esc_html__( 'Framed box list (one per line)', 'zorgkosten-calculator' ),
+			'type'    => Controls_Manager::TEXTAREA,
+			'rows'    => 7,
+			'default' => "Gevraagde informatie en documenten tijdig aanleveren.\nNoodzakelijke formulieren invullen en ondertekenen.\nVragen van ADHD Medisch Centrum of uw zorgverzekeraar tijdig beantwoorden.\nAanvullende informatie verstrekken wanneer daarom wordt gevraagd.\nWijzigingen in uw zorgverzekering of polis direct aan ons doorgeven.",
+		] );
+
+		$this->add_control( 'machtiging_footnote', [
+			'label'   => esc_html__( 'Closing note', 'zorgkosten-calculator' ),
+			'type'    => Controls_Manager::TEXTAREA,
+			'rows'    => 4,
+			'default' => 'Wanneer een machtiging door het ontbreken van uw medewerking niet tijdig kan worden aangevraagd of verkregen, kan het zorgtraject worden beëindigd. Kosten die hierdoor niet worden vergoed, blijven voor uw rekening en vallen niet onder de coulanceregeling.',
 		] );
 
 		$this->end_controls_section();
 
-		/* ---- Step 8: goodwill scheme ---- */
+		/* ---- Step 9: goodwill scheme ---- */
 		$this->start_controls_section( 'section_step8', [
-			'label' => esc_html__( 'Step 8 – Goodwill scheme (coulance)', 'zorgkosten-calculator' ),
+			'label' => esc_html__( 'Step 9 – Goodwill scheme (coulance)', 'zorgkosten-calculator' ),
 		] );
 
 		$this->add_control( 'step8_title', [
@@ -1041,6 +1113,28 @@ class ZKC_Cost_Calculator_Widget extends Widget_Base {
 			'type'        => Controls_Manager::TEXTAREA,
 			'rows'        => 6,
 			'default'     => 'Wij rekenen in dit voorbeeld met een gemiddeld factuurbedrag van ongeveer {invoice}; uw werkelijke factuur kan hoger of lager zijn. Uw zorgverzekeraar vergoedt hiervan naar verwachting {reimbursed}. Het overige niet-vergoede bedrag van ongeveer {waived} scheldt ADHD Medisch Centrum kwijt via de coulanceregeling. U betaalt een eenmalige persoonlijke bijdrage van {contribution}. Daarnaast kan uw zorgverzekeraar nog {deductible} aan eigen risico bij u in rekening brengen. Uw totale verwachte eigen kosten bedragen daarmee ongeveer {total}.',
+		] );
+
+		$this->add_control( 'result_summary_unknown', [
+			'label'       => esc_html__( 'Summary paragraph (used deductible unknown)', 'zorgkosten-calculator' ),
+			'description' => esc_html__( 'Placeholders: {invoice}, {reimbursed}, {waived}, {contribution}, {totalMin}, {totalMax}.', 'zorgkosten-calculator' ),
+			'type'        => Controls_Manager::TEXTAREA,
+			'rows'        => 6,
+			'default'     => 'Wij rekenen in dit voorbeeld met een gemiddeld factuurbedrag van ongeveer {invoice}; uw werkelijke factuur kan hoger of lager zijn. Uw zorgverzekeraar vergoedt hiervan naar verwachting {reimbursed}. Het overige niet-vergoede bedrag van ongeveer {waived} scheldt ADHD Medisch Centrum kwijt via de coulanceregeling. U betaalt een eenmalige persoonlijke bijdrage van {contribution}. Omdat u niet weet hoeveel eigen risico u al heeft gebruikt, liggen uw totale verwachte eigen kosten tussen {totalMin} en {totalMax}.',
+		] );
+
+		$this->add_control( 'result_note_policy_unknown', [
+			'label'       => esc_html__( 'Warning: policy unknown', 'zorgkosten-calculator' ),
+			'type'        => Controls_Manager::TEXTAREA,
+			'rows'        => 3,
+			'default'     => 'Omdat u niet weet welk type basisverzekering u heeft, is deze berekening minder nauwkeurig.',
+		] );
+
+		$this->add_control( 'result_note_deductible_unknown', [
+			'label'       => esc_html__( 'Warning: used deductible unknown', 'zorgkosten-calculator' ),
+			'type'        => Controls_Manager::TEXTAREA,
+			'rows'        => 3,
+			'default'     => 'Omdat u niet weet hoeveel eigen risico u al heeft gebruikt, tonen wij een minimum- en maximumbedrag.',
 		] );
 
 		$this->add_control( 'result_disclaimer', [
@@ -1233,12 +1327,21 @@ class ZKC_Cost_Calculator_Widget extends Widget_Base {
 		// Build policy data.
 		$policies = [];
 		foreach ( (array) ( $s['policies'] ?? [] ) as $row ) {
+			$min = is_numeric( $row['pol_percentage'] ?? null ) ? (float) $row['pol_percentage'] : 70;
+			$max = is_numeric( $row['pol_percentage_max'] ?? null ) ? (float) $row['pol_percentage_max'] : null;
+
+			// A max that is not above the min is simply a single percentage.
+			if ( null !== $max && $max <= $min ) {
+				$max = null;
+			}
+
 			$policies[] = [
-				'insurer'    => (string) ( $row['pol_insurer'] ?? '' ),
-				'name'       => (string) ( $row['pol_name'] ?? '' ),
-				'percentage' => is_numeric( $row['pol_percentage'] ?? null ) ? (float) $row['pol_percentage'] : 70,
-				'basis'      => (string) ( $row['pol_basis'] ?? 'gemiddeld_gecontracteerd' ),
-				'note'       => (string) ( $row['pol_note'] ?? '' ),
+				'insurer'       => (string) ( $row['pol_insurer'] ?? '' ),
+				'name'          => (string) ( $row['pol_name'] ?? '' ),
+				'percentage'    => $min,
+				'percentageMax' => $max,
+				'basis'         => (string) ( $row['pol_basis'] ?? 'gemiddeld_gecontracteerd' ),
+				'note'          => (string) ( $row['pol_note'] ?? '' ),
 			];
 		}
 
@@ -1306,7 +1409,7 @@ class ZKC_Cost_Calculator_Widget extends Widget_Base {
 				'defaultPercentage' => is_numeric( $s['default_percentage'] ) ? (float) $s['default_percentage'] : 70,
 				'defaultBasis'      => (string) $s['default_basis'],
 				'deductibles'       => $deductibles,
-				'defaultDeductible' => is_numeric( $s['default_deductible'] ) ? (float) $s['default_deductible'] : 385,
+				'maxDeductible'     => is_numeric( $s['default_deductible'] ) ? (float) $s['default_deductible'] : 885,
 			],
 			'steps' => [
 				's1' => [
@@ -1324,10 +1427,12 @@ class ZKC_Cost_Calculator_Widget extends Widget_Base {
 					'help'  => (string) $s['step3_help'],
 				],
 				's4' => [
-					'title'       => (string) $s['step4_title'],
-					'help'        => (string) $s['step4_help'],
-					'fieldLabel'  => (string) $s['step4_field_label'],
-					'placeholder' => (string) $s['step4_placeholder'],
+					'title'        => (string) $s['step4_title'],
+					'help'         => (string) $s['step4_help'],
+					'fieldLabel'   => (string) $s['step4_field_label'],
+					'placeholder'  => (string) $s['step4_placeholder'],
+					'errorInvalid' => (string) $s['step4_error_invalid'],
+					'errorMax'     => (string) $s['step4_error_max'],
 				],
 				's5' => [
 					'title'   => (string) $s['step5_title'],
@@ -1335,24 +1440,35 @@ class ZKC_Cost_Calculator_Widget extends Widget_Base {
 					'panel'   => (string) $s['step5_panel'],
 				],
 				's6' => [
-					'title'          => (string) $s['step6_title'],
-					'message'        => (string) $s['step6_message'],
-					'basisKicker'    => (string) $s['step6_basis_kicker'],
-					'accordionLabel' => (string) $s['step6_accordion_label'],
-					'footnote'       => (string) $s['step6_footnote'],
+					'heroKicker'        => (string) $s['step6_hero_kicker'],
+					'heroTitle'         => (string) $s['step6_hero_title'],
+					'heroTitleFallback' => (string) $s['step6_hero_title_fallback'],
+					'heroBasis'         => (string) $s['step6_hero_basis'],
+					'estimateKicker'    => (string) $s['step6_estimate_kicker'],
+					'estimateNote'      => (string) $s['step6_estimate_note'],
+					'message'           => (string) $s['step6_message'],
+					'messageUnknown'    => (string) $s['step6_message_unknown'],
+					'basisKicker'       => (string) $s['step6_basis_kicker'],
+					'accordionLabel'    => (string) $s['step6_accordion_label'],
+					'footnote'          => (string) $s['step6_footnote'],
 				],
 				's7' => [
-					'title'            => (string) $s['step7_title'],
-					'yesBadge'         => (string) $s['step7_yes_badge'],
-					'yesIntro'         => (string) $s['step7_yes_intro'],
-					'yesContent'       => (string) $s['step7_yes_content'],
-					'yesNote'          => (string) $s['step7_yes_note'],
-					'noBadge'          => (string) $s['step7_no_badge'],
-					'noIntro'          => (string) $s['step7_no_intro'],
-					'noContent'        => (string) $s['step7_no_content'],
-					'noNote'           => (string) $s['step7_no_note'],
-					'machtigingTitle'  => (string) $s['step7_machtiging_title'],
-					'machtigingContent'=> (string) $s['step7_machtiging_content'],
+					'title'      => (string) $s['step7_title'],
+					'yesBadge'   => (string) $s['step7_yes_badge'],
+					'yesIntro'   => (string) $s['step7_yes_intro'],
+					'yesContent' => (string) $s['step7_yes_content'],
+					'yesNote'    => (string) $s['step7_yes_note'],
+					'noBadge'    => (string) $s['step7_no_badge'],
+					'noIntro'    => (string) $s['step7_no_intro'],
+					'noContent'  => (string) $s['step7_no_content'],
+					'noNote'     => (string) $s['step7_no_note'],
+				],
+				'machtiging' => [
+					'title'     => (string) $s['step7_machtiging_title'],
+					'content'   => (string) $s['step7_machtiging_content'],
+					'asksTitle' => (string) $s['machtiging_asks_title'],
+					'asks'      => $lines( $s['machtiging_asks'] ),
+					'footnote'  => (string) $s['machtiging_footnote'],
 				],
 				's8' => [
 					'title'           => (string) $s['step8_title'],
@@ -1381,6 +1497,9 @@ class ZKC_Cost_Calculator_Widget extends Widget_Base {
 				'deductibleText'    => (string) $s['result_deductible_text'],
 				'totalLabel'        => (string) $s['result_total_label'],
 				'summary'           => (string) $s['result_summary'],
+				'summaryUnknown'    => (string) $s['result_summary_unknown'],
+				'notePolicyUnknown' => (string) $s['result_note_policy_unknown'],
+				'noteDeductibleUnknown' => (string) $s['result_note_deductible_unknown'],
 				'disclaimer'        => (string) $s['result_disclaimer'],
 				'restart'           => (string) $s['result_restart_label'],
 				'signupLabel'       => (string) $s['signup_label'],
