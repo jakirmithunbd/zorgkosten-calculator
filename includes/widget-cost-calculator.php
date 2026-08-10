@@ -99,7 +99,7 @@ class ZKC_Cost_Calculator_Widget extends Widget_Base {
 			$defaults[] = [
 				'ins_group'          => $r[0],
 				'ins_name'           => $r[1],
-				'ins_logo_url'       => $logos . $r[2],
+				'ins_logo'           => [ 'url' => $logos . $r[2] ],
 				'ins_agreement'      => $r[3],
 				'ins_machtiging'     => $r[4],
 				'ins_declare_url'    => $r[5],
@@ -324,10 +324,9 @@ class ZKC_Cost_Calculator_Widget extends Widget_Base {
 		$repeater = new Repeater();
 
 		$repeater->add_control( 'ins_group', [
-			'label'       => esc_html__( 'Group (concern)', 'zorgkosten-calculator' ),
-			'type'        => Controls_Manager::TEXT,
-			'default'     => '',
-			'description' => esc_html__( 'Insurers with the same group name are shown under one heading.', 'zorgkosten-calculator' ),
+			'label'   => esc_html__( 'Group (concern)', 'zorgkosten-calculator' ),
+			'type'    => Controls_Manager::TEXT,
+			'default' => '',
 		] );
 
 		$repeater->add_control( 'ins_name', [
@@ -343,39 +342,28 @@ class ZKC_Cost_Calculator_Widget extends Widget_Base {
 			'default' => [ 'url' => '' ],
 		] );
 
-		$repeater->add_control( 'ins_logo_url', [
-			'label'       => esc_html__( 'Logo URL (fallback)', 'zorgkosten-calculator' ),
-			'type'        => Controls_Manager::TEXT,
-			'label_block' => true,
-			'description' => esc_html__( 'Used when no logo is uploaded above. Pre-filled with the bundled logo.', 'zorgkosten-calculator' ),
-		] );
-
 		$repeater->add_control( 'ins_agreement', [
-			'label'       => esc_html__( 'Payment agreement (betaalovereenkomst)', 'zorgkosten-calculator' ),
-			'type'        => Controls_Manager::SWITCHER,
-			'default'     => '',
-			'description' => esc_html__( 'Controls the invoice step and the "Wat u zelf regelt" card on the result.', 'zorgkosten-calculator' ),
+			'label'   => esc_html__( 'Payment agreement (betaalovereenkomst)', 'zorgkosten-calculator' ),
+			'type'    => Controls_Manager::SWITCHER,
+			'default' => '',
 		] );
 
 		$repeater->add_control( 'ins_machtiging', [
-			'label'       => esc_html__( 'Authorization (machtiging) may be required', 'zorgkosten-calculator' ),
-			'type'        => Controls_Manager::SWITCHER,
-			'default'     => '',
-			'description' => esc_html__( 'Adds the authorization step for this insurer.', 'zorgkosten-calculator' ),
+			'label'   => esc_html__( 'Authorization step (machtiging)', 'zorgkosten-calculator' ),
+			'type'    => Controls_Manager::SWITCHER,
+			'default' => '',
 		] );
 
 		$repeater->add_control( 'ins_declare_url', [
 			'label'       => esc_html__( 'Declaration page URL', 'zorgkosten-calculator' ),
 			'type'        => Controls_Manager::TEXT,
 			'label_block' => true,
-			'description' => esc_html__( 'Used for the "Declareren bij …" button on the result screen.', 'zorgkosten-calculator' ),
 		] );
 
 		$repeater->add_control( 'ins_machtiging_url', [
-			'label'       => esc_html__( 'Authorization info URL (optional)', 'zorgkosten-calculator' ),
+			'label'       => esc_html__( 'Authorization URL (optional)', 'zorgkosten-calculator' ),
 			'type'        => Controls_Manager::TEXT,
 			'label_block' => true,
-			'description' => esc_html__( 'Used for the "Naar …" button on the authorization step. Falls back to the declaration URL.', 'zorgkosten-calculator' ),
 		] );
 
 		$this->add_control( 'insurers', [

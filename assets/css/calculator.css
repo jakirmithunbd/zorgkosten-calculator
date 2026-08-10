@@ -1,9 +1,24 @@
 /* Zorgkosten Calculator – styles (v2 design)
  * Colors come from CSS custom properties that the Elementor style controls
- * override per widget instance. Fonts inherit from the theme / Elementor.
+ * override per widget instance.
+ *
+ * Fonts follow the reference app: Archia (bundled) for headings, display
+ * numbers and eyebrows; Ubuntu for body text. The Elementor typography
+ * controls still override these when set.
  */
 
+@font-face {
+	font-family: "Archia";
+	src: url("../fonts/archia-regular.woff2") format("woff2");
+	font-weight: 400 700;
+	font-style: normal;
+	font-display: swap;
+}
+
 .zkc {
+	--zkc-font-display: "Archia", "Outfit", ui-sans-serif, system-ui, sans-serif;
+	--zkc-font-sans: "Ubuntu", ui-sans-serif, system-ui, sans-serif;
+
 	--zkc-primary: #EB776C;
 	--zkc-primary-soft: #FFEEEA;
 	--zkc-goodwill: #3CB3A9;
@@ -19,8 +34,10 @@
 	--zkc-radius: 12px;
 
 	color: var(--zkc-foreground);
+	font-family: var(--zkc-font-sans);
 	font-size: 16px;
-	line-height: 1.6;
+	line-height: 1.75;
+	-webkit-font-smoothing: antialiased;
 	box-sizing: border-box;
 	padding: 24px 16px 40px;
 }
@@ -49,16 +66,23 @@
 	line-height: 1.5;
 }
 
+/* Like the reference app: h1–h4 use the display font. */
 .zkc h1,
 .zkc h2,
 .zkc h3,
 .zkc h4 {
 	text-transform: none !important;
-	letter-spacing: normal !important;
-	font-family: inherit;
-	line-height: 1.25;
+	letter-spacing: 0 !important;
+	font-family: var(--zkc-font-display);
+	font-weight: 600;
+	line-height: 1.12;
 	color: var(--zkc-foreground);
 	margin: 0;
+}
+
+.zkc .zkc-display,
+.zkc .zkc-eyebrow {
+	font-family: var(--zkc-font-display);
 }
 
 /* App frame: one screen with internal scrolling on large displays.

@@ -23,8 +23,9 @@ Requires Elementor 3.5+ (tested with 4.2.1).
   striped = uncertain range), own-costs card, "Wat u zelf regelt" card with a
   per-insurer "Declareren bij …" button, machtiging warning with link, and a CTA
   panel ("Hoe gaat het verder?").
-- Fonts inherit from the theme / Elementor global settings; the widget adds
-  typography controls for titles, display numbers and body text.
+- Fonts match the reference app: bundled **Archia** for headings, display
+  numbers and eyebrows, **Ubuntu** for body text — with Elementor typography
+  controls to override.
 
 ## The step flow
 
@@ -64,9 +65,10 @@ the own-costs card shows a range (€ 0 up to the total, or up to the configured
 Everything ships pre-filled with the exact content and data of the original app.
 
 - **Intro screen** – kicker, title, description, bullet list, button, illustration + alt.
-- **Insurers** (repeater) – group, name, logo (upload or bundled fallback URL),
-  payment-agreement toggle, machtiging toggle, **declaration URL** and optional
-  **authorization URL** per insurer. 32 insurers pre-filled with all links.
+- **Insurers** (repeater) – group, name, logo (pre-filled with the bundled
+  files), payment-agreement toggle, machtiging toggle (adds the authorization
+  step), **declaration URL** and optional **authorization URL** per insurer.
+  32 insurers pre-filled with all links.
 - **Policies** (repeater) – insurer, policy, % (lowest), optional % (highest),
   tariff basis, note. All 70 policies pre-filled.
 - **Navigation & sidebar** – back/next/restart/adjust labels, step counter,
@@ -86,6 +88,7 @@ Everything ships pre-filled with the exact content and data of the original app.
 
 - `assets/logos/` – all 31 insurer logos (used by default; uploads override).
 - `assets/img/` – the 5 illustrations (intro, verzekering, eigenrisico, gesprek, factuur).
+- `assets/fonts/archia-regular.woff2` – the display font for headings and numbers.
 
 To swap an asset for every new widget at once, replace the file keeping the
 same filename.
