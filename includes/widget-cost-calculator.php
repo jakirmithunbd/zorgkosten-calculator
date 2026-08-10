@@ -78,3 +78,4 @@ class ZKC_Cost_Calculator_Widget extends Widget_Base {
 	}
 
 }
+
