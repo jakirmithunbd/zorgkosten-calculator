@@ -411,11 +411,6 @@
 
 		var bar = el('div', 'zkc-navbar');
 
-		var back = el('button', 'zkc-nav-back', '<span aria-hidden="true">&larr;</span> ' + esc(g.back));
-		back.type = 'button';
-		back.addEventListener('click', function () { self.goBack(); });
-		bar.appendChild(back);
-
 		var mid = el('div', 'zkc-progress');
 		var segs = el('div', 'zkc-segments');
 		for (var i = 0; i < total; i++) {
@@ -425,15 +420,29 @@
 		mid.appendChild(el('span', 'zkc-counter', esc(tpl(g.stepCounter, { current: current, total: total }))));
 		bar.appendChild(mid);
 
+		var actions = el('div', 'zkc-nav-actions');
+
+		var back = el('button', 'zkc-nav-back', '<span aria-hidden="true">&larr;</span> ' + esc(g.back));
+		back.type = 'button';
+		// Like the reference app: the first step has no way back to the intro
+		// other than "Opnieuw beginnen".
+		if (this.state.screen === 'insurer') {
+			back.disabled = true;
+		} else {
+			back.addEventListener('click', function () { self.goBack(); });
+		}
+		actions.appendChild(back);
+
 		if (this._next) {
 			var next = el('button', 'zkc-btn zkc-nav-next');
 			next.innerHTML = '<span>' + esc(this._nextLabel || g.next) + '</span><span aria-hidden="true">&rarr;</span>';
 			next.type = 'button';
 			next.addEventListener('click', this._next);
-			bar.appendChild(next);
+			actions.appendChild(next);
 		} else {
-			bar.appendChild(el('span', 'zkc-nav-spacer'));
+			actions.appendChild(el('span', 'zkc-nav-spacer'));
 		}
+		bar.appendChild(actions);
 
 		return bar;
 	};

@@ -60,12 +60,15 @@
 	margin: 0;
 }
 
-/* App frame: one screen with internal scrolling on large displays. */
+/* App frame: one screen with internal scrolling on large displays.
+ * Every intermediate flex/grid child needs min-height: 0, otherwise the
+ * implicit min-height:auto lets the content stretch the frame open. */
 @media (min-width: 1024px) {
 	.zkc-frame:not(.zkc-on-result) .zkc-inner {
 		display: flex;
 		flex-direction: column;
 		height: min(100svh, 780px);
+		min-height: 0;
 	}
 
 	.zkc-frame:not(.zkc-on-result) .zkc-layout,
@@ -74,10 +77,20 @@
 		min-height: 0;
 	}
 
+	.zkc-frame:not(.zkc-on-result) .zkc-col {
+		min-height: 0;
+		height: 100%;
+	}
+
 	.zkc-frame:not(.zkc-on-result) .zkc-main {
 		overflow-y: auto;
 		min-height: 0;
 		padding-right: 24px;
+	}
+
+	.zkc-frame:not(.zkc-on-result) .zkc-aside {
+		height: 100%;
+		min-height: 0;
 	}
 }
 
@@ -142,19 +155,15 @@
 
 /* --------------------------------------------------------------- sidebar */
 
+/* Stacks below the nav on small screens, sits right on large screens —
+ * matching the reference app. */
 .zkc-aside {
-	display: none;
+	display: flex;
 	flex-direction: column;
 	overflow: hidden;
 	border-radius: 24px;
 	background: var(--zkc-secondary);
 	min-height: 0;
-}
-
-@media (min-width: 1024px) {
-	.zkc-aside {
-		display: flex;
-	}
 }
 
 .zkc-aside-head {
@@ -904,6 +913,8 @@
 
 /* ---------------------------------------------------------------- nav bar */
 
+/* Mobile: segments on top, then a row with Terug left and Volgende right.
+ * From 640px: one row — Terug | segments + counter | Volgende. */
 .zkc-navbar {
 	display: flex;
 	flex-direction: column;
@@ -911,6 +922,14 @@
 	border-top: 1px solid var(--zkc-border);
 	padding: 16px 0 0;
 	margin-top: 8px;
+}
+
+.zkc-nav-actions {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 12px;
+	min-width: 0;
 }
 
 @media (min-width: 640px) {
@@ -921,6 +940,23 @@
 		gap: 24px;
 		min-height: 80px;
 		padding: 0;
+	}
+
+	.zkc-nav-actions {
+		display: contents;
+	}
+
+	.zkc .zkc-nav-back {
+		order: 1;
+	}
+
+	.zkc-progress {
+		order: 2;
+	}
+
+	.zkc-nav-next,
+	.zkc-nav-spacer {
+		order: 3;
 	}
 }
 
@@ -942,6 +978,15 @@
 
 .zkc .zkc-nav-back:hover {
 	color: var(--zkc-primary) !important;
+}
+
+.zkc .zkc-nav-back:disabled {
+	opacity: .3;
+	cursor: default;
+}
+
+.zkc .zkc-nav-back:disabled:hover {
+	color: var(--zkc-foreground) !important;
 }
 
 .zkc-progress {
