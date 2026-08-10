@@ -84,6 +84,27 @@ Everything ships pre-filled with the exact content and data of the original app.
   max width, the desktop "app frame" toggle, and typography for titles, display
   numbers and body.
 
+## File structure
+
+```
+zorgkosten-calculator.php              Bootstrap: requirements check, assets, widget registration
+includes/
+  widget-cost-calculator.php           The widget class (wires the pieces below)
+  class-zkc-defaults.php               ALL DATA: insurers, links, policies + percentages, tariff bases
+  trait-zkc-controls-general.php       Controls: intro, insurers, policies, navigation, calculation, illustrations
+  trait-zkc-controls-steps.php         Controls: step 1-9 texts
+  trait-zkc-controls-result.php        Controls: result screen texts
+  trait-zkc-controls-style.php         Controls: style tab (colors, layout, typography)
+  trait-zkc-render.php                 Builds the JSON config for the frontend
+assets/
+  js/calculator.js                     The stepper (flow, calculations, rendering)
+  css/calculator.css                   All styling (design tokens at the top)
+  logos/  img/  fonts/                 Bundled logos, illustrations, Archia font
+```
+
+To check or change pricing, edit `includes/class-zkc-defaults.php` — every
+percentage, range and per-insurer link lives there.
+
 ## Bundled assets
 
 - `assets/logos/` – all 31 insurer logos (used by default; uploads override).
