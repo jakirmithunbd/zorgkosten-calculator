@@ -15,6 +15,7 @@
 	--zkc-warning-soft: #FFF0DD;
 	--zkc-success-soft: #E8F9ED;
 	--zkc-destructive: #CC3430;
+	--zkc-eyebrow: #5B7491;
 	--zkc-radius: 12px;
 
 	color: var(--zkc-foreground);
@@ -309,13 +310,15 @@
 	padding: 16px 0;
 }
 
+/* Matches the reference app's .eyebrow: normal case, 16px, brand blue. */
 .zkc-eyebrow {
 	display: inline-block;
-	color: var(--zkc-primary);
-	font-size: 12px;
+	color: var(--zkc-eyebrow);
+	font-size: 16px;
 	font-weight: 600;
-	letter-spacing: .14em;
-	text-transform: uppercase;
+	line-height: 1.25;
+	letter-spacing: 0;
+	text-transform: none !important;
 }
 
 .zkc-intro .zkc-eyebrow {

@@ -1457,6 +1457,7 @@ class ZKC_Cost_Calculator_Widget extends Widget_Base {
 			'color_warning_soft' => [ 'Warning background', '#FFF0DD', '--zkc-warning-soft' ],
 			'color_success_soft' => [ 'Success background', '#E8F9ED', '--zkc-success-soft' ],
 			'color_destructive'  => [ 'Error text', '#CC3430', '--zkc-destructive' ],
+			'color_eyebrow'      => [ 'Eyebrow labels (brand blue)', '#5B7491', '--zkc-eyebrow' ],
 		];
 
 		foreach ( $colors as $id => $c ) {
