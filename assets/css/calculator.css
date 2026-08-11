@@ -633,7 +633,6 @@
 
 .zkc .zkc-option.zkc-selected {
 	border-color: var(--zkc-primary) !important;
-	box-shadow: 0 0 0 1px var(--zkc-primary) !important;
 }
 
 .zkc-amount-grid {
@@ -694,8 +693,8 @@
 }
 
 .zkc .zkc-input:focus {
-	outline: 2px solid var(--zkc-primary);
-	outline-offset: 0;
+	/* outline: 1px solid var(--zkc-primary); */
+	/* outline-offset: 0; */
 	border-color: var(--zkc-primary);
 }
 

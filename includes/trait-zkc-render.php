@@ -25,8 +25,24 @@ trait ZKC_Render {
 			return $out;
 		};
 
-		$media_or = static function ( $media, $fallback ) {
-			return ! empty( $media['url'] ) ? $media['url'] : $fallback;
+		// Elementor bakes repeater defaults into the page when a widget is
+		// saved, so a page can hold absolute URLs pointing at the folder this
+		// plugin lived in at that moment (e.g. "zorgkosten-calculator-main"
+		// from a GitHub ZIP). Re-base anything that points at our own bundled
+		// assets onto the current folder so renaming or reinstalling the
+		// plugin never orphans them. Media-library uploads are left alone.
+		$rebase = static function ( $url ) {
+			if ( ! is_string( $url ) || '' === $url ) {
+				return '';
+			}
+			if ( preg_match( '#/wp-content/plugins/[^/]+/(assets/(?:logos|img|fonts)/[^/?\#]+)$#', $url, $m ) ) {
+				return ZKC_URL . $m[1];
+			}
+			return $url;
+		};
+
+		$media_or = static function ( $media, $fallback ) use ( $rebase ) {
+			return ! empty( $media['url'] ) ? $rebase( $media['url'] ) : $fallback;
 		};
 
 		// Insurers.
@@ -34,9 +50,11 @@ trait ZKC_Render {
 		foreach ( (array) ( $s['insurers'] ?? [] ) as $row ) {
 			$logo = '';
 			if ( ! empty( $row['ins_logo']['url'] ) ) {
-				$logo = $row['ins_logo']['url'];
+				$logo = $rebase( $row['ins_logo']['url'] );
 			} elseif ( ! empty( $row['ins_logo_url'] ) ) {
-				$logo = $row['ins_logo_url'];
+				// Legacy field from before the logo default moved into the
+				// media control; still honoured on pages saved back then.
+				$logo = $rebase( $row['ins_logo_url'] );
 			}
 			$insurers[] = [
 				'group'         => (string) ( $row['ins_group'] ?? '' ),
