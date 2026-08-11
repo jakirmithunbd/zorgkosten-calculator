@@ -363,7 +363,7 @@
 
 .zkc-bullets {
 	list-style: none;
-	margin: 32px 0 0;
+	margin: 32px 0 20px;
 	padding: 0;
 	display: flex;
 	flex-direction: column;
