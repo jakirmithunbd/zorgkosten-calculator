@@ -75,6 +75,7 @@
 	text-transform: none !important;
 	letter-spacing: 0 !important;
 	font-family: var(--zkc-font-display);
+	font-size: inherit;
 	font-weight: 600;
 	line-height: 1.12;
 	color: var(--zkc-foreground);
@@ -332,7 +333,8 @@
 .zkc-intro .zkc-eyebrow { margin-bottom: 20px; }
 
 .zkc .zkc-intro-title {
-	font-size: clamp(36px, 4.6vw, 60px);
+	font-size: 36px;
+	line-height: 40px;
 	font-weight: 600;
 	line-height: 1.05;
 }
@@ -340,7 +342,8 @@
 .zkc-intro-text {
 	margin: 24px 0 0;
 	max-width: 36rem;
-	font-size: clamp(16px, 1.4vw, 18px);
+	font-size: 16px;
+	line-height: 24px;
 }
 
 .zkc-bullets {
@@ -350,7 +353,8 @@
 	display: flex;
 	flex-direction: column;
 	gap: 12px;
-	font-size: 15px;
+	font-size: 14px;
+	line-height: 20px;
 }
 
 .zkc-bullets li {
@@ -368,7 +372,7 @@
 	background: var(--zkc-primary);
 }
 
-.zkc-intro-btn { margin-top: 40px; }
+.zkc .zkc-intro-btn { margin-top: 40px; }
 
 .zkc-intro-media {
 	display: flex;
@@ -438,7 +442,8 @@
 .zkc-step-head { margin-bottom: 24px; }
 
 .zkc .zkc-title {
-	font-size: clamp(24px, 2.6vw, 30px);
+	font-size: 24px;
+	line-height: 32px;
 	font-weight: 600;
 }
 
@@ -697,10 +702,9 @@
 	color: var(--zkc-muted);
 }
 
-.zkc-h3 {
-	font-size: 18px;
+.zkc .zkc-h3 {
 	font-weight: 600;
-	margin: 0 0 8px;
+	margin: 0;
 }
 
 .zkc-text-sm { font-size: 14px; margin: 4px 0 0; }
@@ -708,10 +712,33 @@
 .zkc-list { margin: 8px 0 0; padding-left: 20px; font-size: 14px; }
 .zkc-list li { margin-bottom: 4px; }
 
+.zkc-list-spaced {
+	margin-top: 12px;
+}
+
 .zkc-note-sm {
 	margin: 4px 0 0;
 	font-size: 14px;
 	color: var(--zkc-muted);
+}
+
+/* Content under a hero: the reference uses `mt-6 space-y-4`. */
+.zkc-body {
+	margin-top: 24px;
+	display: grid;
+	gap: 16px;
+	font-size: 14px;
+}
+
+/* Same rhythm, but directly under a step header (which already has 24px). */
+.zkc-body-flat {
+	display: grid;
+	gap: 16px;
+}
+
+.zkc-body > *,
+.zkc-body-flat > * {
+	margin: 0;
 }
 
 /* Bullet list with coral dots (used in the hero cards). */
@@ -798,6 +825,8 @@
 
 .zkc-stack { display: grid; gap: 12px; }
 
+.zkc-stack-link { margin-top: 16px; }
+
 /* Warning box ("Let op"). */
 .zkc-warn {
 	border-radius: var(--zkc-radius);
@@ -823,7 +852,7 @@
 .zkc-hero {
 	border-radius: 16px;
 	background: var(--zkc-secondary);
-	padding: clamp(24px, 3vw, 32px);
+	padding: 24px;
 }
 
 .zkc-hero-kicker {
@@ -834,14 +863,16 @@
 
 .zkc .zkc-hero-amount {
 	margin-top: 8px;
-	font-size: clamp(36px, 5vw, 48px);
+	font-size: 36px;
+	line-height: 1;
 	font-weight: 600;
 	line-height: 1;
 }
 
 .zkc .zkc-hero-pct {
 	margin-top: 8px;
-	font-size: clamp(44px, 6vw, 60px);
+	font-size: 48px;
+	line-height: 1;
 	font-weight: 600;
 	line-height: 1;
 	color: var(--zkc-success);
@@ -850,6 +881,10 @@
 .zkc-hero-amount-uncovered { color: var(--zkc-uncovered); }
 
 .zkc-hero-note { margin: 8px 0 0; font-size: 14px; }
+
+.zkc-hero-card-first {
+	margin-top: 0;
+}
 
 .zkc-hero-card {
 	margin-top: 24px;
@@ -1058,7 +1093,8 @@
 }
 
 .zkc .zkc-r-title {
-	font-size: clamp(30px, 3.6vw, 48px);
+	font-size: 30px;
+	line-height: 36px;
 	font-weight: 600;
 	margin-top: 12px;
 }
@@ -1071,11 +1107,12 @@
 	margin-top: 32px;
 	border-radius: 16px;
 	background: var(--zkc-secondary);
-	padding: clamp(24px, 3vw, 32px);
+	padding: 24px;
 }
 
 .zkc-r-invoice-title {
-	font-size: clamp(20px, 2vw, 24px);
+	font-size: 20px;
+	line-height: 28px;
 	font-weight: 600;
 }
 
@@ -1230,12 +1267,13 @@
 .zkc-r-own {
 	border-radius: 16px;
 	background: var(--zkc-primary-soft);
-	padding: clamp(24px, 3vw, 32px);
+	padding: 24px;
 }
 
 .zkc .zkc-r-own-total {
 	margin-top: 8px;
-	font-size: clamp(30px, 3.6vw, 48px);
+	font-size: 30px;
+	line-height: 36px;
 	font-weight: 600;
 	font-variant-numeric: tabular-nums;
 	overflow-wrap: anywhere;
@@ -1274,7 +1312,7 @@
 	border: 1px solid var(--zkc-border);
 	background: var(--zkc-card);
 	box-shadow: 0 1px 2px rgba(31, 36, 51, .04), 0 10px 30px rgba(31, 36, 51, .06);
-	padding: clamp(24px, 3vw, 32px);
+	padding: 24px;
 }
 
 .zkc-r-card-kicker {
@@ -1283,9 +1321,10 @@
 	color: var(--zkc-secondary-fg);
 }
 
-.zkc-r-self-title {
+.zkc .zkc-r-self-title {
 	margin-top: 8px;
 	font-size: 20px;
+	line-height: 28px;
 	font-weight: 600;
 }
 
@@ -1313,7 +1352,7 @@
 	border-radius: 16px;
 	background: var(--zkc-card);
 	box-shadow: 0 1px 2px rgba(31, 36, 51, .04), 0 10px 30px rgba(31, 36, 51, .06);
-	padding: clamp(24px, 3vw, 32px);
+	padding: 24px;
 }
 
 @media (min-width: 640px) {
@@ -1325,7 +1364,8 @@
 }
 
 .zkc-r-cta-title {
-	font-size: clamp(20px, 2vw, 24px);
+	font-size: 20px;
+	line-height: 28px;
 	font-weight: 600;
 }
 
@@ -1347,3 +1387,35 @@
 
 .zkc-r-cta-links .zkc-link { color: var(--zkc-foreground) !important; }
 .zkc-r-cta-links .zkc-link:hover { color: var(--zkc-primary) !important; }
+
+
+/* ------------------------------------------------- responsive type tiers
+ * The reference app uses Tailwind's discrete text-* utilities rather than
+ * fluid sizing, so the jumps happen exactly at sm (640px) and lg (1024px).
+ */
+@media (min-width: 640px) {
+	/* p-6 sm:p-8 */
+	.zkc-hero,
+	.zkc-r-invoice,
+	.zkc-r-own,
+	.zkc-r-self,
+	.zkc-r-cta            { padding: 32px; }
+
+	.zkc .zkc-intro-title { font-size: 48px; line-height: 1; }      /* text-5xl */
+	.zkc-intro-text       { font-size: 18px; line-height: 28px; }   /* text-lg  */
+	.zkc-bullets          { font-size: 16px; line-height: 24px; }   /* text-base */
+	.zkc .zkc-title       { font-size: 30px; line-height: 36px; }   /* text-3xl */
+	.zkc .zkc-hero-pct    { font-size: 60px; }                      /* text-6xl */
+	.zkc .zkc-hero-amount { font-size: 48px; }                      /* text-5xl */
+	.zkc .zkc-r-title     { font-size: 36px; line-height: 40px; }   /* text-4xl */
+	.zkc-r-invoice-title  { font-size: 24px; line-height: 32px; }   /* text-2xl */
+	.zkc-r-cta-title      { font-size: 24px; line-height: 32px; }   /* text-2xl */
+	.zkc .zkc-r-own-total { font-size: 48px; line-height: 1; }      /* text-5xl */
+	.zkc-body             { font-size: 16px; }                      /* text-base */
+	.zkc-warn             { font-size: 16px; }                      /* text-base */
+}
+
+@media (min-width: 1024px) {
+	.zkc .zkc-intro-title { font-size: 60px; }                      /* text-6xl */
+	.zkc .zkc-r-title     { font-size: 48px; line-height: 1; }      /* text-5xl */
+}

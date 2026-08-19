@@ -538,7 +538,7 @@
 		var box = el('div', 'zkc-panel');
 		box.appendChild(el('h3', 'zkc-h3', esc(title)));
 		if (note) box.appendChild(el('p', 'zkc-note-sm', esc(note)));
-		var ul = el('ul', 'zkc-list');
+		var ul = el('ul', 'zkc-list' + (note ? ' zkc-list-spaced' : ''));
 		items.forEach(function (t) { ul.appendChild(el('li', '', esc(t))); });
 		box.appendChild(ul);
 		return box;
@@ -774,7 +774,7 @@
 		card.appendChild(stack);
 
 		if (s.linkLabel && s.linkUrl) {
-			card.appendChild(el('p', 'zkc-text-sm', link(s.linkUrl, s.linkLabel)));
+			card.appendChild(el('p', 'zkc-text-sm zkc-stack-link', link(s.linkUrl, s.linkLabel)));
 		}
 
 		this.setNav(function () { self.goNext(); });
@@ -858,15 +858,17 @@
 		hero.appendChild(box);
 		card.appendChild(hero);
 
+		var body = el('div', 'zkc-body');
 		var asks = (direct ? s.asksDirect : s.asksSelf) || [];
-		card.appendChild(bulletPanel(s.asksTitle, asks.map(function (t) {
+		body.appendChild(bulletPanel(s.asksTitle, asks.map(function (t) {
 			return tpl(t, { insurer: name, contribution: fmt(c.contribution) });
 		})));
 
 		var excl = (direct ? s.exclDirect : s.exclSelf) || [];
-		card.appendChild(bulletPanel(s.exclTitle, excl.map(function (t) {
+		body.appendChild(bulletPanel(s.exclTitle, excl.map(function (t) {
 			return tpl(t, { insurer: name, contribution: fmt(c.contribution) });
 		}), s.exclNote));
+		card.appendChild(body);
 
 		this.setNav(function () { self.goNext(); });
 	};
@@ -890,11 +892,10 @@
 		hero.appendChild(box);
 		card.appendChild(hero);
 
-		var stack = el('div', 'zkc-stack');
-		(s.cards || []).forEach(function (item) { stack.appendChild(infoCard(item)); });
-		card.appendChild(stack);
-
-		card.appendChild(bulletPanel(s.knowTitle, s.know || []));
+		var body = el('div', 'zkc-body');
+		(s.cards || []).forEach(function (item) { body.appendChild(infoCard(item)); });
+		body.appendChild(bulletPanel(s.knowTitle, s.know || []));
+		card.appendChild(body);
 
 		this.setNav(function () { self.goNext(); });
 	};
@@ -909,8 +910,7 @@
 		this.stepHead(card, s.title, tpl(s.subtitle, { insurer: name }));
 
 		var hero = el('div', 'zkc-hero');
-		var box = el('div', 'zkc-hero-card');
-		box.style.marginTop = '0';
+		var box = el('div', 'zkc-hero-card zkc-hero-card-first');
 		box.appendChild(el('div', 'zkc-hero-card-title', esc(s.meansTitle)));
 		box.appendChild(el('p', 'zkc-text-sm', esc(s.meansNote)));
 		box.appendChild(dotList((s.means || []).map(function (t) {
@@ -919,7 +919,8 @@
 		hero.appendChild(box);
 		card.appendChild(hero);
 
-		card.appendChild(bulletPanel(s.asksTitle, s.asks || []));
+		var body = el('div', 'zkc-body');
+		body.appendChild(bulletPanel(s.asksTitle, s.asks || []));
 
 		if (url) {
 			var check = el('div', 'zkc-panel');
@@ -930,10 +931,11 @@
 			a.target = '_blank';
 			a.rel = 'noopener noreferrer';
 			check.appendChild(a);
-			card.appendChild(check);
+			body.appendChild(check);
 		}
 
-		if (s.warning) card.appendChild(this.warnBox(null, esc(s.warning)));
+		if (s.warning) body.appendChild(this.warnBox(null, esc(s.warning)));
+		card.appendChild(body);
 
 		this.setNav(function () { self.goNext(); });
 	};
@@ -952,6 +954,7 @@
 			? ' ' + link(declUrl, tpl(s.declareLinkLabel, { insurer: name })) + '.'
 			: '';
 
+		var body = el('div', 'zkc-body-flat');
 		var stack = el('div', 'zkc-stack');
 		((direct ? s.stepsDirect : s.stepsSelf) || []).forEach(function (item, i) {
 			stack.appendChild(numberedStep(
@@ -960,16 +963,17 @@
 				tpl(item.text, { insurer: name, declareLink: declareLink })
 			));
 		});
-		card.appendChild(stack);
+		body.appendChild(stack);
 
-		card.appendChild(this.warnBox(s.riskLabel, esc(tpl(direct ? s.riskDirect : s.riskSelf, { insurer: name }))));
+		body.appendChild(this.warnBox(s.riskLabel, esc(tpl(direct ? s.riskDirect : s.riskSelf, { insurer: name }))));
 
 		if (!direct && s.knowTitle) {
 			var know = el('div', 'zkc-panel');
 			know.appendChild(el('h3', 'zkc-h3', esc(s.knowTitle)));
 			know.appendChild(el('p', 'zkc-text-sm', esc(s.knowText)));
-			card.appendChild(know);
+			body.appendChild(know);
 		}
+		card.appendChild(body);
 
 		this.setNav(function () { self.goNext(); }, s.nextLabel);
 	};
