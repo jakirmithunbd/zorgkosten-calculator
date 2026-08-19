@@ -217,6 +217,41 @@ trait ZKC_Controls_General {
 			'default' => 'gemiddeld_gecontracteerd',
 		] );
 
+		$this->add_control( 'heading_bases', [
+			'label'     => esc_html__( 'Tariff basis wording', 'zorgkosten-calculator' ),
+			'type'      => Controls_Manager::HEADING,
+			'separator' => 'before',
+		] );
+
+		$this->add_control( 'bases_note', [
+			'type'            => Controls_Manager::RAW_HTML,
+			'raw'             => esc_html__( 'How each tariff basis is written out in sentences, e.g. "van het gemiddeld gecontracteerd tarief".', 'zorgkosten-calculator' ),
+			'content_classes' => 'elementor-descriptor',
+		] );
+
+		$basis_repeater = new Repeater();
+
+		$basis_repeater->add_control( 'basis_key', [
+			'label'   => esc_html__( 'Basis', 'zorgkosten-calculator' ),
+			'type'    => Controls_Manager::SELECT,
+			'options' => ZKC_Defaults::basis_options(),
+			'default' => 'gemiddeld_gecontracteerd',
+		] );
+
+		$basis_repeater->add_control( 'basis_label', [
+			'label'       => esc_html__( 'Wording used in sentences', 'zorgkosten-calculator' ),
+			'type'        => Controls_Manager::TEXT,
+			'label_block' => true,
+		] );
+
+		$this->add_control( 'bases', [
+			'label'       => esc_html__( 'Tariff bases', 'zorgkosten-calculator' ),
+			'type'        => Controls_Manager::REPEATER,
+			'fields'      => $basis_repeater->get_controls(),
+			'default'     => ZKC_Defaults::bases(),
+			'title_field' => '{{{ basis_label }}}',
+		] );
+
 		$this->end_controls_section();
 	}
 
@@ -255,6 +290,22 @@ trait ZKC_Controls_General {
 			'description' => esc_html__( 'Use {current} and {total}.', 'zorgkosten-calculator' ),
 			'type'        => Controls_Manager::TEXT,
 			'default'     => 'Stap {current} van {total}',
+		] );
+
+		$this->add_control( 'seg_jump', [
+			'label'       => esc_html__( 'Progress segment tooltip (visited)', 'zorgkosten-calculator' ),
+			'description' => esc_html__( 'Use {step}. Visited segments jump back to that step.', 'zorgkosten-calculator' ),
+			'type'        => Controls_Manager::TEXT,
+			'default'     => 'Naar stap {step}',
+			'label_block' => true,
+		] );
+
+		$this->add_control( 'seg_later', [
+			'label'       => esc_html__( 'Progress segment tooltip (not reached)', 'zorgkosten-calculator' ),
+			'description' => esc_html__( 'Use {step}.', 'zorgkosten-calculator' ),
+			'type'        => Controls_Manager::TEXT,
+			'default'     => 'Stap {step} volgt later',
+			'label_block' => true,
 		] );
 
 		$this->add_control( 'help_label', [
@@ -333,11 +384,19 @@ trait ZKC_Controls_General {
 			'label' => esc_html__( 'Calculation', 'zorgkosten-calculator' ),
 		] );
 
-		$this->add_control( 'avg_invoice', [
-			'label'   => esc_html__( 'Average invoice amount (€)', 'zorgkosten-calculator' ),
+		$this->add_control( 'diagnostiek_amount', [
+			'label'       => esc_html__( 'Average invoice – diagnostics (€)', 'zorgkosten-calculator' ),
+			'description' => esc_html__( 'The whole trajectory is diagnostics + treatment.', 'zorgkosten-calculator' ),
+			'type'        => Controls_Manager::NUMBER,
+			'min'         => 0,
+			'default'     => 2000,
+		] );
+
+		$this->add_control( 'behandeling_amount', [
+			'label'   => esc_html__( 'Average invoice – treatment (€)', 'zorgkosten-calculator' ),
 			'type'    => Controls_Manager::NUMBER,
 			'min'     => 0,
-			'default' => 2000,
+			'default' => 4000,
 		] );
 
 		$this->add_control( 'personal_contribution', [

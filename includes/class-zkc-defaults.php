@@ -45,14 +45,14 @@ class ZKC_Defaults {
 			[ 'Menzis', 'Menzis', 'menzis.svg', '', '', 'https://www.menzis.nl/klantenservice/je-zorgkosten-declareren', '' ],
 			[ 'DSW', 'DSW', 'dsw.svg', '', '', 'https://www.dsw.nl/consumenten/declareren', '' ],
 			[ 'DSW', 'Stad Holland', 'stad-holland.svg', '', '', 'https://www.stadholland.nl/consumenten/declareren', '' ],
-			[ 'a.s.r.', 'a.s.r.', 'asr.svg', '', 'yes', 'https://www.asr.nl/', '' ],
-			[ 'a.s.r.', 'Ik kies zelf van a.s.r.', 'ik-kies-zelf-asr.svg', '', 'yes', 'https://www.asr.nl/ikkieszelf', '' ],
-			[ 'Zorg en Zekerheid', 'Zorg en Zekerheid', 'zorg-en-zekerheid.svg', '', 'yes', 'https://www.zorgenzekerheid.nl/declareren/', 'https://www.zorgenzekerheid.nl/klantenservice/' ],
-			[ 'ONVZ', 'ONVZ', 'onvz.png', 'yes', 'yes', 'https://www.onvz.nl/declareren', 'https://www.onvz.nl/klantenservice/machtiging-aanvragen' ],
-			[ 'ONVZ', 'VvAA', 'vvaa.jpeg', 'yes', 'yes', 'https://www.vvaa.nl/verzekeringen/zorgverzekering', '' ],
-			[ 'Salland', 'Salland', 'salland.png', '', 'yes', 'https://www.salland.nl/service-contact/declareren', '' ],
-			[ 'Eucare', 'Aevitae', 'aevitae.webp', '', 'yes', 'https://www.aevitae.com/', '' ],
-			[ 'Eucare', 'Care4life', 'care4life.png', '', 'yes', 'https://www.care4life.nl/service-contact/declaratie-indienen/', '' ],
+			[ 'a.s.r.', 'a.s.r.', 'asr.svg', '', 'yes', 'https://www.asr.nl/', 'https://www.asr.nl/verzekeringen/zorgverzekering/toestemming-vragen' ],
+			[ 'a.s.r.', 'Ik kies zelf van a.s.r.', 'ik-kies-zelf-asr.svg', '', 'yes', 'https://www.asr.nl/ikkieszelf', 'https://www.asr.nl/verzekeringen/zorgverzekering/toestemming-vragen' ],
+			[ 'Zorg en Zekerheid', 'Zorg en Zekerheid', 'zorg-en-zekerheid.svg', '', 'yes', 'https://www.zorgenzekerheid.nl/declareren/', 'https://www.zorgenzekerheid.nl/service-en-contact' ],
+			[ 'ONVZ', 'ONVZ', 'onvz.png', 'yes', 'yes', 'https://www.onvz.nl/declareren', 'https://www.onvz.nl/snel-regelen/toestemming-vragen' ],
+			[ 'ONVZ', 'VvAA', 'vvaa.jpeg', 'yes', 'yes', 'https://www.vvaa.nl/verzekeringen/zorgverzekering', 'https://www.vvaa.nl/verzekeringen/zorgverzekering/toestemming-vragen' ],
+			[ 'Salland', 'Salland', 'salland.png', '', 'yes', 'https://www.salland.nl/service-contact/declareren', 'https://www.salland.nl/toestemming' ],
+			[ 'Eucare', 'Aevitae', 'aevitae.webp', '', 'yes', 'https://www.aevitae.com/', 'https://www.aevitae.com/zorgzaken-regelen/toestemming-aanvragen/' ],
+			[ 'Eucare', 'Care4life', 'care4life.png', '', 'yes', 'https://www.care4life.nl/service-contact/declaratie-indienen/', 'https://www.care4life.nl/service-contact/formulieren/' ],
 		];
 
 		$defaults = [];
@@ -164,32 +164,22 @@ class ZKC_Defaults {
 			[
 				'basis_key'   => 'gemiddeld_gecontracteerd',
 				'basis_label' => 'gemiddeld gecontracteerd tarief',
-				'basis_title' => 'Gemiddeld gecontracteerd tarief',
-				'basis_text'  => 'De zorgverzekeraar maakt afspraken met zorgverleners over het tarief voor bepaalde zorg, bijvoorbeeld voor een behandeling in het ziekenhuis. Op basis van deze tarieven wordt het gemiddeld gecontracteerd tarief en de maximale vergoeding berekend.',
 			],
 			[
 				'basis_key'   => 'wmg_nza',
 				'basis_label' => 'NZa-tarief (Wmg-tarief)',
-				'basis_title' => 'Wettelijk of Wmg-tarief',
-				'basis_text'  => 'Soms bepaalt de overheid het tarief voor een soort zorg. Dat is het wettelijk tarief of Wmg-tarief. Zorgverzekeraars gebruiken dit tarief als er geen tarieven zijn afgesproken met zorgverleners voor de zorg die u nodig heeft.',
 			],
 			[
 				'basis_key'   => 'marktconform',
 				'basis_label' => 'marktconform tarief',
-				'basis_title' => 'Marktconform tarief',
-				'basis_text'  => 'Het marktconform tarief is een tarief dat in Nederland redelijk is voor een bepaalde behandeling. De verzekeraar kijkt daarvoor naar wat zorgverleners rekenen voor een bepaalde behandeling en berekent hiermee het marktconforme tarief.',
 			],
 			[
 				'basis_key'   => 'maximumtarief',
 				'basis_label' => 'maximumtarief van de verzekeraar',
-				'basis_title' => 'Maximumtarief van de verzekeraar',
-				'basis_text'  => 'De zorgverzekeraar hanteert een eigen vastgesteld maximumtarief. Boven dit bedrag wordt niets vergoed, ook niet als de werkelijke kosten hoger zijn.',
 			],
 			[
 				'basis_key'   => 'afgesproken_andere_zorgverleners',
 				'basis_label' => 'tarief dat de verzekeraar heeft afgesproken met andere zorgverleners',
-				'basis_title' => 'Tarief afgesproken met andere zorgverleners',
-				'basis_text'  => 'De vergoeding wordt berekend op basis van tarieven die uw zorgverzekeraar heeft afgesproken met andere, wél gecontracteerde zorgverleners voor vergelijkbare zorg.',
 			],
 		];
 	}

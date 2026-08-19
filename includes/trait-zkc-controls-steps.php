@@ -1,6 +1,6 @@
 <?php
 /**
- * Zorgkosten Cost Calculator – step content controls (steps 1-9)
+ * Zorgkosten Cost Calculator – controls for the input steps (1-5).
  *
  * @package zorgkosten-calculator
  */
@@ -13,6 +13,43 @@ use Elementor\Controls_Manager;
 use Elementor\Repeater;
 
 trait ZKC_Controls_Steps {
+
+	/** Icon choices for the icon cards, matching the reference app's set. */
+	private function icon_options() {
+		return [
+			'landmark'     => esc_html__( 'Landmark (government / tariffs)', 'zorgkosten-calculator' ),
+			'clock'        => esc_html__( 'Clock (time)', 'zorgkosten-calculator' ),
+			'users'        => esc_html__( 'Users (people)', 'zorgkosten-calculator' ),
+			'coins'        => esc_html__( 'Coins (money)', 'zorgkosten-calculator' ),
+			'shield-check' => esc_html__( 'Shield with check (protection)', 'zorgkosten-calculator' ),
+		];
+	}
+
+	/** Repeater of icon + title + text cards. */
+	private function icon_card_repeater() {
+		$repeater = new Repeater();
+
+		$repeater->add_control( 'card_icon', [
+			'label'   => esc_html__( 'Icon', 'zorgkosten-calculator' ),
+			'type'    => Controls_Manager::SELECT,
+			'options' => $this->icon_options(),
+			'default' => 'landmark',
+		] );
+
+		$repeater->add_control( 'card_title', [
+			'label'       => esc_html__( 'Title', 'zorgkosten-calculator' ),
+			'type'        => Controls_Manager::TEXT,
+			'label_block' => true,
+		] );
+
+		$repeater->add_control( 'card_text', [
+			'label' => esc_html__( 'Text', 'zorgkosten-calculator' ),
+			'type'  => Controls_Manager::TEXTAREA,
+			'rows'  => 4,
+		] );
+
+		return $repeater;
+	}
 
 	private function register_step_text_controls() {
 
@@ -50,7 +87,7 @@ trait ZKC_Controls_Steps {
 
 		$this->add_control( 'step2_subtitle', [
 			'label'       => esc_html__( 'Subtitle', 'zorgkosten-calculator' ),
-			'description' => esc_html__( 'Use {insurer} for the chosen insurer.', 'zorgkosten-calculator' ),
+			'description' => esc_html__( 'Use {insurer}.', 'zorgkosten-calculator' ),
 			'type'        => Controls_Manager::TEXT,
 			'default'     => 'Beschikbare polissen bij {insurer}',
 			'label_block' => true,
@@ -76,9 +113,10 @@ trait ZKC_Controls_Steps {
 			'label_block' => true,
 		] );
 
-		$this->add_control( 'step3_text', [
-			'label'   => esc_html__( 'Description', 'zorgkosten-calculator' ),
+		$this->add_control( 'step3_subtitle', [
+			'label'   => esc_html__( 'Subtitle', 'zorgkosten-calculator' ),
 			'type'    => Controls_Manager::TEXTAREA,
+			'rows'    => 4,
 			'default' => 'Het eigen risico is het bedrag dat u eerst zelf betaalt voor zorg uit de basisverzekering. Dit bedrag wordt door uw zorgverzekeraar verrekend en staat los van de persoonlijke bijdrage aan ADHD Medisch Centrum.',
 		] );
 
@@ -167,7 +205,7 @@ trait ZKC_Controls_Steps {
 
 		$this->end_controls_section();
 
-		/* ---- Step 5: info ---- */
+		/* ---- Step 5: how the costs are determined ---- */
 		$this->start_controls_section( 'section_step5', [
 			'label' => esc_html__( 'Step 5 – How costs are determined', 'zorgkosten-calculator' ),
 		] );
@@ -179,355 +217,41 @@ trait ZKC_Controls_Steps {
 			'label_block' => true,
 		] );
 
-		$this->add_control( 'step5_content', [
-			'label'   => esc_html__( 'Content', 'zorgkosten-calculator' ),
-			'type'    => Controls_Manager::WYSIWYG,
-			'default' => '<p>De tarieven voor diagnostiek en behandeling in de specialistische GGZ worden landelijk vastgesteld door de Nederlandse Zorgautoriteit (NZa). Deze standaardtarieven gelden voor alle GGZ-instellingen; ADHD Medisch Centrum heeft hier geen invloed op.</p><p>De kosten hangen af van het type zorg en de tijd die wordt besteed. Er wordt gewerkt volgens het zorgprestatiemodel, waarbij onder andere de duur en het type contact en de betrokken zorgverleners bepalend zijn. Hierdoor kan het totale bedrag per patiënt verschillen.</p><p>Meer informatie over de tarieven vastgesteld door de NZa vindt u <a href="https://www.nza.nl/" target="_blank" rel="noopener noreferrer">hier</a>.</p>',
-		] );
-
-		$this->add_control( 'step5_panel', [
-			'label'   => esc_html__( 'Panel content (framed box)', 'zorgkosten-calculator' ),
-			'type'    => Controls_Manager::WYSIWYG,
-			'default' => '<h4>Declaratiefactuur en betalingsfactuur</h4><p>De manier waarop wij zorg declareren, hangt af van de afspraken die ADHD Medisch Centrum met uw zorgverzekeraar heeft. Wij maken onderscheid tussen:</p><ul><li><strong>Declaratiefactuur:</strong> bedoeld om de geleverde zorg bij uw zorgverzekeraar te declareren. Vermeldt de geleverde zorgprestaties en het volledige bedrag berekend op basis van NZa-tarieven.</li><li><strong>Betalingsfactuur:</strong> hierop staat het bedrag dat u zelf aan ADHD Medisch Centrum moet betalen.</li></ul><p>Een declaratiefactuur is niet automatisch een betalingsverzoek voor het volledige factuurbedrag. Een betaalovereenkomst regelt hóe de declaratie wordt ingediend en de vergoeding uitbetaald. Dit betekent niet automatisch dat uw zorg volledig wordt vergoed. Uw zorgverzekeraar bepaalt de vergoeding op basis van uw polisvoorwaarden.</p>',
-		] );
-
-		$this->end_controls_section();
-
-		/* ---- Step 6: reimbursement ---- */
-		$this->start_controls_section( 'section_step6', [
-			'label' => esc_html__( 'Step 6 – Reimbursement', 'zorgkosten-calculator' ),
-		] );
-
-		$this->add_control( 'step6_hero_title', [
-			'label'       => esc_html__( 'Hero title', 'zorgkosten-calculator' ),
-			'description' => esc_html__( 'Use {insurer} for the chosen insurer.', 'zorgkosten-calculator' ),
-			'type'        => Controls_Manager::TEXT,
-			'default'     => '{insurer} vergoedt naar verwachting',
-			'label_block' => true,
-		] );
-
-		$this->add_control( 'step6_hero_title_fallback', [
-			'label'       => esc_html__( 'Hero title (no insurer chosen)', 'zorgkosten-calculator' ),
-			'type'        => Controls_Manager::TEXT,
-			'default'     => 'Uw verzekeraar vergoedt naar verwachting',
-			'label_block' => true,
-		] );
-
-		$this->add_control( 'step6_hero_basis', [
-			'label'       => esc_html__( 'Line under the percentage', 'zorgkosten-calculator' ),
-			'description' => esc_html__( 'Placeholder: {basis}.', 'zorgkosten-calculator' ),
-			'type'        => Controls_Manager::TEXT,
-			'default'     => 'van het {basis}',
-			'label_block' => true,
-		] );
-
-		$this->add_control( 'step6_estimate_kicker', [
-			'label'   => esc_html__( 'Estimate box kicker', 'zorgkosten-calculator' ),
-			'type'    => Controls_Manager::TEXT,
-			'default' => 'Geschatte vergoeding',
-		] );
-
-		$this->add_control( 'step6_estimate_note', [
-			'label'       => esc_html__( 'Estimate box note', 'zorgkosten-calculator' ),
-			'description' => esc_html__( 'Placeholder: {invoice}.', 'zorgkosten-calculator' ),
-			'type'        => Controls_Manager::TEXT,
-			'default'     => 'bij een gemiddeld factuurbedrag van ± {invoice}',
-			'label_block' => true,
-		] );
-
-		$this->add_control( 'step6_message', [
-			'label'       => esc_html__( 'Message (policy known)', 'zorgkosten-calculator' ),
-			'description' => esc_html__( 'Placeholders: {percentage} (e.g. 70% or 60% tot 100%), {basis}.', 'zorgkosten-calculator' ),
-			'type'        => Controls_Manager::TEXTAREA,
-			'default'     => 'Uw zorgverzekeraar vergoedt bij deze basisverzekering naar verwachting {percentage} van het {basis} voor ongecontracteerde GGZ.',
-		] );
-
-		$this->add_control( 'step6_message_insurer_range', [
-			'label'       => esc_html__( 'Message (policy unknown, insurer known)', 'zorgkosten-calculator' ),
-			'description' => esc_html__( 'Placeholders: {insurer}, {percentage}, {basis}. Uses the lowest and highest percentage of the chosen insurer.', 'zorgkosten-calculator' ),
-			'type'        => Controls_Manager::TEXTAREA,
-			'default'     => 'U weet niet welke basisverzekering u heeft. Bij {insurer} vergoeden de basisverzekeringen {percentage} van het {basis} voor ongecontracteerde GGZ. Daarom tonen wij een minimum- en maximumbedrag.',
-		] );
-
-		$this->add_control( 'step6_message_unknown', [
-			'label'       => esc_html__( 'Message (no insurer / no policies)', 'zorgkosten-calculator' ),
-			'description' => esc_html__( 'Placeholders: {percentage}, {basis}.', 'zorgkosten-calculator' ),
-			'type'        => Controls_Manager::TEXTAREA,
-			'default'     => 'Op basis van een algemene inschatting gaan wij uit van een vergoeding van ongeveer {percentage} van het {basis} voor ongecontracteerde GGZ.',
-		] );
-
-		$this->add_control( 'step6_basis_kicker', [
-			'label'   => esc_html__( '"What does this basis mean?" label', 'zorgkosten-calculator' ),
-			'type'    => Controls_Manager::TEXT,
-			'default' => 'Wat betekent deze basis?',
-		] );
-
-		$this->add_control( 'step6_accordion_label', [
-			'label'       => esc_html__( 'Accordion label', 'zorgkosten-calculator' ),
-			'type'        => Controls_Manager::TEXT,
-			'default'     => 'Uitleg over alle vergoedingsbases',
-			'label_block' => true,
-		] );
-
-		$repeater = new Repeater();
-		$repeater->add_control( 'basis_key', [
-			'label'   => esc_html__( 'Key', 'zorgkosten-calculator' ),
-			'type'    => Controls_Manager::SELECT,
-			'options' => [
-				'gemiddeld_gecontracteerd'         => 'gemiddeld_gecontracteerd',
-				'wmg_nza'                          => 'wmg_nza',
-				'marktconform'                     => 'marktconform',
-				'maximumtarief'                    => 'maximumtarief',
-				'afgesproken_andere_zorgverleners' => 'afgesproken_andere_zorgverleners',
-			],
-			'default' => 'gemiddeld_gecontracteerd',
-		] );
-		$repeater->add_control( 'basis_label', [
-			'label'       => esc_html__( 'Inline label (used in sentences)', 'zorgkosten-calculator' ),
-			'type'        => Controls_Manager::TEXT,
-			'label_block' => true,
-		] );
-		$repeater->add_control( 'basis_title', [
-			'label'       => esc_html__( 'Title', 'zorgkosten-calculator' ),
-			'type'        => Controls_Manager::TEXT,
-			'label_block' => true,
-		] );
-		$repeater->add_control( 'basis_text', [
-			'label' => esc_html__( 'Description', 'zorgkosten-calculator' ),
-			'type'  => Controls_Manager::TEXTAREA,
-		] );
-
-		$this->add_control( 'bases', [
-			'label'       => esc_html__( 'Tariff bases (explanations)', 'zorgkosten-calculator' ),
+		$this->add_control( 'step5_cards', [
+			'label'       => esc_html__( 'Icon cards', 'zorgkosten-calculator' ),
 			'type'        => Controls_Manager::REPEATER,
-			'fields'      => $repeater->get_controls(),
-			'default'     => ZKC_Defaults::bases(),
-			'title_field' => '{{{ basis_title }}}',
+			'fields'      => $this->icon_card_repeater()->get_controls(),
+			'title_field' => '{{{ card_title }}}',
+			'default'     => [
+				[
+					'card_icon'  => 'landmark',
+					'card_title' => 'De tarieven worden landelijk vastgesteld',
+					'card_text'  => 'De Nederlandse Zorgautoriteit (NZa) bepaalt de tarieven voor diagnostiek en behandeling in de specialistische GGZ. Deze tarieven gelden voor alle GGZ-instellingen. ADHD Medisch Centrum stelt de tarieven dus niet zelf vast en kan er niets aan veranderen.',
+				],
+				[
+					'card_icon'  => 'clock',
+					'card_title' => 'Zorgprestatiemodel: tijd en type zorg bepalen de kosten',
+					'card_text'  => 'Het bedrag hangt af van het type zorg, de duur en het type contact en de betrokken zorgverleners.',
+				],
+				[
+					'card_icon'  => 'users',
+					'card_title' => 'Daarom verschilt het totaalbedrag per patiënt',
+					'card_text'  => 'Uw factuur kan hoger of lager zijn dan een gemiddeld traject.',
+				],
+			],
 		] );
 
-		$this->add_control( 'step6_footnote', [
-			'label'   => esc_html__( 'Footnote', 'zorgkosten-calculator' ),
-			'type'    => Controls_Manager::TEXTAREA,
-			'default' => 'De vergoeding kan afwijken van hetzelfde percentage van de totale factuur, omdat zorgverzekeraars soms rekenen met een eigen referentietarief.',
-		] );
-
-		$this->end_controls_section();
-
-		/* ---- Step 7: invoices ---- */
-		$this->start_controls_section( 'section_step7', [
-			'label' => esc_html__( 'Step 7 – Invoices', 'zorgkosten-calculator' ),
-		] );
-
-		$this->add_control( 'step7_title', [
-			'label'       => esc_html__( 'Title', 'zorgkosten-calculator' ),
+		$this->add_control( 'step5_link_label', [
+			'label'       => esc_html__( 'Link text', 'zorgkosten-calculator' ),
 			'type'        => Controls_Manager::TEXT,
-			'default'     => 'Hoe worden uw facturen ingediend?',
+			'default'     => 'Meer over de NZa-tarieven',
 			'label_block' => true,
 		] );
 
-		$this->add_control( 'heading_step7_yes', [
-			'label'     => esc_html__( 'Variant: WITH payment agreement', 'zorgkosten-calculator' ),
-			'type'      => Controls_Manager::HEADING,
-			'separator' => 'before',
-		] );
-
-		$this->add_control( 'step7_yes_badge', [
-			'label'       => esc_html__( 'Badge text', 'zorgkosten-calculator' ),
+		$this->add_control( 'step5_link_url', [
+			'label'       => esc_html__( 'Link URL', 'zorgkosten-calculator' ),
 			'type'        => Controls_Manager::TEXT,
-			'default'     => 'Wij hebben een betaalovereenkomst',
-			'label_block' => true,
-		] );
-
-		$this->add_control( 'step7_yes_intro', [
-			'label'       => esc_html__( 'Intro', 'zorgkosten-calculator' ),
-			'description' => esc_html__( 'Use {insurer}.', 'zorgkosten-calculator' ),
-			'type'        => Controls_Manager::TEXTAREA,
-			'default'     => 'ADHD Medisch Centrum heeft een betaalovereenkomst met {insurer}.',
-		] );
-
-		$this->add_control( 'step7_yes_content', [
-			'label'   => esc_html__( 'Content', 'zorgkosten-calculator' ),
-			'type'    => Controls_Manager::WYSIWYG,
-			'default' => '<h4>Wat betekent dit voor u?</h4><ul><li>Wij declareren de verzekerde zorg rechtstreeks bij uw zorgverzekeraar.</li><li>Uw zorgverzekeraar betaalt de vergoeding rechtstreeks aan ADHD Medisch Centrum.</li><li>U hoeft de zorgfactuur niet zelf bij uw zorgverzekeraar in te dienen.</li></ul>',
-		] );
-
-		$this->add_control( 'step7_yes_note_label', [
-			'label'       => esc_html__( 'Note label', 'zorgkosten-calculator' ),
-			'type'        => Controls_Manager::TEXT,
-			'default'     => 'Let op: eigen risico',
-			'label_block' => true,
-		] );
-
-		$this->add_control( 'step7_yes_note', [
-			'label'   => esc_html__( 'Note text', 'zorgkosten-calculator' ),
-			'type'    => Controls_Manager::TEXTAREA,
-			'rows'    => 5,
-			'default' => 'Heeft u nog verplicht of vrijwillig eigen risico openstaan? Dan brengt uw zorgverzekeraar dit bij u in rekening of verrekent uw zorgverzekeraar dit volgens de eigen voorwaarden. U ontvangt hiervoor geen aparte factuur van ADHD Medisch Centrum. Het eigen risico blijft volledig voor uw rekening en valt niet onder de coulanceregeling.',
-		] );
-
-		$this->add_control( 'heading_step7_no', [
-			'label'     => esc_html__( 'Variant: WITHOUT payment agreement', 'zorgkosten-calculator' ),
-			'type'      => Controls_Manager::HEADING,
-			'separator' => 'before',
-		] );
-
-		$this->add_control( 'step7_no_badge', [
-			'label'       => esc_html__( 'Badge text', 'zorgkosten-calculator' ),
-			'type'        => Controls_Manager::TEXT,
-			'default'     => 'Geen betaalovereenkomst',
-			'label_block' => true,
-		] );
-
-		$this->add_control( 'step7_no_intro', [
-			'label'       => esc_html__( 'Intro', 'zorgkosten-calculator' ),
-			'description' => esc_html__( 'Use {insurer}.', 'zorgkosten-calculator' ),
-			'type'        => Controls_Manager::TEXTAREA,
-			'default'     => 'ADHD Medisch Centrum heeft géén betaalovereenkomst met {insurer}.',
-		] );
-
-		$this->add_control( 'step7_no_content', [
-			'label'   => esc_html__( 'Content', 'zorgkosten-calculator' ),
-			'type'    => Controls_Manager::WYSIWYG,
-			'default' => '<h4>Wat betekent dit voor u?</h4><ul><li>U ontvangt van ADHD Medisch Centrum een digitale of papieren declaratiefactuur.</li><li>U dient deze factuur tijdig zelf in bij uw zorgverzekeraar.</li><li>U levert het volledige vergoedingenoverzicht bij ons aan.</li><li>U betaalt de vergoeding die uw zorgverzekeraar rechtstreeks aan u uitbetaalt binnen 14 dagen door aan ADHD Medisch Centrum.</li></ul><h4>Hoe dient u de factuur in?</h4><p>Omdat wij ongecontracteerde zorg leveren, dient u de factuur eerst zelf in bij uw zorgverzekeraar. Dit kan meestal via de app of website. Na beoordeling ontvangt u een declaratieoverzicht en wordt de vergoeding op uw eigen rekening gestort.</p><h4>Declaratieoverzicht</h4><p>Stuur het declaratieoverzicht per e-mail naar <a href="mailto:facturen@adhdmc.nl">facturen@adhdmc.nl</a>. Aan de hand van dit overzicht stellen wij vast:</p><ul><li>welk bedrag door uw zorgverzekeraar is vergoed;</li><li>welk bedrag met uw eigen risico is verrekend;</li><li>welk deel onder onze coulanceregeling valt;</li><li>welk totaalbedrag u aan ADHD Medisch Centrum betaalt.</li></ul>',
-		] );
-
-		$this->add_control( 'step7_no_note_label', [
-			'label'       => esc_html__( 'Note label', 'zorgkosten-calculator' ),
-			'type'        => Controls_Manager::TEXT,
-			'default'     => 'Let op: eigen risico',
-			'label_block' => true,
-		] );
-
-		$this->add_control( 'step7_no_note', [
-			'label'   => esc_html__( 'Note text', 'zorgkosten-calculator' ),
-			'type'    => Controls_Manager::TEXTAREA,
-			'rows'    => 5,
-			'default' => 'Uw zorgverzekeraar kan uw openstaande eigen risico met de vergoeding verrekenen. Het bedrag dat als eigen risico wordt ingehouden, blijft u aan ADHD Medisch Centrum verschuldigd. Het eigen risico valt niet onder de coulanceregeling.',
-		] );
-
-		$this->end_controls_section();
-	}
-
-	private function register_machtiging_controls() {
-		$this->start_controls_section( 'section_step8_machtiging', [
-			'label' => esc_html__( 'Step 8 – Authorization (machtiging)', 'zorgkosten-calculator' ),
-		] );
-
-		$this->add_control( 'machtiging_note', [
-			'type'            => Controls_Manager::RAW_HTML,
-			'raw'             => esc_html__( 'This step is only shown for insurers with "Authorization (machtiging) may be required" switched on. For every other insurer the calculator has 8 steps instead of 9.', 'zorgkosten-calculator' ),
-			'content_classes' => 'elementor-descriptor',
-		] );
-
-		$this->add_control( 'step8_title', [
-			'label'       => esc_html__( 'Title', 'zorgkosten-calculator' ),
-			'type'        => Controls_Manager::TEXT,
-			'default'     => 'Mogelijk is een machtiging nodig',
-			'label_block' => true,
-		] );
-
-		$this->add_control( 'step8_content', [
-			'label'   => esc_html__( 'Content', 'zorgkosten-calculator' ),
-			'type'    => Controls_Manager::WYSIWYG,
-			'default' => '<p>Voor verzekerden van onder andere a.s.r., Zorg en Zekerheid, ONVZ, VvAA, Salland en Aevitae kan vooraf toestemming van de zorgverzekeraar nodig zijn voordat de zorg kan starten of worden voortgezet. Deze toestemming wordt een <strong>machtiging</strong> genoemd.</p><p>U bent zelf verantwoordelijk voor het controleren of voor uw zorgverzekering, polis of behandeling een machtiging vereist is en voor het tijdig verkrijgen daarvan. ADHD Medisch Centrum verleent binnen redelijke grenzen medewerking en kan, wanneer dit mogelijk is, de machtigingsaanvraag namens u voorbereiden en indienen.</p><p>Uw zorgverzekeraar beoordeelt de aanvraag en beslist of de machtiging wordt verleend. Een aangevraagde of verleende machtiging betekent niet automatisch dat alle zorgkosten volledig worden vergoed.</p>',
-		] );
-
-		$this->add_control( 'step8_asks_title', [
-			'label'       => esc_html__( 'Framed box heading', 'zorgkosten-calculator' ),
-			'type'        => Controls_Manager::TEXT,
-			'default'     => 'Wat vragen wij van u?',
-			'label_block' => true,
-		] );
-
-		$this->add_control( 'step8_asks', [
-			'label'   => esc_html__( 'Framed box list (one per line)', 'zorgkosten-calculator' ),
-			'type'    => Controls_Manager::TEXTAREA,
-			'rows'    => 7,
-			'default' => "Gevraagde informatie en documenten tijdig aanleveren.\nNoodzakelijke formulieren invullen en ondertekenen.\nVragen van ADHD Medisch Centrum of uw zorgverzekeraar tijdig beantwoorden.\nAanvullende informatie verstrekken wanneer daarom wordt gevraagd.\nWijzigingen in uw zorgverzekering of polis direct aan ons doorgeven.",
-		] );
-
-		$this->add_control( 'step8_check_title', [
-			'label'       => esc_html__( '"Check this" box heading', 'zorgkosten-calculator' ),
-			'description' => esc_html__( 'Use {insurer}. The box is only shown when the insurer has an authorization or declaration URL.', 'zorgkosten-calculator' ),
-			'type'        => Controls_Manager::TEXT,
-			'default'     => 'Controleer dit bij {insurer}',
-			'label_block' => true,
-		] );
-
-		$this->add_control( 'step8_check_text', [
-			'label'       => esc_html__( '"Check this" box text', 'zorgkosten-calculator' ),
-			'description' => esc_html__( 'Use {insurer}.', 'zorgkosten-calculator' ),
-			'type'        => Controls_Manager::TEXTAREA,
-			'default'     => 'Op de website van {insurer} leest u of een machtiging nodig is en hoe u deze aanvraagt.',
-		] );
-
-		$this->add_control( 'step8_check_button', [
-			'label'       => esc_html__( '"Check this" button text', 'zorgkosten-calculator' ),
-			'description' => esc_html__( 'Use {insurer}.', 'zorgkosten-calculator' ),
-			'type'        => Controls_Manager::TEXT,
-			'default'     => 'Naar {insurer}',
-			'label_block' => true,
-		] );
-
-		$this->add_control( 'step8_footnote', [
-			'label'   => esc_html__( 'Closing warning', 'zorgkosten-calculator' ),
-			'type'    => Controls_Manager::TEXTAREA,
-			'rows'    => 4,
-			'default' => 'Wanneer een machtiging door het ontbreken van uw medewerking niet tijdig kan worden aangevraagd of verkregen, kan het zorgtraject worden beëindigd. Kosten die hierdoor niet worden vergoed, blijven voor uw rekening en vallen niet onder de coulanceregeling.',
-		] );
-
-		$this->end_controls_section();
-	}
-
-	private function register_coulance_controls() {
-		$this->start_controls_section( 'section_step9', [
-			'label' => esc_html__( 'Step 9 – Goodwill scheme (coulance)', 'zorgkosten-calculator' ),
-		] );
-
-		$this->add_control( 'step9_title', [
-			'label'       => esc_html__( 'Title', 'zorgkosten-calculator' ),
-			'type'        => Controls_Manager::TEXT,
-			'default'     => 'Onze coulanceregeling',
-			'label_block' => true,
-		] );
-
-		$this->add_control( 'step9_intro', [
-			'label'   => esc_html__( 'Intro', 'zorgkosten-calculator' ),
-			'type'    => Controls_Manager::WYSIWYG,
-			'default' => '<p>Wij vinden het belangrijk dat onze zorg zo toegankelijk mogelijk blijft. Daarom hanteren wij een coulanceregeling. Dit betekent dat ADHD Medisch Centrum een groot deel van de kosten die niet door uw zorgverzekeraar worden vergoed, kwijtscheldt. U hoeft dat deel dus niet zelf te betalen.</p><p>Om deze regeling mogelijk te maken, vragen wij na het adviesgesprek een eenmalige persoonlijke bijdrage van <strong>€250</strong> voor het volledige diagnostiek- en behandeltraject. Deze bijdrage staat los van het verplichte eigen risico van uw zorgverzekering.</p>',
-		] );
-
-		$this->add_control( 'step9_conditions_title', [
-			'label'   => esc_html__( 'Conditions heading', 'zorgkosten-calculator' ),
-			'type'    => Controls_Manager::TEXT,
-			'default' => 'Voorwaarden',
-		] );
-
-		$this->add_control( 'step9_conditions', [
-			'label'   => esc_html__( 'Conditions (one per line)', 'zorgkosten-calculator' ),
-			'type'    => Controls_Manager::TEXTAREA,
-			'rows'    => 10,
-			'default' => "De eigen bijdrage van €250 binnen de betalingstermijn betalen.\nDeclaratiefacturen tijdig bij uw zorgverzekeraar indienen.\nVolledige vergoedingenoverzichten tijdig aan ons verstrekken.\nVergoedingen die uw zorgverzekeraar rechtstreeks aan u uitbetaalt binnen 14 dagen aan ons doorbetalen.\nUw verplichte en eventuele vrijwillige eigen risico betalen.\nOverige betalingsfacturen binnen 14 dagen betalen.\nTijdig en volledig meewerken aan declaraties en machtigingsaanvragen.\nGevraagde informatie en documenten tijdig, volledig en naar waarheid aanleveren.",
-		] );
-
-		$this->add_control( 'step9_excluded_title', [
-			'label'       => esc_html__( 'Exclusions heading', 'zorgkosten-calculator' ),
-			'type'        => Controls_Manager::TEXT,
-			'default'     => 'Wat valt niet onder de coulanceregeling?',
-			'label_block' => true,
-		] );
-
-		$this->add_control( 'step9_excluded', [
-			'label'   => esc_html__( 'Exclusions (one per line)', 'zorgkosten-calculator' ),
-			'type'    => Controls_Manager::TEXTAREA,
-			'rows'    => 8,
-			'default' => "De eigen bijdrage van €250.\nHet verplichte en eventuele vrijwillige eigen risico.\nNo-showfacturen.\nBedragen die uw zorgverzekeraar rechtstreeks aan u heeft uitbetaald.\nZorg die niet onder de verzekerde zorg valt en waarover u vooraf bent geïnformeerd.\nKosten die niet worden vergoed doordat gevraagde informatie of medewerking ontbreekt.",
-		] );
-
-		$this->add_control( 'step9_button', [
-			'label'       => esc_html__( 'Final button text', 'zorgkosten-calculator' ),
-			'type'        => Controls_Manager::TEXT,
-			'default'     => 'Bekijk uw kosteninschatting',
+			'default'     => 'https://www.nza.nl/',
 			'label_block' => true,
 		] );
 

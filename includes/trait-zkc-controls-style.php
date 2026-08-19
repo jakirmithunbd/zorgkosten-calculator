@@ -34,6 +34,10 @@ trait ZKC_Controls_Style {
 			'color_success_soft' => [ 'Success background', '#E8F9ED', '--zkc-success-soft' ],
 			'color_destructive'  => [ 'Error text', '#CC3430', '--zkc-destructive' ],
 			'color_eyebrow'      => [ 'Eyebrow labels (brand blue)', '#5B7491', '--zkc-eyebrow' ],
+			'color_success'      => [ 'Reimbursed percentage (green)', '#439A67', '--zkc-success' ],
+			'color_uncovered'    => [ 'Not-reimbursed amounts (red)', '#CF5E55', '--zkc-uncovered' ],
+			'color_uncovered_soft' => [ 'Not-reimbursed panel background', '#FFEEEB', '--zkc-uncovered-soft' ],
+			'color_secondary_fg' => [ 'Kicker text on cream panels', '#323845', '--zkc-secondary-fg' ],
 		];
 
 		foreach ( $colors as $id => $c ) {

@@ -1,115 +1,106 @@
 # Zorgkosten Calculator for Elementor
 
-Custom Elementor addon that rebuilds the multi-step healthcare cost calculator from
-https://zorgkosten-inzicht.lovable.app/ (v2 design) as a fully backend-editable widget.
+Elementor widget that rebuilds the **Kostenkompas GGZ** app
+(https://zorgkosten-inzicht.lovable.app/) 1:1, with every text, amount, image
+and link editable from the Elementor editor.
 
 ## Install
 
 1. Copy the `zorgkosten-calculator` folder into `wp-content/plugins/`.
 2. Activate **Zorgkosten Calculator for Elementor** in WP Admin → Plugins.
-3. In Elementor, search for the **Zorgkosten Calculator** widget (category "Zorgkosten") and drop it on a page.
+3. In Elementor, search for the **Zorgkosten Calculator** widget (category
+   "Zorgkosten") and drop it on a page.
 
 Requires Elementor 3.5+ (tested with 4.2.1).
 
-## The v2 design
-
-- **Two-column layout**: the step content on the left, a cream sidebar on the right
-  with **"Uw gegevens"** — clickable chips of every answer so far (click = jump back
-  to that step) — and a step illustration with decorative blobs.
-- **Segmented progress bar** at the bottom (one segment per step) with
-  "Stap X van Y", a "← Terug" text link and a "Volgende →" pill button.
-- **Intro**: two-column hero with kicker, title, bullet list and illustration.
-- **Result**: full-width overview — split bar (coral = reimbursed, teal = waived,
-  striped = uncertain range), own-costs card, "Wat u zelf regelt" card with a
-  per-insurer "Declareren bij …" button, machtiging warning with link, and a CTA
-  panel ("Hoe gaat het verder?").
-- Fonts match the reference app: bundled **Archia** for headings, display
-  numbers and eyebrows, **Ubuntu** for body text — with Elementor typography
-  controls to override.
-
 ## The step flow
 
-The calculator has **9 steps**, but the authorization step is only part of the
-flow when the chosen insurer may require one — for every other insurer it is
-**8 steps** and the counter and segments adjust automatically.
+**10 steps**, but the authorization step only appears for insurers that may
+require one — for every other insurer it is **9 steps**, and the counter and
+progress segments adjust automatically.
 
 | # | Step | Notes |
 |---|---|---|
-| 1 | Insurer | Logo tiles grouped by concern (CSS grid, 2–3 group columns) |
-| 2 | Policy | Only the policies of the chosen insurer, plus "Ik weet het niet" |
-| 3 | Total deductible | 385–885 grid, plus "Ik weet het niet" |
-| 4 | Used deductible | Required; cannot exceed the total chosen in step 3 |
-| 5 | How costs are determined | Static content + framed panel |
-| 6 | Reimbursement | Cream hero with the percentage and the estimated amount |
-| 7 | Invoices | Two variants: with / without a payment agreement |
-| 8 | Authorization (machtiging) | **Only for insurers that may need one**; links to the insurer |
-| 9 | Goodwill scheme (coulance) | Ends with "Bekijk uw kosteninschatting" |
-| — | Result | Full-width cost overview |
+| 1 | Insurer | Logo tiles grouped by concern |
+| 2 | Policy | Policies of the chosen insurer + "Ik weet het niet" |
+| 3 | Total deductible | 385–885 grid + "Ik weet het niet" |
+| 4 | Used deductible | Required; cannot exceed the total from step 3 |
+| 5 | How costs are determined | Three icon cards + NZa link |
+| 6 | Reimbursement | Green percentage + worked example per part |
+| 7 | Coulanceregeling | Waived amount + conditions/exclusions per agreement |
+| 8 | Eigen bijdrage | € 250, three icon cards, "Goed om te weten" |
+| 9 | Toestemming (machtiging) | **Only for insurers that need one** |
+| 10 | Hoe betaalt u uw zorg? | Four numbered steps per agreement type |
+| — | Result | Full cost overview with a breakdown table |
 
-## Reimbursement percentages & ranges
+Navigation: a bottom bar with "← Terug", **clickable progress segments** (jump
+back to any visited step), and "Volgende →". From step 2 a cream sidebar shows
+**"Uw gegevens"** — clickable chips of every answer — plus a step illustration.
 
-- **Policy known**: that policy's percentage — or a **range** (e.g. Anderzorg
-  Basis 60–100%) when the optional "highest %" field is filled in. Ranges show as
-  "60% tot 100%", the estimate becomes "€ 1.200 tot € 2.000", and the result's
-  split bar gets a striped "uncertain" band.
-- **Policy unknown, insurer known**: the lowest and highest percentage across
-  *all* policies of that insurer (matching the original app).
-- **No insurer / no policies**: the configured default percentage (70%).
+## Amounts and calculation
 
-When the visitor answers "Ik weet het niet" for the total or used deductible,
-the own-costs card shows a range (€ 0 up to the total, or up to the configured
-€ 885 ceiling) with an explanatory note.
+- Diagnostics **€ 2.000** + treatment **€ 4.000** = whole trajectory **€ 6.000**
+- Personal contribution **€ 250**
+- Reimbursement:
+  - *policy known* → that policy's percentage, or a **range** when the optional
+    "highest %" is filled in (e.g. Anderzorg 60% tot 100%);
+  - *policy unknown, insurer known* → lowest–highest across all that insurer's
+    policies;
+  - *no insurer* → the configured default (70%).
+- Every amount is split into reimbursed / not reimbursed per part.
+- Unknown deductibles produce a range (€ 0 up to the total, or up to the
+  configured € 885 ceiling) with an explanatory note.
 
 ## What is editable from Elementor
 
-Everything ships pre-filled with the exact content and data of the original app.
+Everything, organised one section per step:
 
-- **Intro screen** – kicker, title, description, bullet list, button, illustration + alt.
-- **Insurers** (repeater) – group, name, logo (pre-filled with the bundled
-  files), payment-agreement toggle, machtiging toggle (adds the authorization
-  step), **declaration URL** and optional **authorization URL** per insurer.
-  32 insurers pre-filled with all links.
+- **Intro screen** – kicker, title, text, bullets, button, illustration.
+- **Insurers** (repeater) – group, name, logo, payment-agreement toggle,
+  authorization toggle (adds step 9), declaration URL, authorization URL.
+  32 insurers pre-filled.
 - **Policies** (repeater) – insurer, policy, % (lowest), optional % (highest),
-  tariff basis, note. All 70 policies pre-filled.
-- **Navigation & sidebar** – back/next/restart/adjust labels, step counter,
-  help/warning labels, "Ik weet het niet", sidebar title/empty text/chip texts.
-- **Steps 1–9** – every title, help text, message variant, WYSIWYG block,
-  validation error, list and button label.
-- **Result screen** – every label, note and warning, the disclaimer, CTA title/
-  text/button + link.
-- **Calculation** – average invoice (€2000), personal contribution (€250),
-  deductible options, unknown-deductible ceiling (€885), default %.
-- **Sidebar illustrations** – the four step images + alt texts (bundled by default).
-- **Style tab** – all colors (coral primary, teal goodwill, cream secondary, …),
-  max width, the desktop "app frame" toggle, and typography for titles, display
-  numbers and body.
+  tariff basis, note. 70 policies pre-filled. Plus the tariff-basis wording.
+- **Navigation & sidebar** – all button/link labels, step counter, progress
+  tooltips, help/warning labels, sidebar title and chip texts.
+- **Steps 1–10** – every title, subtitle, help text, list, icon card, numbered
+  step, validation message and per-agreement variant.
+- **Result screen** – every label, table heading, note, warning, disclaimer and
+  the CTA.
+- **Calculation** – the two average amounts, contribution, deductible options,
+  unknown-deductible ceiling, default %.
+- **Sidebar illustrations** – four images + alt texts.
+- **Style tab** – all colours (coral, teal, green, uncovered red, cream …),
+  max width, desktop app-frame toggle, typography.
+
+Icon cards choose from the reference app's icon set: landmark, clock, users,
+coins, shield-check.
 
 ## File structure
 
 ```
-zorgkosten-calculator.php              Bootstrap: requirements check, assets, widget registration
+zorgkosten-calculator.php            Bootstrap: requirements, assets, registration
 includes/
-  widget-cost-calculator.php           The widget class (wires the pieces below)
-  class-zkc-defaults.php               ALL DATA: insurers, links, policies + percentages, tariff bases
-  trait-zkc-controls-general.php       Controls: intro, insurers, policies, navigation, calculation, illustrations
-  trait-zkc-controls-steps.php         Controls: step 1-9 texts
-  trait-zkc-controls-result.php        Controls: result screen texts
-  trait-zkc-controls-style.php         Controls: style tab (colors, layout, typography)
-  trait-zkc-render.php                 Builds the JSON config for the frontend
+  widget-cost-calculator.php         Widget class (wires the traits below)
+  class-zkc-defaults.php             ALL DATA: insurers, links, policies + %s, bases
+  trait-zkc-controls-general.php     Intro, insurers, policies, navigation, calc, images
+  trait-zkc-controls-steps.php       Steps 1-5
+  trait-zkc-controls-money.php       Steps 6-8 (reimbursement, coulance, contribution)
+  trait-zkc-controls-final.php       Steps 9-10 (machtiging, payment)
+  trait-zkc-controls-result.php      Result screen
+  trait-zkc-controls-style.php       Style tab
+  trait-zkc-render.php               Builds the JSON config for the frontend
 assets/
-  js/calculator.js                     The stepper (flow, calculations, rendering)
-  css/calculator.css                   All styling (design tokens at the top)
-  logos/  img/  fonts/                 Bundled logos, illustrations, Archia font
+  js/calculator.js                   The stepper (flow, calculations, rendering)
+  css/calculator.css                 All styling (design tokens at the top)
+  logos/ img/ fonts/                 31 logos, 5 illustrations, Archia font
 ```
 
 To check or change pricing, edit `includes/class-zkc-defaults.php` — every
 percentage, range and per-insurer link lives there.
 
-## Bundled assets
+## Fonts
 
-- `assets/logos/` – all 31 insurer logos (used by default; uploads override).
-- `assets/img/` – the 5 illustrations (intro, verzekering, eigenrisico, gesprek, factuur).
-- `assets/fonts/archia-regular.woff2` – the display font for headings and numbers.
-
-To swap an asset for every new widget at once, replace the file keeping the
-same filename.
+Headings, display numbers and eyebrow labels use **Archia** (bundled), body
+text uses **Ubuntu** — the same pairing as the reference app. Elementor's
+typography controls override both.
