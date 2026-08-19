@@ -27,7 +27,7 @@ trait ZKC_Controls_Style {
 			'color_goodwill'     => [ 'Goodwill (teal)', '#3CB3A9', '--zkc-goodwill' ],
 			'color_secondary'    => [ 'Secondary background (cream)', '#F8F2EE', '--zkc-secondary' ],
 			'color_foreground'   => [ 'Text', '#2F3545', '--zkc-foreground' ],
-			'color_muted'        => [ 'Muted text', '#6D6460', '--zkc-muted' ],
+			'color_muted'        => [ 'Muted text', '#63666E', '--zkc-muted' ],
 			'color_card'         => [ 'Card background', '#FFFFFF', '--zkc-card' ],
 			'color_border'       => [ 'Borders', '#E2E3E6', '--zkc-border' ],
 			'color_warning_soft' => [ 'Warning background', '#FFF0DD', '--zkc-warning-soft' ],
