@@ -1050,6 +1050,9 @@
 		// Breakdown table.
 		var tableWrap = el('div', 'zkc-r-table-wrap');
 		var table = el('table', 'zkc-r-table');
+		// Fixed column proportions, as in the reference.
+		table.appendChild(el('colgroup', '',
+			'<col style="width:26%"><col style="width:22%"><col style="width:26%"><col style="width:26%">'));
 		var thead = el('thead', '', '<tr>' +
 			'<th>' + esc(r.colPart) + '</th>' +
 			'<th>' + esc(r.colCost) + '</th>' +

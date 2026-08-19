@@ -1198,15 +1198,17 @@
 
 .zkc-r-table {
 	width: 100%;
-	min-width: 520px;
+	/* The reference uses table-fixed with an explicit colgroup, so the four
+	 * columns keep their proportions instead of sizing to content. */
+	table-layout: fixed;
 	border-collapse: separate;
 	border-spacing: 0;
 	font-size: 14px;
 }
 
 .zkc-r-table th {
-	border: 0;
-	background: none;
+	border: 0 !important;
+	background: none !important;
 	padding: 0 16px 8px;
 	font-size: 12px;
 	font-weight: 700;
@@ -1217,14 +1219,17 @@
 
 .zkc-r-table th:first-child { text-align: left; }
 
-.zkc-r-table td {
+.zkc-r-table tbody tr {
 	background: var(--zkc-card);
+}
+
+.zkc-r-table td {
 	padding: 12px 16px;
 	text-align: right;
 	font-variant-numeric: tabular-nums;
 	overflow-wrap: anywhere;
-	border: 0;
-	border-bottom: 1px solid var(--zkc-border);
+	border: 0 !important;
+	border-bottom: 1px solid var(--zkc-border) !important;
 }
 
 .zkc-r-table td:first-child {
@@ -1233,14 +1238,14 @@
 }
 
 .zkc-r-table tr:last-child td {
-	border-bottom: 0;
+	border-bottom: 0 !important;
 	font-weight: 600;
 }
 
-.zkc-r-table tr:first-child td:first-child { border-top-left-radius: var(--zkc-radius); }
-.zkc-r-table tr:first-child td:last-child { border-top-right-radius: var(--zkc-radius); }
-.zkc-r-table tr:last-child td:first-child { border-bottom-left-radius: var(--zkc-radius); }
-.zkc-r-table tr:last-child td:last-child { border-bottom-right-radius: var(--zkc-radius); }
+.zkc-r-table tr:first-child td:first-child { border-top-left-radius: 16px; }
+.zkc-r-table tr:first-child td:last-child { border-top-right-radius: 16px; }
+.zkc-r-table tr:last-child td:first-child { border-bottom-left-radius: 16px; }
+.zkc-r-table tr:last-child td:last-child { border-bottom-right-radius: 16px; }
 
 .zkc-cell-cost { color: var(--zkc-muted); }
 .zkc-cell-in { color: var(--zkc-primary); }
