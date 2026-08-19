@@ -1110,7 +1110,7 @@
 	padding: 24px;
 }
 
-.zkc-r-invoice-title {
+.zkc .zkc-r-invoice-title {
 	font-size: 20px;
 	line-height: 28px;
 	font-weight: 600;
@@ -1205,9 +1205,11 @@
 }
 
 .zkc-r-table th {
+	border: 0;
+	background: none;
 	padding: 0 16px 8px;
 	font-size: 12px;
-	font-weight: 600;
+	font-weight: 700;
 	color: var(--zkc-secondary-fg);
 	text-align: right;
 	vertical-align: bottom;
@@ -1221,6 +1223,7 @@
 	text-align: right;
 	font-variant-numeric: tabular-nums;
 	overflow-wrap: anywhere;
+	border: 0;
 	border-bottom: 1px solid var(--zkc-border);
 }
 
@@ -1283,6 +1286,10 @@
 	margin: 24px 0 0;
 	border-top: 1px solid color-mix(in srgb, var(--zkc-border) 70%, transparent);
 	font-size: 14px;
+}
+
+.zkc-r-row:last-child {
+	border-bottom: 0;
 }
 
 .zkc-r-row {
@@ -1363,7 +1370,7 @@
 	}
 }
 
-.zkc-r-cta-title {
+.zkc .zkc-r-cta-title {
 	font-size: 20px;
 	line-height: 28px;
 	font-weight: 600;
@@ -1408,10 +1415,12 @@
 	.zkc .zkc-hero-pct    { font-size: 60px; }                      /* text-6xl */
 	.zkc .zkc-hero-amount { font-size: 48px; }                      /* text-5xl */
 	.zkc .zkc-r-title     { font-size: 36px; line-height: 40px; }   /* text-4xl */
-	.zkc-r-invoice-title  { font-size: 24px; line-height: 32px; }   /* text-2xl */
-	.zkc-r-cta-title      { font-size: 24px; line-height: 32px; }   /* text-2xl */
+	.zkc .zkc-r-invoice-title { font-size: 24px; line-height: 32px; }  /* text-2xl */
+	.zkc .zkc-r-cta-title     { font-size: 24px; line-height: 32px; }  /* text-2xl */
 	.zkc .zkc-r-own-total { font-size: 48px; line-height: 1; }      /* text-5xl */
 	.zkc-body             { font-size: 16px; }                      /* text-base */
+	.zkc-r-table th       { padding-left: 20px; padding-right: 20px; }   /* sm:px-5 */
+	.zkc-r-table td       { padding-left: 20px; padding-right: 20px; }   /* sm:px-5 */
 	.zkc-warn             { font-size: 16px; }                      /* text-base */
 }
 
