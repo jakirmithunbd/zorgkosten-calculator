@@ -999,7 +999,7 @@
 		var copy = el('div', '');
 		copy.appendChild(el('div', 'zkc-eyebrow', esc(r.kicker)));
 		copy.appendChild(el('h1', 'zkc-r-title', esc(r.title)));
-		copy.appendChild(el('p', 'zkc-r-intro', esc(tpl(r.intro, { total: fmt(total), insurer: name }))));
+		copy.appendChild(el('p', 'zkc-r-intro', esc(tpl(r.intro, { total: fmt(total), invoice: fmt(total), insurer: name }))));
 		head.appendChild(copy);
 		var img = (this.cfg.images || {}).factuur || { src: '', alt: '' };
 		var media = el('div', 'zkc-r-media');
@@ -1009,7 +1009,7 @@
 
 		// Invoice panel.
 		var panel = el('div', 'zkc-r-invoice');
-		panel.appendChild(el('h2', 'zkc-r-invoice-title', esc(tpl(r.invoiceTitle, { total: fmt(total) }))));
+		panel.appendChild(el('h2', 'zkc-r-invoice-title', esc(tpl(r.invoiceTitle, { total: fmt(total), invoice: fmt(total) }))));
 		panel.appendChild(el('p', 'zkc-r-invoice-text', esc(r.invoiceText)));
 
 		var pctMin = Math.round((tot.lo / total) * 100);
@@ -1087,7 +1087,7 @@
 		var ownCard = el('div', 'zkc-r-own');
 		ownCard.appendChild(el('div', 'zkc-r-card-kicker', esc(r.ownKicker)));
 		ownCard.appendChild(el('div', 'zkc-r-own-total zkc-display', esc(own.totalLabel)));
-		ownCard.appendChild(el('p', 'zkc-text-sm', esc(tpl(r.ownText, { total: fmt(total) }))));
+		ownCard.appendChild(el('p', 'zkc-text-sm', esc(tpl(r.ownText, { total: fmt(total), invoice: fmt(total) }))));
 
 		var dl = el('dl', 'zkc-r-rows');
 		var row1 = el('div', 'zkc-r-row');
@@ -1113,7 +1113,7 @@
 		} else {
 			var ol = el('ol', 'zkc-r-steps');
 			(r.selfSteps || []).forEach(function (line) {
-				ol.appendChild(el('li', '', esc(tpl(line, { insurer: name }))));
+				ol.appendChild(el('li', '', esc(tpl(line, { insurer: name, amount: tot.lo === tot.hi ? fmt(tot.lo) : fmt(tot.lo) + ' tot ' + fmt(tot.hi) }))));
 			});
 			selfCard.appendChild(ol);
 			if (ins && ins.declareUrl) {

@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Zorgkosten Calculator for Elementor
  * Description: Custom Elementor widget: multi-step healthcare cost calculator (insurer → policy → deductible → estimate). Every step, option, amount and text is editable from the Elementor editor.
- * Version:     3.0.5
+ * Version:     3.0.6
  * Author:      Jakir
  * Text Domain: zorgkosten-calculator
  * Requires Plugins: elementor
@@ -13,7 +13,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly.
 }
 
-define( 'ZKC_VERSION', '3.0.5' );
+define( 'ZKC_VERSION', '3.0.6' );
 define( 'ZKC_FILE', __FILE__ );
 define( 'ZKC_PATH', plugin_dir_path( __FILE__ ) );
 define( 'ZKC_URL', plugin_dir_url( __FILE__ ) );

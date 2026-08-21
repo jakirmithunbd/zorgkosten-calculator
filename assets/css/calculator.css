@@ -396,10 +396,10 @@
 	justify-content: center;
 	gap: 8px;
 	border: none !important;
-	border-radius: 999px !important;
+	border-radius: 8px !important;
 	background: var(--zkc-primary) !important;
 	color: #fff !important;
-	padding: 13px 26px !important;
+	padding: 12px 26px !important;
 	font: inherit;
 	font-size: 14px !important;
 	font-weight: 500;
@@ -425,7 +425,7 @@
 	background: transparent;
 	color: var(--zkc-primary) !important;
 	padding: 10px 20px;
-	font-size: 14px;
+	font-size: 14px !important;
 	font-weight: 500;
 	cursor: pointer;
 	text-decoration: none !important;
@@ -803,7 +803,13 @@
 
 .zkc-item-title { font-weight: 600; }
 
-.zkc-item-text { margin: 4px 0 0; font-size: 14px; line-height: 20px; }
+.zkc-item-text { 
+	margin: 4px 0 0; font-size: 14px; line-height: 20px; 
+}
+
+.zkc-item-text a {
+	text-decoration: underline !important;
+}
 
 /* Numbered step: coral number + title + text on the cream surface. */
 .zkc-num-item {
@@ -978,7 +984,6 @@
 	font-size: inherit !important;
 	line-height: inherit !important;
 	font-weight: 500;
-	text-decoration: underline !important;
 	text-underline-offset: 4px;
 }
 
