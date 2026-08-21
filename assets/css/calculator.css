@@ -1,29 +1,47 @@
-/* Zorgkosten Calculator – styles
- * Colors, radius etc. come from CSS custom properties that the Elementor
- * style controls override per widget instance.
+/* Zorgkosten Calculator – styles (v3 design)
+ * Mirrors the reference app at zorgkosten-inzicht.lovable.app.
+ * Colors come from CSS custom properties that the Elementor style controls
+ * override per widget instance. Archia ships with the plugin for headings
+ * and display numbers; body text uses Ubuntu (with Outfit as the display
+ * fallback, matching the app's own font stack).
  */
 
-.zkc {
-	--zkc-primary: #E8756B;
-	--zkc-dark: #333C4E;
-	--zkc-heading: #1E2430;
-	--zkc-text: #4A5261;
-	--zkc-muted: #8A8F99;
-	--zkc-page-bg: #F6F7F9;
-	--zkc-card-bg: #FFFFFF;
-	--zkc-border: #E5E7EB;
-	--zkc-radius: 24px;
-	--zkc-btn-text: #FFFFFF;
-	--zkc-btn-radius: 999px;
-	/* Matches the site's own headings; the theme registers the Archia face. */
-	--zkc-heading-font: "Archia", Sans-serif;
+@font-face {
+	font-family: "Archia";
+	src: url("../fonts/archia-regular.woff2") format("woff2");
+	font-weight: 400 700;
+	font-style: normal;
+	font-display: swap;
+}
 
-	background: var(--zkc-page-bg);
-	color: var(--zkc-text);
-	padding: 24px 16px 32px;
+.zkc {
+	--zkc-font-display: "Archia", "Outfit", ui-sans-serif, system-ui, sans-serif;
+	--zkc-font-sans: "Ubuntu", ui-sans-serif, system-ui, sans-serif;
+
+	--zkc-primary: #EB776C;
+	--zkc-primary-soft: #FFEEEA;
+	--zkc-goodwill: #3CB3A9;
+	--zkc-success: #439A67;
+	--zkc-uncovered: #CF5E55;
+	--zkc-uncovered-soft: #FFEEEB;
+	--zkc-secondary: #F8F2EE;
+	--zkc-secondary-fg: #323845;
+	--zkc-foreground: #2F3545;
+	--zkc-muted: #63666E;
+	--zkc-card: #FFFFFF;
+	--zkc-border: #E2E3E6;
+	--zkc-warning-soft: #FFF0DD;
+	--zkc-destructive: #CC3430;
+	--zkc-eyebrow: #5B7491;
+	--zkc-radius: 12px;
+
+	color: var(--zkc-foreground);
+	font-family: var(--zkc-font-sans);
 	font-size: 16px;
-	line-height: 1.6;
+	line-height: 1.75;
+	-webkit-font-smoothing: antialiased;
 	box-sizing: border-box;
+	padding: 24px 16px 40px;
 }
 
 .zkc *,
@@ -32,12 +50,13 @@
 	box-sizing: border-box;
 }
 
-/* Neutralize theme / Elementor-kit button and link styling inside the widget. */
-.zkc button,
-.zkc button:hover,
-.zkc button:focus,
-.zkc a.zkc-btn,
-.zkc a.zkc-btn:hover {
+.zkc-inner {
+	max-width: 1500px;
+	margin: 0 auto;
+}
+
+/* Neutralize theme / Elementor-kit button and heading styling. */
+.zkc button {
 	-webkit-appearance: none !important;
 	appearance: none !important;
 	text-transform: none !important;
@@ -45,225 +64,434 @@
 	text-shadow: none !important;
 	background-image: none !important;
 	margin: 0;
-	line-height: 1.5;
 	font-family: inherit;
+	line-height: 1.5;
 }
 
-.zkc-inner {
-	max-width: 1140px;
-	margin: 0 auto;
+.zkc h1,
+.zkc h2,
+.zkc h3,
+.zkc h4 {
+	text-transform: none !important;
+	letter-spacing: 0 !important;
+	font-family: var(--zkc-font-display);
+	font-size: inherit;
+	font-weight: 600;
+	line-height: 1.12;
+	color: var(--zkc-foreground);
+	margin: 0;
 }
 
-/* ------------------------------------------------------------------ header */
+.zkc .zkc-display,
+.zkc .zkc-eyebrow,
+.zkc .zkc-item-title,
+.zkc .zkc-num {
+	font-family: var(--zkc-font-display);
+}
 
-.zkc-header {
+/* App frame: one screen with internal scrolling on large displays. */
+@media (min-width: 1024px) {
+	.zkc-frame:not(.zkc-on-result) .zkc-inner {
+		display: flex;
+		flex-direction: column;
+		height: min(100svh, 780px);
+		min-height: 0;
+	}
+
+	.zkc-frame:not(.zkc-on-result) .zkc-layout,
+	.zkc-frame:not(.zkc-on-result) .zkc-intro {
+		flex: 1;
+		min-height: 0;
+	}
+
+	.zkc-frame:not(.zkc-on-result) .zkc-col {
+		min-height: 0;
+		height: 100%;
+	}
+
+	.zkc-frame:not(.zkc-on-result) .zkc-main {
+		overflow-y: auto;
+		min-height: 0;
+		padding-right: 16px;
+	}
+
+	.zkc-frame:not(.zkc-on-result) .zkc-aside {
+		height: 100%;
+		min-height: 0;
+	}
+}
+
+/* ---------------------------------------------------------------- topbar */
+
+.zkc-topbar {
 	display: flex;
 	align-items: center;
 	justify-content: space-between;
 	gap: 16px;
-	margin-bottom: 14px;
+	margin-bottom: 24px;
+	min-height: 22px;
 }
 
-.zkc-brand {
-	color: var(--zkc-primary);
-	font-weight: 600;
-}
-
-.zkc .zkc-restart {
+.zkc .zkc-link {
 	background: none !important;
 	border: none !important;
 	border-radius: 0 !important;
 	box-shadow: none !important;
 	padding: 0 !important;
 	cursor: pointer;
-	color: var(--zkc-text) !important;
+	color: var(--zkc-muted) !important;
 	text-decoration: underline !important;
 	text-underline-offset: 4px;
 	font: inherit;
 	font-size: 14px !important;
 }
 
-/* ---------------------------------------------------------------- progress */
-
-.zkc-progress {
-	margin-bottom: 18px;
+.zkc .zkc-link:hover {
+	color: var(--zkc-foreground) !important;
 }
 
-.zkc-progress-meta {
+/* ---------------------------------------------------------------- layout */
+
+.zkc-layout {
 	display: flex;
-	justify-content: space-between;
-	font-size: 12px;
-	color: var(--zkc-muted);
-	margin-bottom: 6px;
-}
-
-.zkc-progress-bar {
-	height: 6px;
-	border-radius: 999px;
-	background: #E9EBEE;
-	overflow: hidden;
-}
-
-.zkc-progress-fill {
-	height: 100%;
-	border-radius: 999px;
-	background: var(--zkc-primary);
-	transition: width .35s ease;
-}
-
-/* -------------------------------------------------------------------- card */
-
-.zkc-card {
-	background: var(--zkc-card-bg);
-	border-radius: var(--zkc-radius);
-	padding: clamp(24px, 4vw, 40px);
-	box-shadow: 0 10px 30px rgba(30, 36, 48, .06);
-}
-
-.zkc-footer {
-	text-align: center;
-	font-size: 12px;
-	color: var(--zkc-muted);
-	margin-top: 18px;
-}
-
-/* -------------------------------------------------------------- typography */
-
-/* Neutralize theme heading styles (capitalize, spacing) inside the widget and
- * put every heading on the site's own heading face. Kept free of !important so
- * the Elementor typography controls can still override it per instance. */
-.zkc h1,
-.zkc h2,
-.zkc h3,
-.zkc h4,
-.zkc .zkc-title,
-.zkc .zkc-hero-title,
-.zkc .zkc-h3,
-.zkc .zkc-h4,
-.zkc .zkc-kicker ~ h4,
-.zkc .zkc-rich h2,
-.zkc .zkc-rich h3,
-.zkc .zkc-rich h4 {
-	text-transform: none !important;
-	letter-spacing: normal !important;
-	font-family: var(--zkc-heading-font);
-	line-height: 1.3;
-}
-
-.zkc .zkc-kicker {
-	text-transform: uppercase !important;
-}
-
-.zkc-title {
-	color: var(--zkc-heading);
-	font-size: clamp(24px, 3.2vw, 32px);
-	font-weight: 700;
-	line-height: 1.2;
-	margin: 0 0 14px;
-}
-
-.zkc-subtitle {
-	margin: -6px 0 14px;
-	color: var(--zkc-muted);
-	font-size: 15px;
-}
-
-.zkc-kicker {
-	color: var(--zkc-primary);
-	text-transform: uppercase;
-	letter-spacing: .12em;
-	font-size: 12px;
-	font-weight: 600;
-	margin-bottom: 6px;
-}
-
-.zkc-h3 {
-	color: var(--zkc-heading);
-	font-size: 19px;
-	font-weight: 700;
-	margin: 0 0 10px;
-}
-
-.zkc-h4 {
-	color: var(--zkc-heading);
-	font-size: 16px;
-	font-weight: 600;
-	margin: 0 0 6px;
-}
-
-.zkc-text {
-	margin: 0 0 14px;
-}
-
-.zkc-text-sm {
-	font-size: 14px;
-	margin: 0;
-}
-
-.zkc-muted {
-	color: var(--zkc-muted);
-	font-size: 13px;
-	margin: 14px 0 0;
-}
-
-.zkc-center {
-	text-align: center;
-}
-
-/* -------------------------------------------------------------------- help */
-
-.zkc-help {
-	background: #F7F8FA;
-	border: 1px solid var(--zkc-border);
-	border-radius: 12px;
-	padding: 12px 16px;
-	font-size: 14px;
-	margin-bottom: 20px;
-}
-
-.zkc-help strong {
-	color: var(--zkc-heading);
-}
-
-/* ---------------------------------------------------------------- insurers */
-
-.zkc-groups {
-	display: flex;
-	align-items: flex-start;
-	gap: 22px;
+	flex-direction: column;
+	gap: 32px;
 }
 
 .zkc-col {
-	flex: 1;
+	display: flex;
+	flex-direction: column;
 	min-width: 0;
+	flex: 1;
 }
 
-.zkc-group {
-	margin-bottom: 24px;
+.zkc-main {
+	flex: 1;
+	min-width: 0;
+	padding: 4px 0 24px;
+}
+
+@media (min-width: 1024px) {
+	.zkc-layout.zkc-has-aside {
+		display: grid;
+		grid-template-columns: minmax(0, 1fr) 44%;
+		gap: 40px;
+		align-items: stretch;
+	}
+}
+
+/* --------------------------------------------------------------- sidebar */
+
+.zkc-aside {
+	display: flex;
+	flex-direction: column;
+	overflow: hidden;
+	border-radius: 24px;
+	background: var(--zkc-secondary);
+	min-height: 0;
+}
+
+.zkc-aside-head {
+	padding: 40px 40px 0;
+}
+
+.zkc-aside-title {
+	font-size: 16px;
+	font-weight: 600;
+	color: var(--zkc-secondary-fg);
+}
+
+.zkc-chips {
+	margin-top: 16px;
+	display: flex;
+	flex-wrap: wrap;
+	gap: 8px;
+}
+
+.zkc-chips-empty {
+	font-size: 14px;
+	color: var(--zkc-muted);
+}
+
+.zkc .zkc-chip {
+	display: inline-flex;
+	align-items: center;
+	max-width: 100%;
+	border: 1px solid var(--zkc-border) !important;
+	background: var(--zkc-card) !important;
+	border-radius: 999px !important;
+	box-shadow: none !important;
+	padding: 8px 14px !important;
+	font: inherit;
+	font-size: 14px !important;
+	font-weight: 500;
+	color: var(--zkc-foreground) !important;
+	cursor: pointer;
+	transition: border-color .15s ease, color .15s ease;
+}
+
+.zkc .zkc-chip:hover {
+	border-color: var(--zkc-primary) !important;
+	color: var(--zkc-primary) !important;
+}
+
+.zkc-chip span {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+/* ---------------------------------------------------------- illustrations */
+
+.zkc-illu {
+	position: relative;
+	display: flex;
+	flex: 1;
+	align-items: center;
+	justify-content: center;
+	min-height: 12rem;
+	padding: 40px;
+	overflow: hidden;
+}
+
+.zkc-illu img {
+	position: relative;
+	z-index: 2;
+	width: auto;
+	height: auto;
+	max-height: 14rem;
+	max-width: 58%;
+	object-fit: contain;
+}
+
+.zkc-illu-intro img { max-height: 18rem; max-width: 62%; }
+.zkc-illu-result img { max-height: 12rem; max-width: 70%; }
+
+.zkc-blob {
+	position: absolute;
+	pointer-events: none;
+}
+
+.zkc-blob-1 {
+	left: 6%; top: 10%; height: 46%; width: 42%;
+	background: color-mix(in srgb, var(--zkc-primary) 15%, transparent);
+	border-radius: 62% 38% 55% 45% / 48% 60% 40% 52%;
+}
+
+.zkc-blob-2 {
+	right: 8%; bottom: 8%; height: 40%; width: 38%;
+	background: rgba(54, 64, 83, .10);
+	border-radius: 45% 55% 35% 65% / 60% 42% 58% 40%;
+}
+
+.zkc-blob-3 {
+	inset: 12% 14%;
+	background: color-mix(in srgb, var(--zkc-card) 70%, transparent);
+	border-radius: 52% 48% 44% 56% / 46% 52% 48% 54%;
+	z-index: 1;
+}
+
+.zkc-dot {
+	position: absolute;
+	border-radius: 50%;
+	pointer-events: none;
+	z-index: 1;
+}
+
+.zkc-dot-1 { left: 10%; top: 52%; width: 10px; height: 10px; background: var(--zkc-primary); }
+.zkc-dot-2 { right: 14%; top: 16%; width: 8px; height: 8px; background: #F8F3F1; }
+.zkc-dot-3 { right: 6%; top: 42%; width: 12px; height: 12px; background: color-mix(in srgb, var(--zkc-primary) 50%, transparent); }
+.zkc-dot-4 { left: 26%; bottom: 10%; width: 8px; height: 8px; background: rgba(54, 64, 83, .4); }
+
+/* ----------------------------------------------------------------- intro */
+
+.zkc-intro {
+	display: grid;
+	gap: 40px;
+	min-height: 100%;
+}
+
+@media (min-width: 1024px) {
+	.zkc-intro {
+		grid-template-columns: minmax(0, 1fr) 48%;
+		align-items: center;
+	}
+}
+
+.zkc-intro-copy { padding: 16px 0; }
+
+.zkc-eyebrow {
+	display: inline-block;
+	color: var(--zkc-eyebrow);
+	font-size: 16px;
+	font-weight: 600;
+	line-height: 1.25;
+	letter-spacing: 0;
+	text-transform: none !important;
+}
+
+.zkc-intro .zkc-eyebrow { margin-bottom: 20px; }
+
+.zkc .zkc-intro-title {
+	font-size: 36px;
+	line-height: 40px;
+	font-weight: 600;
+	line-height: 1.05;
+}
+
+.zkc-intro-text {
+	margin: 24px 0 0;
+	max-width: 36rem;
+	font-size: 16px;
+	line-height: 24px;
+}
+
+.zkc-bullets {
+	list-style: none;
+	margin: 32px 0 0;
+	padding: 0;
+	display: flex;
+	flex-direction: column;
+	gap: 12px;
+	font-size: 14px;
+	line-height: 20px;
+}
+
+.zkc-bullets li {
+	display: flex;
+	align-items: flex-start;
+	gap: 12px;
+}
+
+.zkc-bullet-dot {
+	margin-top: 8px;
+	width: 8px;
+	height: 8px;
+	flex-shrink: 0;
+	border-radius: 50%;
+	background: var(--zkc-primary);
+}
+
+.zkc .zkc-intro-btn { margin-top: 40px; }
+
+.zkc-intro-media {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	overflow: hidden;
+	border-radius: 32px;
+	background: var(--zkc-secondary);
+	min-height: 16rem;
+}
+
+@media (min-width: 1024px) {
+	.zkc-intro-media { min-height: 24rem; height: 100%; }
+}
+
+/* --------------------------------------------------------------- buttons */
+
+.zkc .zkc-btn {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	gap: 8px;
+	border: none !important;
+	border-radius: 8px !important;
+	background: var(--zkc-primary) !important;
+	color: #fff !important;
+	padding: 12px 26px !important;
+	font: inherit;
+	font-size: 14px !important;
+	font-weight: 500;
+	cursor: pointer;
+	box-shadow: 0 1px 2px rgba(31, 36, 51, .05), 0 6px 18px rgba(31, 36, 51, .05) !important;
+	transition: opacity .15s ease, transform .1s ease;
+	text-decoration: none !important;
+}
+
+.zkc .zkc-btn:hover {
+	opacity: .9;
+	background: var(--zkc-primary) !important;
+	color: #fff !important;
+}
+
+.zkc .zkc-btn:active { transform: scale(.98); }
+
+.zkc .zkc-btn-outline {
+	display: inline-flex;
+	margin-top: 16px;
+	border: 1px solid var(--zkc-primary);
+	border-radius: 999px;
+	background: transparent;
+	color: var(--zkc-primary) !important;
+	padding: 10px 20px;
+	font-size: 14px !important;
+	font-weight: 500;
+	cursor: pointer;
+	text-decoration: none !important;
+	transition: background .15s ease;
+}
+
+.zkc .zkc-btn-outline:hover {
+	background: var(--zkc-primary-soft);
+	color: var(--zkc-primary) !important;
+}
+
+/* ------------------------------------------------------------- step head */
+
+.zkc-step-head { margin-bottom: 24px; }
+
+.zkc .zkc-title {
+	font-size: 24px;
+	line-height: 32px;
+	font-weight: 600;
+}
+
+.zkc-subtitle {
+	margin: 12px 0 0;
+	color: var(--zkc-foreground);
+}
+
+.zkc-help {
+	margin-top: 16px;
+	border-radius: var(--zkc-radius);
+	background: var(--zkc-secondary);
+	padding: 12px 16px;
+	font-size: 14px;
+}
+
+.zkc-help-label { font-weight: 600; }
+.zkc-help div + div { margin-top: 4px; }
+
+/* ------------------------------------------------------------ insurer grid */
+
+.zkc-groups {
+	display: grid;
+	gap: 32px 24px;
+	align-items: start;
+}
+
+@media (min-width: 640px) {
+	.zkc-groups { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+@media (min-width: 1280px) {
+	.zkc-groups { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 }
 
 .zkc-group-title {
 	display: flex;
 	align-items: center;
-	gap: 10px;
-	color: var(--zkc-primary);
-	font-size: 12px;
-	font-weight: 600;
-	letter-spacing: .12em;
-	text-transform: uppercase;
-	margin-bottom: 10px;
+	gap: 12px;
+	margin-bottom: 8px;
 }
 
-.zkc-group-title::after {
-	content: "";
-	flex: 1;
+.zkc-group-line {
 	height: 1px;
+	flex: 1;
 	background: var(--zkc-border);
 }
 
-/* minmax(0, 1fr) rather than 1fr: a bare 1fr track never shrinks below the
- * min-content of its items, and a logo's intrinsic width (up to 300px) would
- * push the tracks wider than the column, spilling tiles over the next one. */
 .zkc-tiles {
 	display: grid;
 	grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -271,80 +499,62 @@
 }
 
 .zkc .zkc-tile {
-	background: var(--zkc-card-bg) !important;
-	border: 1px solid var(--zkc-border) !important;
-	border-radius: 12px !important;
-	box-shadow: none !important;
-	padding: 12px 8px !important;
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-	gap: 8px;
-	width: 100%;
-	min-width: 0;
-	cursor: pointer;
-	font: inherit;
-	color: var(--zkc-text) !important;
-	transition: border-color .15s ease, box-shadow .15s ease, background .15s ease;
-}
-
-/* Hover tints the border and nothing else — no lift, no drop shadow — so the
- * tile never shifts under the cursor. */
-.zkc .zkc-tile:hover,
-.zkc .zkc-tile:focus-visible {
-	background: var(--zkc-card-bg) !important;
-	border-color: var(--zkc-primary) !important;
-	border-color: color-mix(in srgb, var(--zkc-primary) 60%, transparent) !important;
-	box-shadow: none !important;
-	outline: none;
-}
-
-.zkc-tile-media {
-	height: 46px;
-	display: flex;
-	align-items: center;
-	justify-content: center;
+	aspect-ratio: 1 / 1;
 	width: 100%;
 	min-width: 0;
 	overflow: hidden;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	gap: 6px;
+	text-align: center;
+	background: var(--zkc-card) !important;
+	border: 1px solid var(--zkc-border) !important;
+	border-radius: var(--zkc-radius) !important;
+	box-shadow: none !important;
+	padding: 8px !important;
+	cursor: pointer;
+	font: inherit;
+	color: var(--zkc-foreground) !important;
+	transition: border-color .15s ease;
 }
 
-/* Sized off the tile (width/height + object-fit) instead of the file's own
- * intrinsic size, so wide logos scale down rather than stretch the tile. */
-.zkc-tile-logo {
+.zkc .zkc-tile:hover,
+.zkc .zkc-tile:focus-visible {
+	border-color: color-mix(in srgb, var(--zkc-primary) 60%, transparent) !important;
+	outline: none;
+}
+
+.zkc .zkc-tile.zkc-selected {
+	border-color: var(--zkc-primary) !important;
+	box-shadow: 0 0 0 1px var(--zkc-primary) !important;
+}
+
+.zkc-tile-media {
+	flex: 1;
 	width: 100%;
-	max-width: 85%;
-	height: 100%;
-	max-height: 42px;
-	object-fit: contain;
-}
-
-.zkc-tile-initial {
-	width: 40px;
-	height: 40px;
-	border-radius: 50%;
-	background: var(--zkc-page-bg);
-	color: var(--zkc-heading);
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	font-weight: 700;
+	min-height: 0;
 }
 
-/* Kept small: the logo carries the recognition, the caption only disambiguates
- * labels that share a logo (ZieZo/Zilveren Kruis, CZdirect/CZ). */
+.zkc-tile-logo { max-height: 40px; max-width: 85%; object-fit: contain; }
+
+.zkc-tile-initial {
+	font-size: 14px;
+	font-weight: 600;
+	color: var(--zkc-muted);
+	text-transform: uppercase;
+}
+
 .zkc-tile-name {
+	display: block;
+	width: 100%;
 	font-size: 10px;
+	font-weight: 500;
 	line-height: 1.3;
-	text-align: center;
-	/* The tile centres its children rather than stretching them, so without an
-	 * explicit clamp a long name (e.g. "De Christelijke Zorgverzekeraar (label
-	 * Zilveren Kruis)") lays out at max-content and spills out of the tile. */
-	max-width: 100%;
-	min-width: 0;
-	/* Themes commonly set nowrap on inline elements; that collapses the clamp
-	 * below and cuts long names off mid-word instead of ellipsing them. */
-	white-space: normal !important;
 	overflow-wrap: anywhere;
 	overflow: hidden;
 	display: -webkit-box;
@@ -352,52 +562,58 @@
 	-webkit-box-orient: vertical;
 }
 
-/* ----------------------------------------------------------------- options */
-
-.zkc-options {
-	display: flex;
-	flex-direction: column;
-	gap: 12px;
-	margin-bottom: 8px;
+@media (min-width: 640px) {
+	.zkc-tile-name { font-size: 11px; }
 }
+
+/* ---------------------------------------------------------------- options */
+
+.zkc-options { display: grid; gap: 12px; }
 
 .zkc .zkc-option {
 	width: 100%;
 	text-align: left;
-	background: var(--zkc-card-bg) !important;
+	background: var(--zkc-card) !important;
 	border: 1px solid var(--zkc-border) !important;
-	border-radius: 12px !important;
+	border-radius: var(--zkc-radius) !important;
 	box-shadow: none !important;
-	padding: 16px 18px !important;
+	padding: 18px 20px !important;
 	cursor: pointer;
 	font: inherit;
 	font-weight: 500;
-	color: var(--zkc-heading) !important;
-	transition: border-color .15s ease, box-shadow .15s ease, background .15s ease;
+	color: var(--zkc-foreground) !important;
+	transition: border-color .15s ease;
 }
 
 .zkc .zkc-option:hover,
 .zkc .zkc-option:focus-visible {
-	background: var(--zkc-card-bg) !important;
-	border-color: var(--zkc-primary) !important;
 	border-color: color-mix(in srgb, var(--zkc-primary) 60%, transparent) !important;
-	box-shadow: none !important;
 	outline: none;
+}
+
+.zkc .zkc-option.zkc-selected {
+	border-color: var(--zkc-primary) !important;
+	box-shadow: 0 0 0 1px var(--zkc-primary) !important;
 }
 
 .zkc-amount-grid {
 	display: grid;
-	grid-template-columns: repeat(3, 1fr);
+	grid-template-columns: repeat(2, minmax(0, 1fr));
 	gap: 12px;
-	margin-bottom: 12px;
+}
+
+@media (min-width: 640px) {
+	.zkc-amount-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 }
 
 .zkc .zkc-option-amount {
 	text-align: center;
-	font-size: 20px;
-	font-weight: 600;
 	padding: 20px 12px !important;
+	font-size: 24px;
+	font-weight: 600;
 }
+
+.zkc .zkc-option-wide { margin-top: 12px; }
 
 /* ------------------------------------------------------------------- input */
 
@@ -405,39 +621,37 @@
 	display: block;
 	font-size: 14px;
 	font-weight: 500;
-	color: var(--zkc-heading);
 	margin-bottom: 8px;
 }
 
-.zkc-input-wrap {
-	display: flex;
-	align-items: center;
-	gap: 8px;
-	border: 1px solid var(--zkc-border);
-	border-radius: 12px;
-	padding: 0 16px;
-	margin-bottom: 12px;
-	background: var(--zkc-card-bg);
-}
-
-.zkc-input-wrap:focus-within {
-	border-color: var(--zkc-primary);
-}
+.zkc-input-wrap { position: relative; margin-bottom: 4px; }
 
 .zkc-input-prefix {
+	position: absolute;
+	left: 16px;
+	top: 50%;
+	transform: translateY(-50%);
 	color: var(--zkc-muted);
 }
 
 .zkc .zkc-input {
-	flex: 1;
-	border: none;
-	outline: none;
-	background: transparent;
-	padding: 15px 0;
+	width: 100%;
+	border: 1px solid var(--zkc-border);
+	border-radius: 10px;
+	background: var(--zkc-card);
+	padding: 12px 16px 12px 36px;
 	font: inherit;
-	color: var(--zkc-heading);
+	font-size: 18px;
+	color: var(--zkc-foreground);
 	-moz-appearance: textfield;
 }
+
+.zkc .zkc-input:focus {
+	outline: 2px solid var(--zkc-primary);
+	border-color: var(--zkc-primary);
+}
+
+.zkc .zkc-input:disabled { opacity: .5; }
 
 .zkc .zkc-input::-webkit-outer-spin-button,
 .zkc .zkc-input::-webkit-inner-spin-button {
@@ -446,22 +660,25 @@
 }
 
 .zkc-error {
-	color: #C4453B;
+	color: var(--zkc-destructive);
 	font-size: 14px;
-	margin: -6px 0 12px;
+	margin: 8px 0 0;
 }
 
 .zkc-check {
 	display: flex;
 	align-items: center;
-	gap: 10px;
+	gap: 12px;
 	border: 1px solid var(--zkc-border);
-	border-radius: 12px;
-	padding: 14px 16px;
+	border-radius: var(--zkc-radius);
+	background: var(--zkc-card);
+	padding: 16px;
+	margin-top: 16px;
 	cursor: pointer;
-	color: var(--zkc-heading);
 	font-weight: 500;
 }
+
+.zkc-check.zkc-selected { border-color: var(--zkc-primary); }
 
 .zkc-check input {
 	width: 16px;
@@ -471,461 +688,784 @@
 
 /* ------------------------------------------------------------------ panels */
 
+/* Reference: rounded-2xl border bg-card p-5 sm:p-6 text-sm sm:text-base. */
 .zkc-panel {
 	border: 1px solid var(--zkc-border);
-	border-radius: 14px;
-	padding: 18px 20px;
-	margin: 16px 0;
-}
-
-.zkc-panel-muted {
-	color: var(--zkc-muted);
-}
-
-.zkc-panel-muted .zkc-h4 {
-	color: var(--zkc-heading);
-}
-
-.zkc-highlight {
-	border: 1px solid var(--zkc-border);
-	border-left: 3px solid var(--zkc-primary);
-	border-radius: 12px;
-	padding: 16px 18px;
-	color: var(--zkc-heading);
-	margin-bottom: 16px;
-}
-
-.zkc-note {
-	background: #F1F2F5;
-	border-left: 3px solid var(--zkc-primary);
-	border-radius: 12px;
-	padding: 14px 18px;
+	border-radius: 20px;
+	background: var(--zkc-card);
+	padding: 20px;
 	margin: 16px 0;
 	font-size: 14px;
+	line-height: 20px;
 }
 
-.zkc-note h4,
-.zkc-rich h4 {
-	color: var(--zkc-heading);
-	margin: 0 0 6px;
-	font-size: 15px;
-	font-weight: 600;
-}
-
-.zkc-badge-box {
-	border: 1px solid var(--zkc-border);
-	border-left: 3px solid var(--zkc-primary);
-	border-radius: 12px;
-	padding: 14px 18px;
-	margin-bottom: 16px;
-}
-
-.zkc-badge-box p {
-	margin: 6px 0 0;
-	color: var(--zkc-heading);
-}
-
-/* With a payment agreement the news is good, without it the visitor has work
- * to do — the two states are colour-coded like the reference app. */
-.zkc-badge-ok {
-	border-color: rgba(45, 150, 105, .3);
-	border-left-color: #2D9669;
-	background: rgba(45, 150, 105, .07);
-}
-
-.zkc-badge-alert {
-	border-color: rgba(232, 117, 107, .3);
-	border-left-color: var(--zkc-primary);
-	background: rgba(232, 117, 107, .07);
-}
-
-.zkc-badge-kicker {
-	font-size: 11px;
-	font-weight: 600;
-	text-transform: uppercase;
-	letter-spacing: .1em;
-	color: var(--zkc-muted);
-}
-
-/* -------------------------------------------------------------------- hero */
-
-.zkc-hero {
-	background: var(--zkc-dark);
-	border-radius: 18px;
-	padding: clamp(24px, 4vw, 40px);
-	text-align: center;
-	margin-bottom: 26px;
-}
-
-.zkc-hero-kicker {
-	font-size: 12px;
-	font-weight: 600;
-	text-transform: uppercase;
-	letter-spacing: .2em;
-	color: rgba(255, 255, 255, .55);
-}
-
-.zkc .zkc-hero-title {
-	color: #fff;
-	font-size: clamp(19px, 2.4vw, 24px);
-	font-weight: 600;
-	margin: 8px 0 0;
-}
-
-.zkc-hero-pct {
-	color: var(--zkc-primary);
-	font-size: clamp(44px, 7vw, 60px);
-	font-weight: 700;
-	line-height: 1;
-	margin-top: 16px;
-}
-
-.zkc-hero-basis {
-	margin-top: 8px;
+.zkc-panel-kicker {
 	font-size: 14px;
-	color: rgba(255, 255, 255, .7);
-}
-
-.zkc-hero-estimate {
-	display: inline-block;
-	background: rgba(255, 255, 255, .1);
-	border-radius: 12px;
-	padding: 16px 32px;
-	margin-top: 24px;
-}
-
-.zkc-hero-amount {
-	color: #fff;
-	font-size: 24px;
-	font-weight: 600;
-}
-
-.zkc-hero-note {
-	margin-top: 2px;
-	font-size: 12px;
-	color: rgba(255, 255, 255, .6);
-}
-
-.zkc-hero-policy-note {
-	max-width: 640px;
-	margin: 20px auto 0;
-	font-size: 14px;
-	color: rgba(255, 255, 255, .7);
-}
-
-/* --------------------------------------------------------------- accordion */
-
-.zkc-accordion {
-	border: 1px solid var(--zkc-border);
-	border-radius: 12px;
-	padding: 0 18px;
-	margin: 16px 0;
-}
-
-.zkc-accordion summary {
-	cursor: pointer;
-	padding: 14px 0;
+	line-height: 20px;
 	font-weight: 500;
-	color: var(--zkc-heading);
+	color: var(--zkc-muted);
 }
 
-.zkc-accordion h4 {
+.zkc .zkc-h3 {
+	font-weight: 600;
+	line-height: 1.25;
+	margin: 0;
+}
+
+.zkc-text-sm { font-size: 14px; line-height: 20px; margin: 4px 0 0; }
+
+.zkc-list { margin: 8px 0 0; padding-left: 20px; font-size: 14px; line-height: 20px; }
+.zkc-list li { margin-bottom: 4px; }
+
+.zkc-list-spaced {
 	margin-top: 12px;
 }
 
-.zkc-accordion p {
-	margin-bottom: 14px;
+.zkc-note-sm {
+	margin: 4px 0 0;
+	font-size: 14px;
+	line-height: 20px;
+	color: var(--zkc-muted);
+}
+
+/* Content under a hero: the reference uses `mt-6 space-y-4`. */
+.zkc-body {
+	margin-top: 24px;
+	display: grid;
+	gap: 16px;
+	font-size: 14px;
+}
+
+/* Same rhythm, but directly under a step header (which already has 24px). */
+.zkc-body-flat {
+	display: grid;
+	gap: 16px;
+}
+
+.zkc-body > *,
+.zkc-body-flat > * {
+	margin: 0;
+}
+
+/* Bullet list with coral dots (used in the hero cards). */
+.zkc-dotlist {
+	list-style: none;
+	margin: 12px 0 0;
+	padding: 0;
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+	font-size: 14px;
+}
+
+.zkc-dotlist li {
+	display: flex;
+	align-items: flex-start;
+	gap: 12px;
+}
+
+.zkc-dotlist li::before {
+	content: "";
+	margin-top: 9px;
+	width: 8px;
+	height: 8px;
+	flex-shrink: 0;
+	border-radius: 50%;
+	background: var(--zkc-primary);
+}
+
+/* Icon card: circle icon + title + text. */
+.zkc-item {
+	display: flex;
+	min-width: 0;
+	align-items: flex-start;
+	gap: 16px;
+	border: 1px solid var(--zkc-border);
+	border-radius: 16px;
+	background: var(--zkc-card);
+	padding: 16px 20px;
+}
+
+.zkc-item-icon {
+	display: grid;
+	place-items: center;
+	height: 40px;
+	width: 40px;
+	flex-shrink: 0;
+	border-radius: 50%;
+	background: var(--zkc-primary-soft);
+	color: var(--zkc-primary);
+}
+
+.zkc-item-icon svg { width: 20px; height: 20px; }
+
+.zkc-item-body { min-width: 0; }
+
+.zkc-item-title { font-weight: 600; }
+
+.zkc-item-text { 
+	margin: 4px 0 0; font-size: 14px; line-height: 20px; 
+}
+
+.zkc-item-text a {
+	text-decoration: underline !important;
+}
+
+/* Numbered step: coral number + title + text on the cream surface. */
+.zkc-num-item {
+	display: flex;
+	min-width: 0;
+	align-items: flex-start;
+	gap: 16px;
+	border-radius: 16px;
+	background: var(--zkc-secondary);
+	padding: 16px 20px;
+}
+
+.zkc-num {
+	display: grid;
+	place-items: center;
+	height: 36px;
+	width: 36px;
+	flex-shrink: 0;
+	border-radius: 50%;
+	background: var(--zkc-primary);
+	color: #fff;
+	font-size: 14px;
+	font-weight: 600;
+}
+
+.zkc-stack { display: grid; gap: 12px; }
+
+.zkc-stack-link { margin-top: 16px; }
+
+/* Warning box ("Let op"). */
+.zkc-warn {
+	border-radius: 16px;
+	background: var(--zkc-warning-soft);
+	padding: 16px;
+	margin-top: 16px;
+	font-size: 14px;
+	line-height: 20px;
+}
+
+.zkc-warn-label { font-weight: 600; }
+
+.zkc-warn-text { margin-top: 4px; color: #623512; }
+
+/* Themes and Elementor kits often strip link underlines; the reference
+ * underlines every inline link, so these must win. */
+.zkc .zkc-warn-text a {
+	color: var(--zkc-primary) !important;
+	font-size: inherit !important;
+	line-height: inherit !important;
+	font-weight: 500;
+	text-decoration: underline !important;
+	text-underline-offset: 4px;
+}
+
+/* -------------------------------------------------------------- hero cards */
+
+.zkc-hero {
+	border-radius: 16px;
+	background: var(--zkc-secondary);
+	padding: 24px;
+}
+
+.zkc-hero-kicker {
+	font-size: 14px;
+	font-weight: 500;
+	color: var(--zkc-secondary-fg);
+}
+
+.zkc .zkc-hero-amount {
+	margin-top: 8px;
+	font-size: 36px;
+	line-height: 1;
+	font-weight: 600;
+	line-height: 1;
+}
+
+.zkc .zkc-hero-pct {
+	margin-top: 8px;
+	font-size: 48px;
+	line-height: 1;
+	font-weight: 600;
+	line-height: 1;
+	color: var(--zkc-success);
+}
+
+.zkc-hero-amount-uncovered { color: var(--zkc-uncovered); }
+
+.zkc-hero-note { margin: 8px 0 0; font-size: 14px; }
+
+.zkc-hero-card-first {
+	margin-top: 0;
+}
+
+.zkc-hero-card {
+	margin-top: 24px;
+	border-radius: var(--zkc-radius);
+	background: var(--zkc-card);
+	padding: 16px 20px;
+}
+
+.zkc-hero-card-title { font-size: 14px; font-weight: 500; }
+
+/* Step 6 rekenvoorbeeld rows. */
+.zkc-calc-rows { margin-top: 16px; display: grid; gap: 12px; }
+
+.zkc-calc-row {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) auto;
+	gap: 4px 16px;
+}
+
+.zkc-calc-row-total {
+	border-top: 1px solid var(--zkc-border);
+	padding-top: 12px;
+	font-weight: 600;
+}
+
+.zkc-calc-label { min-width: 0; }
+
+.zkc-calc-invoice {
+	display: block;
+	font-size: 12px;
+	font-weight: 400;
+	color: var(--zkc-muted);
+}
+
+.zkc-calc-amounts {
+	text-align: right;
+	font-size: 14px;
+	font-variant-numeric: tabular-nums;
+	overflow-wrap: anywhere;
+}
+
+.zkc-calc-in { color: var(--zkc-success); }
+
+.zkc-calc-out {
+	display: block;
+	margin-top: 2px;
+	font-size: 12px;
+	font-weight: 400;
+	color: var(--zkc-uncovered);
+}
+
+/* "En het deel dat niet wordt vergoed?" panel. */
+.zkc-uncovered-panel {
+	margin-top: 24px;
+	border: 1px solid color-mix(in srgb, var(--zkc-uncovered) 30%, transparent);
+	border-radius: 16px;
+	background: var(--zkc-uncovered-soft);
+	padding: 20px 24px;
+}
+
+.zkc-uncovered-amount {
+	font-weight: 600;
+	color: var(--zkc-uncovered);
 }
 
 /* -------------------------------------------------------------------- rich */
 
-.zkc-rich p {
-	margin: 0 0 12px;
+.zkc-rich p { margin: 0 0 12px; }
+.zkc-rich p:last-child { margin-bottom: 0; }
+.zkc-rich ul { margin: 0 0 12px; padding-left: 20px; }
+.zkc-rich li { margin-bottom: 6px; }
+
+/* Elementor kits restyle every `a` (color, font-size) after this sheet
+ * loads, so inline links must pin their own values. */
+.zkc .zkc-rich a,
+.zkc .zkc-item-text a,
+.zkc .zkc-panel a,
+.zkc a.zkc-inline-link {
+	color: var(--zkc-primary) !important;
+	font-size: inherit !important;
+	line-height: inherit !important;
+	font-weight: 500;
+	text-underline-offset: 4px;
 }
 
-.zkc-rich p:last-child {
-	margin-bottom: 0;
-}
+/* ---------------------------------------------------------------- nav bar */
 
-.zkc-rich ul {
-	margin: 0 0 12px;
-	padding-left: 20px;
-}
-
-.zkc-rich li {
-	margin-bottom: 6px;
-}
-
-.zkc-rich a {
-	color: var(--zkc-primary);
-	text-decoration: underline;
-	text-underline-offset: 3px;
-}
-
-.zkc-list {
-	margin: 0;
-	padding-left: 20px;
-}
-
-.zkc-list li {
-	margin-bottom: 6px;
-}
-
-/* --------------------------------------------------------------------- nav */
-
-.zkc-nav {
+.zkc-navbar {
 	display: flex;
+	flex-direction: column;
+	gap: 12px;
+	border-top: 1px solid var(--zkc-border);
+	padding: 16px 0 0;
+	margin-top: 8px;
+}
+
+.zkc-nav-actions {
+	display: flex;
+	align-items: center;
 	justify-content: space-between;
+	gap: 12px;
+	min-width: 0;
+}
+
+@media (min-width: 640px) {
+	.zkc-navbar {
+		display: grid;
+		grid-template-columns: auto minmax(0, 1fr) auto;
+		align-items: center;
+		gap: 24px;
+		min-height: 80px;
+		padding: 0;
+	}
+
+	.zkc-nav-actions { display: contents; }
+	.zkc .zkc-nav-back { order: 1; }
+	.zkc-progress { order: 2; }
+	.zkc-nav-next,
+	.zkc-nav-spacer { order: 3; }
+}
+
+.zkc .zkc-nav-back {
+	display: inline-flex;
+	align-items: center;
+	gap: 8px;
+	background: none !important;
+	border: none !important;
+	box-shadow: none !important;
+	padding: 0 !important;
+	font: inherit;
+	font-size: 14px !important;
+	font-weight: 600;
+	color: var(--zkc-foreground) !important;
+	cursor: pointer;
+	justify-self: start;
+}
+
+.zkc .zkc-nav-back:hover { color: var(--zkc-primary) !important; }
+
+.zkc .zkc-nav-back:disabled { opacity: .3; cursor: default; }
+.zkc .zkc-nav-back:disabled:hover { color: var(--zkc-foreground) !important; }
+
+.zkc-progress {
+	display: flex;
 	align-items: center;
 	gap: 12px;
-	margin-top: 22px;
-	flex-wrap: wrap;
+	min-width: 0;
 }
 
-.zkc-nav-group {
+.zkc-segments {
 	display: flex;
-	gap: 10px;
-	align-items: center;
+	flex: 1;
+	min-width: 0;
+	gap: 6px;
 }
 
-.zkc .zkc-btn {
-	font: inherit;
+/* Visited segments are clickable shortcuts back to that step. */
+.zkc .zkc-seg {
+	height: 8px;
+	flex: 1;
+	min-width: 0;
+	border: none !important;
+	border-radius: 999px !important;
+	box-shadow: none !important;
+	padding: 0 !important;
+	background: var(--zkc-border) !important;
+	cursor: default;
+	transition: background .2s ease, height .15s ease;
+}
+
+.zkc .zkc-seg-on { background: var(--zkc-primary) !important; }
+
+.zkc .zkc-seg-jump { cursor: pointer; }
+
+.zkc .zkc-seg-jump:hover {
+	height: 12px;
+	background: var(--zkc-primary) !important;
+}
+
+.zkc .zkc-seg-jump:focus-visible {
+	outline: 2px solid var(--zkc-primary);
+	outline-offset: 2px;
+}
+
+.zkc-counter {
+	flex-shrink: 0;
+	font-size: 12px;
 	font-weight: 500;
-	border-radius: var(--zkc-btn-radius) !important;
-	padding: 12px 26px !important;
-	cursor: pointer;
-	transition: opacity .15s ease, background .15s ease, border-color .15s ease;
-	text-decoration: none !important;
-	display: inline-block;
-}
-
-.zkc .zkc-btn-primary {
-	background: var(--zkc-primary) !important;
-	border: 1px solid var(--zkc-primary) !important;
-	color: var(--zkc-btn-text) !important;
-}
-
-/* Fades rather than lifting: no shadow appears on hover, so the button keeps
- * its footprint and the row below it never reflows. */
-.zkc .zkc-btn-primary:hover,
-.zkc .zkc-btn-primary:focus-visible {
-	background: var(--zkc-primary) !important;
-	opacity: .9;
-	box-shadow: none !important;
-	outline: none;
-	color: var(--zkc-btn-text) !important;
-}
-
-.zkc .zkc-btn-ghost {
-	background: var(--zkc-card-bg) !important;
-	border: 1px solid var(--zkc-border) !important;
-	color: var(--zkc-heading) !important;
-	box-shadow: none !important;
-}
-
-.zkc .zkc-btn-ghost:hover,
-.zkc .zkc-btn-ghost:focus-visible {
-	background: var(--zkc-page-bg) !important;
-	border-color: var(--zkc-border) !important;
-	color: var(--zkc-heading) !important;
-	outline: none;
-}
-
-/* ------------------------------------------------------------------- intro */
-
-.zkc-intro {
-	text-align: center;
-	padding: 28px 8px;
-}
-
-.zkc-intro-title {
-	font-size: clamp(30px, 4.4vw, 42px);
-}
-
-.zkc-intro-text {
-	max-width: 460px;
-	margin: 0 auto 24px;
-}
-
-/* ------------------------------------------------------------------ result */
-
-.zkc-result-head {
-	text-align: center;
-	margin-bottom: 8px;
-}
-
-.zkc-avg {
-	text-align: center;
-	padding: 24px;
-}
-
-.zkc-avg-amount {
-	color: var(--zkc-heading);
-	font-size: clamp(28px, 4vw, 38px);
-	font-weight: 700;
-	margin-bottom: 8px;
-}
-
-.zkc-split {
-	display: flex;
-	border-radius: 10px;
-	overflow: hidden;
-	margin: 18px 0;
-	min-height: 44px;
-}
-
-.zkc-split-left,
-.zkc-split-right {
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	color: #fff;
-	font-size: 13px;
-	font-weight: 600;
-	min-width: 44px;
-}
-
-.zkc-split-left {
-	background: var(--zkc-primary);
-}
-
-.zkc-split-right {
-	background: var(--zkc-dark);
-}
-
-.zkc-legend {
-	display: grid;
-	grid-template-columns: 1fr 1fr;
-	gap: 14px;
-	text-align: left;
-}
-
-.zkc-legend-item {
-	border: 1px solid var(--zkc-border);
-	border-radius: 12px;
-	padding: 14px 16px;
-}
-
-.zkc-dot::before {
-	content: "";
-	display: inline-block;
-	width: 9px;
-	height: 9px;
-	border-radius: 50%;
-	margin-right: 8px;
-	vertical-align: 1px;
-}
-
-.zkc-dot-primary::before {
-	background: var(--zkc-primary);
-}
-
-.zkc-dot-dark::before {
-	background: var(--zkc-dark);
-}
-
-.zkc-own {
-	background: #EEF0F3;
-	border-radius: 16px;
-	padding: 22px;
-	margin: 18px 0;
-}
-
-.zkc-own-row {
-	display: flex;
-	justify-content: space-between;
-	align-items: center;
-	gap: 16px;
-	background: var(--zkc-card-bg);
-	border-radius: 12px;
-	padding: 14px 18px;
-	margin-bottom: 10px;
-}
-
-.zkc-own-row strong {
-	color: var(--zkc-heading);
-	display: block;
-}
-
-.zkc-own-sub {
-	font-size: 13px;
 	color: var(--zkc-muted);
-	display: block;
 }
 
-.zkc-own-amount {
-	font-weight: 700;
-	color: var(--zkc-heading);
+.zkc-nav-next { justify-self: end; max-width: 100%; }
+
+.zkc-nav-next span:first-child {
+	overflow: hidden;
+	text-overflow: ellipsis;
 	white-space: nowrap;
 }
 
-.zkc-own-total {
-	background: var(--zkc-dark);
-	color: #fff;
-	margin-bottom: 0;
+/* ----------------------------------------------------------------- result */
+
+.zkc-result { padding-bottom: 16px; }
+
+.zkc-r-head { display: grid; gap: 32px; }
+
+@media (min-width: 1024px) {
+	.zkc-r-head {
+		grid-template-columns: minmax(0, 1fr) 34%;
+		align-items: center;
+	}
 }
 
-.zkc-own-total .zkc-own-amount {
-	color: #fff;
+.zkc .zkc-r-title {
+	font-size: 30px;
+	line-height: 36px;
+	font-weight: 600;
+	margin-top: 12px;
+}
+
+.zkc-r-intro { margin: 16px 0 0; max-width: 36rem; }
+
+.zkc-r-media { display: flex; align-items: center; justify-content: center; }
+
+.zkc-r-invoice {
+	margin-top: 32px;
+	border-radius: 20px;
+	background: var(--zkc-secondary);
+	padding: 24px;
+}
+
+.zkc .zkc-r-invoice-title {
 	font-size: 20px;
+	line-height: 28px;
+	font-weight: 600;
 }
 
-.zkc-summary {
-	border-left: 3px solid var(--zkc-primary);
-	padding: 4px 0 4px 16px;
-	margin: 18px 0 0;
-	font-size: 15px;
-}
-
-.zkc-summary strong {
-	color: var(--zkc-heading);
-}
-
-.zkc-disclaimer {
-	font-size: 11px;
-}
-
-/* Shown when the visitor answered "Ik weet het niet" somewhere, so the
- * numbers above are a range or an estimate rather than a calculation. */
-.zkc-warning {
-	border: 1px solid rgba(229, 163, 59, .4);
-	background: rgba(229, 163, 59, .1);
-	border-radius: 10px;
-	padding: 12px 14px;
-	margin-top: 14px;
+.zkc-r-invoice-text {
+	margin: 8px 0 0;
+	max-width: 48rem;
 	font-size: 14px;
-	color: var(--zkc-heading);
+	line-height: 20px;
 }
 
-.zkc-nav-result {
-	margin-top: 26px;
+.zkc-splitbar {
+	display: flex;
+	height: 56px;
+	width: 100%;
+	overflow: hidden;
+	border-radius: 16px;
+	margin-top: 24px;
+}
+
+.zkc-splitbar > div {
+	display: flex;
+	align-items: center;
 	justify-content: center;
+	min-width: 0;
+	overflow: hidden;
+	font-size: 12px;
+	font-weight: 600;
+	color: #fff;
 }
 
-.zkc-result-back {
+.zkc-splitbar > div > span {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	padding: 0 4px;
+}
+
+@media (min-width: 640px) {
+	.zkc-splitbar > div { font-size: 14px; }
+}
+
+.zkc-split-reimb { background: var(--zkc-primary); }
+
+.zkc-split-uncertain {
+	background: repeating-linear-gradient(135deg, var(--zkc-primary) 0 8px, var(--zkc-goodwill) 8px 16px);
+}
+
+.zkc-split-waived { background: var(--zkc-goodwill); }
+
+.zkc-r-legend {
+	margin-top: 20px;
+	display: grid;
+	gap: 16px;
+}
+
+@media (min-width: 640px) {
+	.zkc-r-legend { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+.zkc-r-legend-item {
+	display: flex;
+	align-items: flex-start;
+	gap: 12px;
+	border-radius: 16px;
+	background: var(--zkc-card);
+	padding: 16px;
+}
+
+.zkc-legend-dot {
+	margin-top: 6px;
+	width: 12px;
+	height: 12px;
+	flex-shrink: 0;
+	border-radius: 50%;
+}
+
+.zkc-legend-dot-reimb { background: var(--zkc-primary); }
+.zkc-legend-dot-waived { background: var(--zkc-goodwill); }
+
+.zkc-r-legend-title { font-weight: 500; }
+
+/* Result breakdown table. */
+.zkc-r-table-wrap { margin-top: 20px; overflow-x: auto; }
+
+.zkc-r-table {
+	width: 100%;
+	/* The reference uses table-fixed with an explicit colgroup, so the four
+	 * columns keep their proportions instead of sizing to content. */
+	table-layout: fixed;
+	border-collapse: separate;
+	border-spacing: 0;
+	font-size: 14px;
+}
+
+.zkc-r-table th {
+	border: 0 !important;
+	background: none !important;
+	padding: 0 16px 8px;
+	font-size: 12px;
+	line-height: 16px;
+	font-weight: 700;
+	color: var(--zkc-secondary-fg);
+	text-align: right;
+	vertical-align: bottom;
+}
+
+.zkc-r-table th:first-child { text-align: left; }
+
+.zkc-r-table tbody tr {
+	background: var(--zkc-card);
+}
+
+.zkc-r-table td {
+	padding: 12px 16px;
+	text-align: right;
+	line-height: 20px;
+	font-variant-numeric: tabular-nums;
+	overflow-wrap: anywhere;
+	border: 0 !important;
+	border-bottom: 1px solid var(--zkc-border) !important;
+	/* The row background lives on the tr; themes must not tint the cells. */
+	background: none !important;
+}
+
+.zkc-r-table td:first-child {
+	text-align: left;
+	font-weight: 500;
+}
+
+.zkc-r-table tr:last-child td {
+	border-bottom: 0 !important;
+	font-weight: 600;
+}
+
+.zkc-r-table tr:first-child td:first-child { border-top-left-radius: 16px; }
+.zkc-r-table tr:first-child td:last-child { border-top-right-radius: 16px; }
+.zkc-r-table tr:last-child td:first-child { border-bottom-left-radius: 16px; }
+.zkc-r-table tr:last-child td:last-child { border-bottom-right-radius: 16px; }
+
+.zkc-cell-cost { color: var(--zkc-muted); }
+.zkc-cell-in { color: var(--zkc-primary); }
+.zkc-cell-out { color: var(--zkc-goodwill); }
+
+.zkc-r-note {
 	margin-top: 16px;
-	text-align: center;
+	border-radius: 16px;
+	background: var(--zkc-card);
+	padding: 16px;
+	font-size: 14px;
+	line-height: 20px;
 }
 
-/* -------------------------------------------------------------- responsive */
+.zkc-r-grid {
+	margin-top: 24px;
+	display: grid;
+	gap: 24px;
+}
 
-@media (max-width: 640px) {
-	.zkc-tiles,
-	.zkc-amount-grid {
+@media (min-width: 1024px) {
+	.zkc-r-grid {
 		grid-template-columns: repeat(2, minmax(0, 1fr));
-	}
-
-	.zkc-legend {
-		grid-template-columns: 1fr;
-	}
-
-	.zkc-nav-result {
-		flex-direction: column-reverse;
 		align-items: stretch;
 	}
+}
 
-	.zkc-nav-result .zkc-btn {
-		width: 100%;
-		text-align: center;
+.zkc-r-own {
+	border-radius: 20px;
+	background: var(--zkc-primary-soft);
+	padding: 24px;
+}
+
+.zkc .zkc-r-own-total {
+	margin-top: 8px;
+	font-size: 30px;
+	line-height: 36px;
+	font-weight: 600;
+	font-variant-numeric: tabular-nums;
+	overflow-wrap: anywhere;
+}
+
+.zkc-r-rows {
+	margin: 24px 0 0;
+	border-top: 1px solid color-mix(in srgb, var(--zkc-border) 70%, transparent);
+	font-size: 14px;
+	line-height: 20px;
+}
+
+.zkc-r-row:last-child {
+	border-bottom: 0;
+}
+
+.zkc-r-row {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: flex-start;
+	justify-content: space-between;
+	gap: 4px 16px;
+	padding: 12px 0;
+	border-bottom: 1px solid color-mix(in srgb, var(--zkc-border) 70%, transparent);
+}
+
+.zkc-r-row dt { flex: 1; min-width: 0; margin: 0; }
+
+.zkc-r-row dd {
+	margin: 0;
+	flex-shrink: 0;
+	font-weight: 600;
+	font-variant-numeric: tabular-nums;
+}
+
+.zkc-r-row-label { display: block; font-weight: 500; }
+.zkc-r-row-sub { display: block; }
+
+.zkc-r-self {
+	border-radius: 20px;
+	border: 1px solid var(--zkc-border);
+	background: var(--zkc-card);
+	box-shadow: 0 1px 2px rgba(31, 36, 51, .04), 0 10px 30px rgba(31, 36, 51, .06);
+	padding: 24px;
+}
+
+.zkc-r-card-kicker {
+	font-size: 14px;
+	line-height: 20px;
+	font-weight: 500;
+	color: var(--zkc-secondary-fg);
+}
+
+.zkc .zkc-r-self-title {
+	margin-top: 8px;
+	font-size: 20px;
+	line-height: 28px;
+	font-weight: 600;
+}
+
+.zkc-r-steps {
+	margin: 16px 0 0;
+	padding-left: 20px;
+	font-size: 14px;
+	line-height: 20px;
+}
+
+.zkc-r-steps li { margin-bottom: 8px; }
+
+.zkc-r-footnotes { margin-top: 24px; }
+
+.zkc-r-disclaimer {
+	margin: 12px 0 0;
+	font-size: 12px;
+	line-height: 16px;
+	color: var(--zkc-muted);
+}
+
+.zkc-r-cta {
+	margin-top: 24px;
+	display: flex;
+	flex-direction: column;
+	gap: 24px;
+	border-radius: 20px;
+	background: var(--zkc-card);
+	box-shadow: 0 1px 2px rgba(31, 36, 51, .04), 0 10px 30px rgba(31, 36, 51, .06);
+	padding: 24px;
+}
+
+@media (min-width: 640px) {
+	.zkc-r-cta {
+		flex-direction: row;
+		align-items: center;
+		justify-content: space-between;
 	}
+}
+
+.zkc .zkc-r-cta-title {
+	font-size: 20px;
+	line-height: 28px;
+	font-weight: 600;
+}
+
+.zkc-r-cta .zkc-text-sm { max-width: 40rem; margin-top: 8px; }
+
+.zkc-r-cta-actions {
+	display: flex;
+	flex-direction: column;
+	align-items: flex-start;
+	gap: 12px;
+	flex-shrink: 0;
+}
+
+@media (min-width: 640px) {
+	.zkc-r-cta-actions { align-items: flex-end; }
+}
+
+.zkc-r-cta-links { display: flex; gap: 16px; }
+
+.zkc-r-cta-links .zkc-link { color: var(--zkc-foreground) !important; }
+.zkc-r-cta-links .zkc-link:hover { color: var(--zkc-primary) !important; }
+
+
+/* ------------------------------------------------- responsive type tiers
+ * The reference app uses Tailwind's discrete text-* utilities rather than
+ * fluid sizing, so the jumps happen exactly at sm (640px) and lg (1024px).
+ */
+@media (min-width: 640px) {
+	/* p-6 sm:p-8 */
+	.zkc-hero,
+	.zkc-r-invoice,
+	.zkc-r-own,
+	.zkc-r-self,
+	.zkc-r-cta            { padding: 32px; }
+
+	.zkc .zkc-intro-title { font-size: 48px; line-height: 1; }      /* text-5xl */
+	.zkc-intro-text       { font-size: 18px; line-height: 28px; }   /* text-lg  */
+	.zkc-bullets          { font-size: 16px; line-height: 24px; }   /* text-base */
+	.zkc .zkc-title       { font-size: 30px; line-height: 36px; }   /* text-3xl */
+	.zkc .zkc-hero-pct    { font-size: 60px; }                      /* text-6xl */
+	.zkc .zkc-hero-amount { font-size: 48px; }                      /* text-5xl */
+	.zkc .zkc-r-title     { font-size: 36px; line-height: 40px; }   /* text-4xl */
+	.zkc .zkc-r-invoice-title { font-size: 24px; line-height: 32px; }  /* text-2xl */
+	.zkc .zkc-r-cta-title     { font-size: 24px; line-height: 32px; }  /* text-2xl */
+	.zkc .zkc-r-own-total { font-size: 48px; line-height: 1; }      /* text-5xl */
+	.zkc-body             { font-size: 16px; }                      /* text-base */
+	.zkc-r-table th       { padding-left: 20px; padding-right: 20px; }   /* sm:px-5 */
+	.zkc-r-table td       { padding-left: 20px; padding-right: 20px; }   /* sm:px-5 */
+	.zkc-warn             { font-size: 16px; line-height: 24px; }   /* sm:text-base */
+
+	/* Panels: p-5 sm:p-6, text-sm sm:text-base. */
+	.zkc-panel                { padding: 24px; font-size: 16px; line-height: 24px; }
+	.zkc-panel .zkc-text-sm   { font-size: 16px; line-height: 24px; }
+}
+
+@media (min-width: 1024px) {
+	.zkc .zkc-intro-title { font-size: 60px; }                      /* text-6xl */
+	.zkc .zkc-r-title     { font-size: 48px; line-height: 1; }      /* text-5xl */
 }
