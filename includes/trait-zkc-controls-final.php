@@ -21,14 +21,14 @@ trait ZKC_Controls_Final {
 
 		$repeater->add_control( 'num_title', [
 			'label'       => esc_html__( 'Title', 'zorgkosten-calculator' ),
-			'description' => esc_html__( 'Use {insurer}.', 'zorgkosten-calculator' ),
+			'description' => esc_html__( 'Use {insurer}. Aliases: {invoice}/{factuur}/{traject} = {total}, {bijdrage} = {contribution}, {eigenrisico} = {deductible}, {verzekeraar} = {insurer}; {percentage}, {basis}, {vergoed}, {waived} are always available.', 'zorgkosten-calculator' ),
 			'type'        => Controls_Manager::TEXT,
 			'label_block' => true,
 		] );
 
 		$repeater->add_control( 'num_text', [
 			'label'       => esc_html__( 'Text', 'zorgkosten-calculator' ),
-			'description' => esc_html__( 'Use {insurer} and {declareLink}. Basic HTML is allowed.', 'zorgkosten-calculator' ),
+			'description' => esc_html__( 'Use {insurer} and {declareLink}. Basic HTML is allowed. Aliases: {invoice}/{factuur}/{traject} = {total}, {bijdrage} = {contribution}, {eigenrisico} = {deductible}, {verzekeraar} = {insurer}; {percentage}, {basis}, {vergoed}, {waived} are always available.', 'zorgkosten-calculator' ),
 			'type'        => Controls_Manager::TEXTAREA,
 			'rows'        => 4,
 		] );
@@ -56,7 +56,7 @@ trait ZKC_Controls_Final {
 
 		$this->add_control( 'step9_subtitle', [
 			'label'       => esc_html__( 'Subtitle', 'zorgkosten-calculator' ),
-			'description' => esc_html__( 'Use {insurer}.', 'zorgkosten-calculator' ),
+			'description' => esc_html__( 'Use {insurer}. Aliases: {invoice}/{factuur}/{traject} = {total}, {bijdrage} = {contribution}, {eigenrisico} = {deductible}, {verzekeraar} = {insurer}; {percentage}, {basis}, {vergoed}, {waived} are always available.', 'zorgkosten-calculator' ),
 			'type'        => Controls_Manager::TEXTAREA,
 			'rows'        => 4,
 			'default'     => 'Voor de start van de behandeling is mogelijk toestemming nodig van {insurer}. Dit wordt ook wel een machtiging genoemd. Voor diagnostiek is geen toestemming of machtiging nodig.',
@@ -77,7 +77,7 @@ trait ZKC_Controls_Final {
 
 		$this->add_control( 'step9_means', [
 			'label'       => esc_html__( '"What does that mean" list (one per line)', 'zorgkosten-calculator' ),
-			'description' => esc_html__( 'Use {insurer}.', 'zorgkosten-calculator' ),
+			'description' => esc_html__( 'Use {insurer}. Aliases: {invoice}/{factuur}/{traject} = {total}, {bijdrage} = {contribution}, {eigenrisico} = {deductible}, {verzekeraar} = {insurer}; {percentage}, {basis}, {vergoed}, {waived} are always available.', 'zorgkosten-calculator' ),
 			'type'        => Controls_Manager::TEXTAREA,
 			'rows'        => 6,
 			'default'     => "De diagnostiek kan gewoon starten, daarvoor is geen machtiging nodig.\nVoor start van behandeling is mogelijk toestemming nodig van {insurer}.\n{insurer} beslist over de aanvraag. Een machtiging betekent niet automatisch dat alle kosten volledig worden vergoed.",
@@ -99,7 +99,7 @@ trait ZKC_Controls_Final {
 
 		$this->add_control( 'step9_check_title', [
 			'label'       => esc_html__( '"Check with your insurer" heading', 'zorgkosten-calculator' ),
-			'description' => esc_html__( 'Use {insurer}. Only shown when the insurer has an authorization or declaration URL.', 'zorgkosten-calculator' ),
+			'description' => esc_html__( 'Use {insurer}. Only shown when the insurer has an authorization or declaration URL. Aliases: {invoice}/{factuur}/{traject} = {total}, {bijdrage} = {contribution}, {eigenrisico} = {deductible}, {verzekeraar} = {insurer}; {percentage}, {basis}, {vergoed}, {waived} are always available.', 'zorgkosten-calculator' ),
 			'type'        => Controls_Manager::TEXT,
 			'default'     => 'Controleer dit bij {insurer}',
 			'label_block' => true,
@@ -107,14 +107,14 @@ trait ZKC_Controls_Final {
 
 		$this->add_control( 'step9_check_text', [
 			'label'       => esc_html__( '"Check with your insurer" text', 'zorgkosten-calculator' ),
-			'description' => esc_html__( 'Use {insurer}.', 'zorgkosten-calculator' ),
+			'description' => esc_html__( 'Use {insurer}. Aliases: {invoice}/{factuur}/{traject} = {total}, {bijdrage} = {contribution}, {eigenrisico} = {deductible}, {verzekeraar} = {insurer}; {percentage}, {basis}, {vergoed}, {waived} are always available.', 'zorgkosten-calculator' ),
 			'type'        => Controls_Manager::TEXTAREA,
 			'default'     => 'Op de website van {insurer} leest u wanneer toestemming nodig is en hoe u die aanvraagt.',
 		] );
 
 		$this->add_control( 'step9_check_button', [
 			'label'       => esc_html__( 'Button text', 'zorgkosten-calculator' ),
-			'description' => esc_html__( 'Use {insurer}.', 'zorgkosten-calculator' ),
+			'description' => esc_html__( 'Use {insurer}. Aliases: {invoice}/{factuur}/{traject} = {total}, {bijdrage} = {contribution}, {eigenrisico} = {deductible}, {verzekeraar} = {insurer}; {percentage}, {basis}, {vergoed}, {waived} are always available.', 'zorgkosten-calculator' ),
 			'type'        => Controls_Manager::TEXT,
 			'default'     => 'Naar {insurer}',
 			'label_block' => true,
@@ -144,14 +144,14 @@ trait ZKC_Controls_Final {
 
 		$this->add_control( 'step10_subtitle_direct', [
 			'label'       => esc_html__( 'Subtitle – WITH payment agreement', 'zorgkosten-calculator' ),
-			'description' => esc_html__( 'Use {insurer}.', 'zorgkosten-calculator' ),
+			'description' => esc_html__( 'Use {insurer}. Aliases: {invoice}/{factuur}/{traject} = {total}, {bijdrage} = {contribution}, {eigenrisico} = {deductible}, {verzekeraar} = {insurer}; {percentage}, {basis}, {vergoed}, {waived} are always available.', 'zorgkosten-calculator' ),
 			'type'        => Controls_Manager::TEXTAREA,
 			'default'     => 'Bij {insurer} regelen wij het declareren voor u.',
 		] );
 
 		$this->add_control( 'step10_subtitle_self', [
 			'label'       => esc_html__( 'Subtitle – WITHOUT payment agreement', 'zorgkosten-calculator' ),
-			'description' => esc_html__( 'Use {insurer}.', 'zorgkosten-calculator' ),
+			'description' => esc_html__( 'Use {insurer}. Aliases: {invoice}/{factuur}/{traject} = {total}, {bijdrage} = {contribution}, {eigenrisico} = {deductible}, {verzekeraar} = {insurer}; {percentage}, {basis}, {vergoed}, {waived} are always available.', 'zorgkosten-calculator' ),
 			'type'        => Controls_Manager::TEXTAREA,
 			'default'     => 'Bij {insurer} dient u de factuur zelf in. Zo werkt dat stap voor stap.',
 		] );
@@ -229,7 +229,7 @@ trait ZKC_Controls_Final {
 
 		$this->add_control( 'step10_risk_direct', [
 			'label'       => esc_html__( 'Warning – WITH payment agreement', 'zorgkosten-calculator' ),
-			'description' => esc_html__( 'Use {insurer}.', 'zorgkosten-calculator' ),
+			'description' => esc_html__( 'Use {insurer}. Aliases: {invoice}/{factuur}/{traject} = {total}, {bijdrage} = {contribution}, {eigenrisico} = {deductible}, {verzekeraar} = {insurer}; {percentage}, {basis}, {vergoed}, {waived} are always available.', 'zorgkosten-calculator' ),
 			'type'        => Controls_Manager::TEXTAREA,
 			'rows'        => 4,
 			'default'     => 'Heeft u nog eigen risico openstaan? Dan verrekent {insurer} dat zelf met u. U ontvangt hiervoor geen factuur van ADHD Medisch Centrum. Het eigen risico valt niet onder de coulanceregeling.',
@@ -237,7 +237,7 @@ trait ZKC_Controls_Final {
 
 		$this->add_control( 'step10_risk_self', [
 			'label'       => esc_html__( 'Warning – WITHOUT payment agreement', 'zorgkosten-calculator' ),
-			'description' => esc_html__( 'Use {insurer}.', 'zorgkosten-calculator' ),
+			'description' => esc_html__( 'Use {insurer}. Aliases: {invoice}/{factuur}/{traject} = {total}, {bijdrage} = {contribution}, {eigenrisico} = {deductible}, {verzekeraar} = {insurer}; {percentage}, {basis}, {vergoed}, {waived} are always available.', 'zorgkosten-calculator' ),
 			'type'        => Controls_Manager::TEXTAREA,
 			'rows'        => 6,
 			'default'     => 'Is uw eigen risico nog niet volledig verbruikt? Dan zal {insurer} uw eigen risico verrekenen met onze factuur. {insurer} trekt dit bedrag af van de vergoeding en keert daardoor minder aan u uit. Het eigen risico betaalt u dan rechtstreeks aan ADHD Medisch Centrum. U hoeft het eigen risico dus niet óók nog aan {insurer} te betalen; u betaalt het maar één keer. Het eigen risico valt niet onder onze coulanceregeling.',

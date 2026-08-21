@@ -33,7 +33,7 @@ trait ZKC_Controls_Result {
 
 		$this->add_control( 'result_intro', [
 			'label'       => esc_html__( 'Intro', 'zorgkosten-calculator' ),
-			'description' => esc_html__( 'Use {total} and {insurer}.', 'zorgkosten-calculator' ),
+			'description' => esc_html__( 'Use {total} and {insurer}. Aliases: {invoice}/{factuur}/{traject} = {total}, {bijdrage} = {contribution}, {eigenrisico} = {deductible}, {verzekeraar} = {insurer}; {percentage}, {basis}, {vergoed}, {waived} are always available.', 'zorgkosten-calculator' ),
 			'type'        => Controls_Manager::TEXTAREA,
 			'rows'        => 4,
 			'default'     => 'Een volledig traject van diagnostiek en behandeling kost gemiddeld ± {total}. Hieronder ziet u wat {insurer} vergoedt, wat wij kwijtschelden en welk deel u zelf betaalt.',
@@ -48,7 +48,7 @@ trait ZKC_Controls_Result {
 
 		$this->add_control( 'result_invoice_title', [
 			'label'       => esc_html__( 'Panel title', 'zorgkosten-calculator' ),
-			'description' => esc_html__( 'Use {total}.', 'zorgkosten-calculator' ),
+			'description' => esc_html__( 'Use {total}. Aliases: {invoice}/{factuur}/{traject} = {total}, {bijdrage} = {contribution}, {eigenrisico} = {deductible}, {verzekeraar} = {insurer}; {percentage}, {basis}, {vergoed}, {waived} are always available.', 'zorgkosten-calculator' ),
 			'type'        => Controls_Manager::TEXT,
 			'default'     => 'Wat gebeurt er met de factuur van ± {total}?',
 			'label_block' => true,
@@ -70,7 +70,7 @@ trait ZKC_Controls_Result {
 
 		$this->add_control( 'result_reimbursed_label', [
 			'label'       => esc_html__( 'Reimbursed label', 'zorgkosten-calculator' ),
-			'description' => esc_html__( 'Use {insurer} and {amount}.', 'zorgkosten-calculator' ),
+			'description' => esc_html__( 'Use {insurer} and {amount}. Aliases: {invoice}/{factuur}/{traject} = {total}, {bijdrage} = {contribution}, {eigenrisico} = {deductible}, {verzekeraar} = {insurer}; {percentage}, {basis}, {vergoed}, {waived} are always available.', 'zorgkosten-calculator' ),
 			'type'        => Controls_Manager::TEXT,
 			'default'     => '{insurer} vergoedt {amount}',
 			'label_block' => true,
@@ -78,14 +78,14 @@ trait ZKC_Controls_Result {
 
 		$this->add_control( 'result_reimbursed_text', [
 			'label'       => esc_html__( 'Reimbursed description', 'zorgkosten-calculator' ),
-			'description' => esc_html__( 'Use {percentage} and {basis}.', 'zorgkosten-calculator' ),
+			'description' => esc_html__( 'Use {percentage} and {basis}. Aliases: {invoice}/{factuur}/{traject} = {total}, {bijdrage} = {contribution}, {eigenrisico} = {deductible}, {verzekeraar} = {insurer}; {percentage}, {basis}, {vergoed}, {waived} are always available.', 'zorgkosten-calculator' ),
 			'type'        => Controls_Manager::TEXTAREA,
 			'default'     => 'Dit deel wordt vergoed uit uw basisverzekering ({percentage} van het {basis}).',
 		] );
 
 		$this->add_control( 'result_waived_label', [
 			'label'       => esc_html__( 'Waived label', 'zorgkosten-calculator' ),
-			'description' => esc_html__( 'Use {amount}.', 'zorgkosten-calculator' ),
+			'description' => esc_html__( 'Use {amount}. Aliases: {invoice}/{factuur}/{traject} = {total}, {bijdrage} = {contribution}, {eigenrisico} = {deductible}, {verzekeraar} = {insurer}; {percentage}, {basis}, {vergoed}, {waived} are always available.', 'zorgkosten-calculator' ),
 			'type'        => Controls_Manager::TEXT,
 			'default'     => 'Wij schelden {amount} kwijt',
 			'label_block' => true,
@@ -148,7 +148,7 @@ trait ZKC_Controls_Result {
 
 		$this->add_control( 'result_range_note_policy', [
 			'label'       => esc_html__( 'Note: policy unknown (range shown)', 'zorgkosten-calculator' ),
-			'description' => esc_html__( 'Use {insurer} and {percentage}.', 'zorgkosten-calculator' ),
+			'description' => esc_html__( 'Use {insurer} and {percentage}. Aliases: {invoice}/{factuur}/{traject} = {total}, {bijdrage} = {contribution}, {eigenrisico} = {deductible}, {verzekeraar} = {insurer}; {percentage}, {basis}, {vergoed}, {waived} are always available.', 'zorgkosten-calculator' ),
 			'type'        => Controls_Manager::TEXTAREA,
 			'rows'        => 4,
 			'default'     => 'Omdat u niet weet welk type basisverzekering u heeft, rekenen wij met de laagste en hoogste vergoeding van {insurer} ({percentage}). Daarom ziet u hier een minimum- en maximumbedrag.',
@@ -170,7 +170,7 @@ trait ZKC_Controls_Result {
 
 		$this->add_control( 'result_own_text', [
 			'label'       => esc_html__( 'Card text', 'zorgkosten-calculator' ),
-			'description' => esc_html__( 'Use {total}.', 'zorgkosten-calculator' ),
+			'description' => esc_html__( 'Use {total}. Aliases: {invoice}/{factuur}/{traject} = {total}, {bijdrage} = {contribution}, {eigenrisico} = {deductible}, {verzekeraar} = {insurer}; {percentage}, {basis}, {vergoed}, {waived} are always available.', 'zorgkosten-calculator' ),
 			'type'        => Controls_Manager::TEXTAREA,
 			'rows'        => 4,
 			'default'     => 'Van een traject van ± {total} betaalt u alleen deze twee bedragen zelf. De rest wordt vergoed of door ons kwijtgescholden.',
@@ -199,7 +199,7 @@ trait ZKC_Controls_Result {
 
 		$this->add_control( 'result_deductible_text_direct', [
 			'label'       => esc_html__( 'Deductible row – WITH payment agreement', 'zorgkosten-calculator' ),
-			'description' => esc_html__( 'Use {insurer}.', 'zorgkosten-calculator' ),
+			'description' => esc_html__( 'Use {insurer}. Aliases: {invoice}/{factuur}/{traject} = {total}, {bijdrage} = {contribution}, {eigenrisico} = {deductible}, {verzekeraar} = {insurer}; {percentage}, {basis}, {vergoed}, {waived} are always available.', 'zorgkosten-calculator' ),
 			'type'        => Controls_Manager::TEXTAREA,
 			'rows'        => 3,
 			'default'     => 'verrekent {insurer} zelf met u, voor alle zorg uit de basisverzekering',
@@ -207,7 +207,7 @@ trait ZKC_Controls_Result {
 
 		$this->add_control( 'result_deductible_text_self', [
 			'label'       => esc_html__( 'Deductible row – WITHOUT payment agreement', 'zorgkosten-calculator' ),
-			'description' => esc_html__( 'Use {insurer}.', 'zorgkosten-calculator' ),
+			'description' => esc_html__( 'Use {insurer}. Aliases: {invoice}/{factuur}/{traject} = {total}, {bijdrage} = {contribution}, {eigenrisico} = {deductible}, {verzekeraar} = {insurer}; {percentage}, {basis}, {vergoed}, {waived} are always available.', 'zorgkosten-calculator' ),
 			'type'        => Controls_Manager::TEXTAREA,
 			'rows'        => 3,
 			'default'     => 'wordt door {insurer} ingehouden op de vergoeding en aan onze kant verrekend, dus u betaalt dit niet dubbel',
@@ -234,7 +234,7 @@ trait ZKC_Controls_Result {
 
 		$this->add_control( 'result_self_title_self', [
 			'label'       => esc_html__( 'Title – WITHOUT payment agreement', 'zorgkosten-calculator' ),
-			'description' => esc_html__( 'Use {insurer}.', 'zorgkosten-calculator' ),
+			'description' => esc_html__( 'Use {insurer}. Aliases: {invoice}/{factuur}/{traject} = {total}, {bijdrage} = {contribution}, {eigenrisico} = {deductible}, {verzekeraar} = {insurer}; {percentage}, {basis}, {vergoed}, {waived} are always available.', 'zorgkosten-calculator' ),
 			'type'        => Controls_Manager::TEXT,
 			'default'     => 'U dient de factuur zelf in bij {insurer}',
 			'label_block' => true,
@@ -242,7 +242,7 @@ trait ZKC_Controls_Result {
 
 		$this->add_control( 'result_self_steps', [
 			'label'       => esc_html__( 'Numbered steps (one per line)', 'zorgkosten-calculator' ),
-			'description' => esc_html__( 'Use {insurer}.', 'zorgkosten-calculator' ),
+			'description' => esc_html__( 'Use {insurer}. Aliases: {invoice}/{factuur}/{traject} = {total}, {bijdrage} = {contribution}, {eigenrisico} = {deductible}, {verzekeraar} = {insurer}; {percentage}, {basis}, {vergoed}, {waived} are always available.', 'zorgkosten-calculator' ),
 			'type'        => Controls_Manager::TEXTAREA,
 			'rows'        => 5,
 			'default'     => "U ontvangt van ons een declaratiefactuur.\nU dient deze in bij {insurer}, meestal via de app of het online portaal.\nU ontvangt de vergoeding van {insurer} en betaalt die binnen 14 dagen aan ons door.",
@@ -250,7 +250,7 @@ trait ZKC_Controls_Result {
 
 		$this->add_control( 'result_declare_button', [
 			'label'       => esc_html__( 'Declare button text', 'zorgkosten-calculator' ),
-			'description' => esc_html__( 'Use {insurer}. Shown when the insurer has a declaration URL.', 'zorgkosten-calculator' ),
+			'description' => esc_html__( 'Use {insurer}. Shown when the insurer has a declaration URL. Aliases: {invoice}/{factuur}/{traject} = {total}, {bijdrage} = {contribution}, {eigenrisico} = {deductible}, {verzekeraar} = {insurer}; {percentage}, {basis}, {vergoed}, {waived} are always available.', 'zorgkosten-calculator' ),
 			'type'        => Controls_Manager::TEXT,
 			'default'     => 'Declareren bij {insurer}',
 			'label_block' => true,
@@ -258,7 +258,7 @@ trait ZKC_Controls_Result {
 
 		$this->add_control( 'result_self_title_direct', [
 			'label'       => esc_html__( 'Title – WITH payment agreement', 'zorgkosten-calculator' ),
-			'description' => esc_html__( 'Use {insurer}.', 'zorgkosten-calculator' ),
+			'description' => esc_html__( 'Use {insurer}. Aliases: {invoice}/{factuur}/{traject} = {total}, {bijdrage} = {contribution}, {eigenrisico} = {deductible}, {verzekeraar} = {insurer}; {percentage}, {basis}, {vergoed}, {waived} are always available.', 'zorgkosten-calculator' ),
 			'type'        => Controls_Manager::TEXT,
 			'default'     => 'U hoeft niets in te dienen bij {insurer}',
 			'label_block' => true,
@@ -266,7 +266,7 @@ trait ZKC_Controls_Result {
 
 		$this->add_control( 'result_self_text_direct', [
 			'label'       => esc_html__( 'Text – WITH payment agreement', 'zorgkosten-calculator' ),
-			'description' => esc_html__( 'Use {insurer}.', 'zorgkosten-calculator' ),
+			'description' => esc_html__( 'Use {insurer}. Aliases: {invoice}/{factuur}/{traject} = {total}, {bijdrage} = {contribution}, {eigenrisico} = {deductible}, {verzekeraar} = {insurer}; {percentage}, {basis}, {vergoed}, {waived} are always available.', 'zorgkosten-calculator' ),
 			'type'        => Controls_Manager::TEXTAREA,
 			'rows'        => 4,
 			'default'     => 'Wij dienen de zorg rechtstreeks in bij {insurer}. U ontvangt van ons geen declaratiefactuur en hoeft zelf niets in te dienen. Alleen uw eigen risico verrekent {insurer} met u.',
@@ -281,7 +281,7 @@ trait ZKC_Controls_Result {
 
 		$this->add_control( 'result_machtiging_text', [
 			'label'       => esc_html__( 'Authorization warning text', 'zorgkosten-calculator' ),
-			'description' => esc_html__( 'Use {insurer}.', 'zorgkosten-calculator' ),
+			'description' => esc_html__( 'Use {insurer}. Aliases: {invoice}/{factuur}/{traject} = {total}, {bijdrage} = {contribution}, {eigenrisico} = {deductible}, {verzekeraar} = {insurer}; {percentage}, {basis}, {vergoed}, {waived} are always available.', 'zorgkosten-calculator' ),
 			'type'        => Controls_Manager::TEXTAREA,
 			'rows'        => 4,
 			'default'     => '{insurer} vraagt vaak een machtiging (toestemming) vóórdat de behandeling start. Regel dit op tijd, anders kan de vergoeding worden afgewezen.',
@@ -289,7 +289,7 @@ trait ZKC_Controls_Result {
 
 		$this->add_control( 'result_machtiging_link', [
 			'label'       => esc_html__( 'Authorization warning link text', 'zorgkosten-calculator' ),
-			'description' => esc_html__( 'Use {insurer}.', 'zorgkosten-calculator' ),
+			'description' => esc_html__( 'Use {insurer}. Aliases: {invoice}/{factuur}/{traject} = {total}, {bijdrage} = {contribution}, {eigenrisico} = {deductible}, {verzekeraar} = {insurer}; {percentage}, {basis}, {vergoed}, {waived} are always available.', 'zorgkosten-calculator' ),
 			'type'        => Controls_Manager::TEXT,
 			'default'     => 'Bekijk dit bij {insurer}',
 			'label_block' => true,

@@ -21,7 +21,7 @@ trait ZKC_Controls_Money {
 
 		$this->add_control( 'step6_hero_title', [
 			'label'       => esc_html__( 'Hero title', 'zorgkosten-calculator' ),
-			'description' => esc_html__( 'Use {insurer}.', 'zorgkosten-calculator' ),
+			'description' => esc_html__( 'Use {insurer}. Aliases: {invoice}/{factuur}/{traject} = {total}, {bijdrage} = {contribution}, {eigenrisico} = {deductible}, {verzekeraar} = {insurer}; {percentage}, {basis}, {vergoed}, {waived} are always available.', 'zorgkosten-calculator' ),
 			'type'        => Controls_Manager::TEXT,
 			'default'     => '{insurer} vergoedt naar verwachting',
 			'label_block' => true,
@@ -36,7 +36,7 @@ trait ZKC_Controls_Money {
 
 		$this->add_control( 'step6_hero_basis', [
 			'label'       => esc_html__( 'Line under the percentage', 'zorgkosten-calculator' ),
-			'description' => esc_html__( 'Use {basis}.', 'zorgkosten-calculator' ),
+			'description' => esc_html__( 'Use {basis}. Aliases: {invoice}/{factuur}/{traject} = {total}, {bijdrage} = {contribution}, {eigenrisico} = {deductible}, {verzekeraar} = {insurer}; {percentage}, {basis}, {vergoed}, {waived} are always available.', 'zorgkosten-calculator' ),
 			'type'        => Controls_Manager::TEXT,
 			'default'     => 'van het {basis}',
 			'label_block' => true,
@@ -75,7 +75,7 @@ trait ZKC_Controls_Money {
 
 		$this->add_control( 'step6_invoice_label', [
 			'label'       => esc_html__( 'Invoice line under each row', 'zorgkosten-calculator' ),
-			'description' => esc_html__( 'Use {amount}.', 'zorgkosten-calculator' ),
+			'description' => esc_html__( 'Use {amount}. Aliases: {invoice}/{factuur}/{traject} = {total}, {bijdrage} = {contribution}, {eigenrisico} = {deductible}, {verzekeraar} = {insurer}; {percentage}, {basis}, {vergoed}, {waived} are always available.', 'zorgkosten-calculator' ),
 			'type'        => Controls_Manager::TEXT,
 			'default'     => 'factuur ± {amount}',
 			'label_block' => true,
@@ -114,7 +114,7 @@ trait ZKC_Controls_Money {
 
 		$this->add_control( 'step6_uncovered_text', [
 			'label'       => esc_html__( 'Text', 'zorgkosten-calculator' ),
-			'description' => esc_html__( 'Use {amount} for the highlighted non-reimbursed amount.', 'zorgkosten-calculator' ),
+			'description' => esc_html__( 'Use {amount} for the highlighted non-reimbursed amount. Aliases: {invoice}/{factuur}/{traject} = {total}, {bijdrage} = {contribution}, {eigenrisico} = {deductible}, {verzekeraar} = {insurer}; {percentage}, {basis}, {vergoed}, {waived} are always available.', 'zorgkosten-calculator' ),
 			'type'        => Controls_Manager::TEXTAREA,
 			'rows'        => 4,
 			'default'     => 'Dat betaalt u niet zelf. Van de {amount} die niet wordt vergoed, schelden wij het grootste deel kwijt. In de volgende stap leest u hoe onze coulanceregeling werkt.',
@@ -151,7 +151,7 @@ trait ZKC_Controls_Money {
 
 		$this->add_control( 'step7_hero_note', [
 			'label'       => esc_html__( 'Line under the amount', 'zorgkosten-calculator' ),
-			'description' => esc_html__( 'Use {total} for the average trajectory amount.', 'zorgkosten-calculator' ),
+			'description' => esc_html__( 'Use {total} for the average trajectory amount. Aliases: {invoice}/{factuur}/{traject} = {total}, {bijdrage} = {contribution}, {eigenrisico} = {deductible}, {verzekeraar} = {insurer}; {percentage}, {basis}, {vergoed}, {waived} are always available.', 'zorgkosten-calculator' ),
 			'type'        => Controls_Manager::TEXTAREA,
 			'default'     => 'niet vergoed bij een traject van ± {total}, dit bedrag betaalt u dus niet zelf',
 		] );
@@ -185,7 +185,7 @@ trait ZKC_Controls_Money {
 
 		$this->add_control( 'step7_asks_direct', [
 			'label'       => esc_html__( 'Conditions – WITH payment agreement (one per line)', 'zorgkosten-calculator' ),
-			'description' => esc_html__( 'Use {contribution} and {insurer}.', 'zorgkosten-calculator' ),
+			'description' => esc_html__( 'Use {contribution} and {insurer}. Aliases: {invoice}/{factuur}/{traject} = {total}, {bijdrage} = {contribution}, {eigenrisico} = {deductible}, {verzekeraar} = {insurer}; {percentage}, {basis}, {vergoed}, {waived} are always available.', 'zorgkosten-calculator' ),
 			'type'        => Controls_Manager::TEXTAREA,
 			'rows'        => 6,
 			'default'     => "De eenmalige bijdrage van {contribution} binnen de betalingstermijn betalen.\nUw verplichte en eventuele vrijwillige eigen risico betalen.\nOverige facturen binnen 14 dagen betalen.\nMeewerken aan machtigingsaanvragen en gevraagde gegevens tijdig aanleveren.",
@@ -193,7 +193,7 @@ trait ZKC_Controls_Money {
 
 		$this->add_control( 'step7_asks_self', [
 			'label'       => esc_html__( 'Conditions – WITHOUT payment agreement (one per line)', 'zorgkosten-calculator' ),
-			'description' => esc_html__( 'Use {contribution} and {insurer}.', 'zorgkosten-calculator' ),
+			'description' => esc_html__( 'Use {contribution} and {insurer}. Aliases: {invoice}/{factuur}/{traject} = {total}, {bijdrage} = {contribution}, {eigenrisico} = {deductible}, {verzekeraar} = {insurer}; {percentage}, {basis}, {vergoed}, {waived} are always available.', 'zorgkosten-calculator' ),
 			'type'        => Controls_Manager::TEXTAREA,
 			'rows'        => 9,
 			'default'     => "De eenmalige bijdrage van {contribution} binnen de betalingstermijn betalen.\nDeclaratiefacturen tijdig bij {insurer} indienen.\nVergoedingenoverzichten tijdig en volledig aan ons sturen.\nVergoedingen die op uw rekening worden gestort binnen 14 dagen doorbetalen.\nUw verplichte en eventuele vrijwillige eigen risico betalen.\nOverige facturen binnen 14 dagen betalen.\nMeewerken aan declaraties en machtigingsaanvragen en gevraagde gegevens tijdig aanleveren.",
@@ -220,7 +220,7 @@ trait ZKC_Controls_Money {
 
 		$this->add_control( 'step7_excl_direct', [
 			'label'       => esc_html__( 'Exclusions – WITH payment agreement (one per line)', 'zorgkosten-calculator' ),
-			'description' => esc_html__( 'Use {contribution}.', 'zorgkosten-calculator' ),
+			'description' => esc_html__( 'Use {contribution}. Aliases: {invoice}/{factuur}/{traject} = {total}, {bijdrage} = {contribution}, {eigenrisico} = {deductible}, {verzekeraar} = {insurer}; {percentage}, {basis}, {vergoed}, {waived} are always available.', 'zorgkosten-calculator' ),
 			'type'        => Controls_Manager::TEXTAREA,
 			'rows'        => 6,
 			'default'     => "De eenmalige bijdrage van {contribution}.\nHet verplichte en eventuele vrijwillige eigen risico.\nNo-showfacturen.\nZorg die niet onder de verzekerde zorg valt en waarover u vooraf bent geïnformeerd.\nKosten die niet worden vergoed doordat gevraagde informatie of medewerking ontbreekt.",
@@ -228,7 +228,7 @@ trait ZKC_Controls_Money {
 
 		$this->add_control( 'step7_excl_self', [
 			'label'       => esc_html__( 'Exclusions – WITHOUT payment agreement (one per line)', 'zorgkosten-calculator' ),
-			'description' => esc_html__( 'Use {contribution}.', 'zorgkosten-calculator' ),
+			'description' => esc_html__( 'Use {contribution}. Aliases: {invoice}/{factuur}/{traject} = {total}, {bijdrage} = {contribution}, {eigenrisico} = {deductible}, {verzekeraar} = {insurer}; {percentage}, {basis}, {vergoed}, {waived} are always available.', 'zorgkosten-calculator' ),
 			'type'        => Controls_Manager::TEXTAREA,
 			'rows'        => 7,
 			'default'     => "De eenmalige bijdrage van {contribution}.\nHet verplichte en eventuele vrijwillige eigen risico.\nNo-showfacturen.\nBedragen die uw zorgverzekeraar rechtstreeks aan u heeft uitbetaald.\nZorg die niet onder de verzekerde zorg valt en waarover u vooraf bent geïnformeerd.\nKosten die niet worden vergoed doordat gevraagde informatie of medewerking ontbreekt.",
@@ -251,7 +251,7 @@ trait ZKC_Controls_Money {
 
 		$this->add_control( 'step8_subtitle', [
 			'label'       => esc_html__( 'Subtitle', 'zorgkosten-calculator' ),
-			'description' => esc_html__( 'Use {contribution}.', 'zorgkosten-calculator' ),
+			'description' => esc_html__( 'Use {contribution}. Aliases: {invoice}/{factuur}/{traject} = {total}, {bijdrage} = {contribution}, {eigenrisico} = {deductible}, {verzekeraar} = {insurer}; {percentage}, {basis}, {vergoed}, {waived} are always available.', 'zorgkosten-calculator' ),
 			'type'        => Controls_Manager::TEXTAREA,
 			'rows'        => 6,
 			'default'     => 'Om onze coulanceregeling mogelijk te maken, vragen wij een persoonlijke bijdrage van {contribution} voor het volledige diagnostiek- en behandeltraject. Deze bijdrage dekt slechts een deel van de kosten die niet door uw zorgverzekeraar worden vergoed. Het resterende bedrag nemen wij voor onze rekening. De persoonlijke bijdrage staat los van het eigen risico.',

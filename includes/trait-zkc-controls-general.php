@@ -362,7 +362,7 @@ trait ZKC_Controls_General {
 
 		$this->add_control( 'sidebar_chip_deductible', [
 			'label'       => esc_html__( 'Deductible chip text', 'zorgkosten-calculator' ),
-			'description' => esc_html__( 'Use {amount}.', 'zorgkosten-calculator' ),
+			'description' => esc_html__( 'Use {amount}. Aliases: {invoice}/{factuur}/{traject} = {total}, {bijdrage} = {contribution}, {eigenrisico} = {deductible}, {verzekeraar} = {insurer}; {percentage}, {basis}, {vergoed}, {waived} are always available.', 'zorgkosten-calculator' ),
 			'type'        => Controls_Manager::TEXT,
 			'default'     => 'Eigen risico {amount}',
 			'label_block' => true,
@@ -370,7 +370,7 @@ trait ZKC_Controls_General {
 
 		$this->add_control( 'sidebar_chip_used', [
 			'label'       => esc_html__( 'Used deductible chip text', 'zorgkosten-calculator' ),
-			'description' => esc_html__( 'Use {amount}.', 'zorgkosten-calculator' ),
+			'description' => esc_html__( 'Use {amount}. Aliases: {invoice}/{factuur}/{traject} = {total}, {bijdrage} = {contribution}, {eigenrisico} = {deductible}, {verzekeraar} = {insurer}; {percentage}, {basis}, {vergoed}, {waived} are always available.', 'zorgkosten-calculator' ),
 			'type'        => Controls_Manager::TEXT,
 			'default'     => 'Al gebruikt {amount}',
 			'label_block' => true,

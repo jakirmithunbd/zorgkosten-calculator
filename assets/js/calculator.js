@@ -291,6 +291,48 @@
 		};
 	};
 
+
+	/* Superset of template variables available to every editor-managed
+	 * string. Aliases (e.g. {invoice} for {total}) exist because content
+	 * authors type whichever name feels natural; unknown keys are left
+	 * literal by tpl() so typos stay visible. Pass context-specific values
+	 * (amount, step, declareLink ...) via `extra`. */
+	Calculator.prototype.vars = function (extra) {
+		var c = this.cfg.calc;
+		var r = this.reimbursement();
+		var total = c.diagnostiek + c.behandeling;
+		var tot = this.part(r, total);
+		var ded = (this.state.deductible !== null && this.state.deductible !== 'unknown') ? this.state.deductible : null;
+		var map = {
+			insurer: this.insurerName(),
+			verzekeraar: this.insurerName(),
+			total: fmt(total),
+			invoice: fmt(total),
+			factuur: fmt(total),
+			traject: fmt(total),
+			diagnostiek: fmt(c.diagnostiek),
+			behandeling: fmt(c.behandeling),
+			contribution: fmt(c.contribution),
+			bijdrage: fmt(c.contribution),
+			deductible: ded === null ? '' : fmt(ded),
+			eigenrisico: ded === null ? '' : fmt(ded),
+			used: fmt(this.state.usedDeductible || 0),
+			reimbursed: amountLabel(tot.lo, tot.hi),
+			vergoed: amountLabel(tot.lo, tot.hi),
+			waived: amountLabel(tot.notLo, tot.notHi),
+			kwijtgescholden: amountLabel(tot.notLo, tot.notHi),
+			percentage: r.label,
+			basis: r.basisLabel,
+			amount: fmt(total)
+		};
+		if (extra) {
+			for (var k in extra) {
+				if (Object.prototype.hasOwnProperty.call(extra, k)) map[k] = extra[k];
+			}
+		}
+		return map;
+	};
+
 	/* ---------------------------------------------------------------- render */
 
 	Calculator.prototype.render = function () {
@@ -390,13 +432,13 @@
 		}
 		if (this.state.deductible !== null && this.state.deductible !== 'unknown') {
 			items.push({
-				label: tpl(g.chipDeductible, { amount: fmt(this.state.deductible) }),
+				label: tpl(g.chipDeductible, this.vars({ amount: fmt(this.state.deductible) })),
 				screen: 'deductible'
 			});
 		}
 		if (!this.state.usedUnknown && this.stepIndex() > this.steps().indexOf('used')) {
 			items.push({
-				label: tpl(g.chipUsed, { amount: fmt(this.state.usedDeductible || 0) }),
+				label: tpl(g.chipUsed, this.vars({ amount: fmt(this.state.usedDeductible || 0) })),
 				screen: 'used'
 			});
 		}
@@ -486,12 +528,13 @@
 	Calculator.prototype.stepHead = function (card, title, subtitle, help) {
 		var g = this.cfg.general;
 		var head = el('div', 'zkc-step-head');
-		head.appendChild(el('h2', 'zkc-title', esc(title)));
-		if (subtitle) head.appendChild(el('p', 'zkc-subtitle', esc(subtitle)));
+		var v = this.vars();
+		head.appendChild(el('h2', 'zkc-title', esc(tpl(title, v))));
+		if (subtitle) head.appendChild(el('p', 'zkc-subtitle', esc(tpl(subtitle, v))));
 		if (help) {
 			var box = el('div', 'zkc-help');
 			box.appendChild(el('div', 'zkc-help-label', esc(g.helpLabel)));
-			box.appendChild(el('div', '', esc(help)));
+			box.appendChild(el('div', '', esc(tpl(help, v))));
 			head.appendChild(box);
 		}
 		card.appendChild(head);
@@ -627,7 +670,7 @@
 		var self = this;
 		var s = this.cfg.steps.s2;
 		var insurer = this.state.insurer || { name: '' };
-		this.stepHead(card, s.title, tpl(s.subtitle, { insurer: insurer.name }), s.help);
+		this.stepHead(card, s.title, tpl(s.subtitle, this.vars({ insurer: insurer.name })), s.help);
 
 		var list = el('div', 'zkc-options');
 		this.policiesFor(insurer.name).forEach(function (p) {
@@ -790,14 +833,14 @@
 		var hero = el('div', 'zkc-hero');
 		hero.appendChild(el('div', 'zkc-hero-kicker', esc(
 			this.state.insurer
-				? tpl(s.heroTitle, { insurer: this.state.insurer.name })
+				? tpl(s.heroTitle, this.vars())
 				: s.heroTitleFallback
 		)));
 		hero.appendChild(el('div', 'zkc-hero-pct zkc-display', esc(r.label)));
-		hero.appendChild(el('p', 'zkc-hero-note', esc(tpl(s.heroBasis, { basis: r.basisLabel }))));
+		hero.appendChild(el('p', 'zkc-hero-note', esc(tpl(s.heroBasis, this.vars({ basis: r.basisLabel })))));
 
 		var box = el('div', 'zkc-hero-card');
-		box.appendChild(el('div', 'zkc-hero-card-title', esc(s.exampleTitle)));
+		box.appendChild(el('div', 'zkc-hero-card-title', esc(tpl(s.exampleTitle, this.vars()))));
 
 		var rows = [
 			{ label: s.labelDiagnostiek, part: this.part(r, c.diagnostiek) },
@@ -810,23 +853,23 @@
 			var line = el('div', 'zkc-calc-row' + (row.total ? ' zkc-calc-row-total' : ''));
 			line.appendChild(el('div', 'zkc-calc-label',
 				'<span>' + esc(row.label) + '</span>' +
-				'<span class="zkc-calc-invoice">' + esc(tpl(s.invoiceLabel, { amount: fmt(row.part.amount) })) + '</span>'));
+				'<span class="zkc-calc-invoice">' + esc(tpl(s.invoiceLabel, self.vars({ amount: fmt(row.part.amount) }))) + '</span>'));
 			line.appendChild(el('div', 'zkc-calc-amounts',
 				'<span class="zkc-calc-in">' + esc(amountLabel(row.part.lo, row.part.hi) + ' ' + s.reimbursedSuffix) + '</span>' +
 				'<span class="zkc-calc-out">' + esc(amountLabel(row.part.notLo, row.part.notHi) + ' ' + s.notReimbursedSuffix) + '</span>'));
 			rowsWrap.appendChild(line);
 		});
 		box.appendChild(rowsWrap);
-		box.appendChild(el('p', 'zkc-text-sm', esc(s.exampleNote)));
+		box.appendChild(el('p', 'zkc-text-sm', esc(tpl(s.exampleNote, this.vars()))));
 		hero.appendChild(box);
 		card.appendChild(hero);
 
 		var tot = this.part(r, c.diagnostiek + c.behandeling);
 		var panel = el('div', 'zkc-uncovered-panel');
-		panel.appendChild(el('h3', 'zkc-h3', esc(s.uncoveredTitle)));
-		panel.appendChild(el('p', 'zkc-text-sm', tpl(esc(s.uncoveredText), {
+		panel.appendChild(el('h3', 'zkc-h3', esc(tpl(s.uncoveredTitle, this.vars()))));
+		panel.appendChild(el('p', 'zkc-text-sm', tpl(esc(s.uncoveredText), this.vars({
 			amount: '<span class="zkc-uncovered-amount">' + esc(amountLabel(tot.notLo, tot.notHi)) + '</span>'
-		})));
+		}))));
 		card.appendChild(panel);
 
 		this.setNav(function () { self.goNext(); });
@@ -845,15 +888,13 @@
 		this.stepHead(card, s.title, s.subtitle);
 
 		var hero = el('div', 'zkc-hero');
-		hero.appendChild(el('div', 'zkc-hero-kicker', esc(s.heroKicker)));
+		hero.appendChild(el('div', 'zkc-hero-kicker', esc(tpl(s.heroKicker, this.vars()))));
 		hero.appendChild(el('div', 'zkc-hero-amount zkc-hero-amount-uncovered zkc-display',
 			esc(amountLabel(tot.notLo, tot.notHi))));
-		hero.appendChild(el('p', 'zkc-hero-note', esc(tpl(s.heroNote, {
-			total: fmt(c.diagnostiek + c.behandeling)
-		}))));
+		hero.appendChild(el('p', 'zkc-hero-note', esc(tpl(s.heroNote, this.vars()))));
 
 		var box = el('div', 'zkc-hero-card');
-		box.appendChild(el('div', 'zkc-hero-card-title', esc(s.meansTitle)));
+		box.appendChild(el('div', 'zkc-hero-card-title', esc(tpl(s.meansTitle, this.vars()))));
 		box.appendChild(dotList(s.means || []));
 		hero.appendChild(box);
 		card.appendChild(hero);
@@ -861,12 +902,12 @@
 		var body = el('div', 'zkc-body');
 		var asks = (direct ? s.asksDirect : s.asksSelf) || [];
 		body.appendChild(bulletPanel(s.asksTitle, asks.map(function (t) {
-			return tpl(t, { insurer: name, contribution: fmt(c.contribution) });
+			return tpl(t, self.vars());
 		})));
 
 		var excl = (direct ? s.exclDirect : s.exclSelf) || [];
 		body.appendChild(bulletPanel(s.exclTitle, excl.map(function (t) {
-			return tpl(t, { insurer: name, contribution: fmt(c.contribution) });
+			return tpl(t, self.vars());
 		}), s.exclNote));
 		card.appendChild(body);
 
@@ -879,15 +920,15 @@
 		var s = this.cfg.steps.s8;
 		var c = this.cfg.calc;
 
-		this.stepHead(card, s.title, tpl(s.subtitle, { contribution: fmt(c.contribution) }));
+		this.stepHead(card, s.title, s.subtitle);
 
 		var hero = el('div', 'zkc-hero');
-		hero.appendChild(el('div', 'zkc-hero-kicker', esc(s.heroKicker)));
+		hero.appendChild(el('div', 'zkc-hero-kicker', esc(tpl(s.heroKicker, this.vars()))));
 		hero.appendChild(el('div', 'zkc-hero-amount zkc-display', esc(fmt(c.contribution))));
-		hero.appendChild(el('p', 'zkc-hero-note', esc(s.heroNote)));
+		hero.appendChild(el('p', 'zkc-hero-note', esc(tpl(s.heroNote, this.vars()))));
 
 		var box = el('div', 'zkc-hero-card');
-		box.appendChild(el('div', 'zkc-hero-card-title', esc(s.meansTitle)));
+		box.appendChild(el('div', 'zkc-hero-card-title', esc(tpl(s.meansTitle, this.vars()))));
 		box.appendChild(dotList(s.means || []));
 		hero.appendChild(box);
 		card.appendChild(hero);
@@ -907,14 +948,14 @@
 		var name = this.insurerName();
 		var url = this.machtigingUrl();
 
-		this.stepHead(card, s.title, tpl(s.subtitle, { insurer: name }));
+		this.stepHead(card, s.title, s.subtitle);
 
 		var hero = el('div', 'zkc-hero');
 		var box = el('div', 'zkc-hero-card zkc-hero-card-first');
-		box.appendChild(el('div', 'zkc-hero-card-title', esc(s.meansTitle)));
-		box.appendChild(el('p', 'zkc-text-sm', esc(s.meansNote)));
+		box.appendChild(el('div', 'zkc-hero-card-title', esc(tpl(s.meansTitle, this.vars()))));
+		box.appendChild(el('p', 'zkc-text-sm', esc(tpl(s.meansNote, this.vars()))));
 		box.appendChild(dotList((s.means || []).map(function (t) {
-			return tpl(t, { insurer: name });
+			return tpl(t, self.vars());
 		})));
 		hero.appendChild(box);
 		card.appendChild(hero);
@@ -924,9 +965,9 @@
 
 		if (url) {
 			var check = el('div', 'zkc-panel');
-			check.appendChild(el('h3', 'zkc-h3', esc(tpl(s.checkTitle, { insurer: name }))));
-			check.appendChild(el('p', 'zkc-text-sm', esc(tpl(s.checkText, { insurer: name }))));
-			var a = el('a', 'zkc-btn-outline', esc(tpl(s.checkButton, { insurer: name })));
+			check.appendChild(el('h3', 'zkc-h3', esc(tpl(s.checkTitle, this.vars()))));
+			check.appendChild(el('p', 'zkc-text-sm', esc(tpl(s.checkText, this.vars()))));
+			var a = el('a', 'zkc-btn-outline', esc(tpl(s.checkButton, this.vars())));
 			a.href = url;
 			a.target = '_blank';
 			a.rel = 'noopener noreferrer';
@@ -934,7 +975,7 @@
 			body.appendChild(check);
 		}
 
-		if (s.warning) body.appendChild(this.warnBox(null, esc(s.warning)));
+		if (s.warning) body.appendChild(this.warnBox(null, esc(tpl(s.warning, this.vars()))));
 		card.appendChild(body);
 
 		this.setNav(function () { self.goNext(); });
@@ -948,10 +989,10 @@
 		var name = this.insurerName();
 		var declUrl = this.declareUrl();
 
-		this.stepHead(card, s.title, tpl(direct ? s.subtitleDirect : s.subtitleSelf, { insurer: name }));
+		this.stepHead(card, s.title, direct ? s.subtitleDirect : s.subtitleSelf);
 
 		var declareLink = declUrl
-			? ' ' + link(declUrl, tpl(s.declareLinkLabel, { insurer: name })) + '.'
+			? ' ' + link(declUrl, tpl(s.declareLinkLabel, this.vars())) + '.'
 			: '';
 
 		var body = el('div', 'zkc-body-flat');
@@ -959,18 +1000,18 @@
 		((direct ? s.stepsDirect : s.stepsSelf) || []).forEach(function (item, i) {
 			stack.appendChild(numberedStep(
 				i + 1,
-				tpl(item.title, { insurer: name }),
-				tpl(item.text, { insurer: name, declareLink: declareLink })
+				tpl(item.title, self.vars()),
+				tpl(item.text, self.vars({ declareLink: declareLink }))
 			));
 		});
 		body.appendChild(stack);
 
-		body.appendChild(this.warnBox(s.riskLabel, esc(tpl(direct ? s.riskDirect : s.riskSelf, { insurer: name }))));
+		body.appendChild(this.warnBox(s.riskLabel, esc(tpl(direct ? s.riskDirect : s.riskSelf, this.vars()))));
 
 		if (!direct && s.knowTitle) {
 			var know = el('div', 'zkc-panel');
-			know.appendChild(el('h3', 'zkc-h3', esc(s.knowTitle)));
-			know.appendChild(el('p', 'zkc-text-sm', esc(s.knowText)));
+			know.appendChild(el('h3', 'zkc-h3', esc(tpl(s.knowTitle, this.vars()))));
+			know.appendChild(el('p', 'zkc-text-sm', esc(tpl(s.knowText, this.vars()))));
 			body.appendChild(know);
 		}
 		card.appendChild(body);
@@ -997,9 +1038,9 @@
 		// Header.
 		var head = el('div', 'zkc-r-head');
 		var copy = el('div', '');
-		copy.appendChild(el('div', 'zkc-eyebrow', esc(r.kicker)));
-		copy.appendChild(el('h1', 'zkc-r-title', esc(r.title)));
-		copy.appendChild(el('p', 'zkc-r-intro', esc(tpl(r.intro, { total: fmt(total), invoice: fmt(total), insurer: name }))));
+		copy.appendChild(el('div', 'zkc-eyebrow', esc(tpl(r.kicker, this.vars()))));
+		copy.appendChild(el('h1', 'zkc-r-title', esc(tpl(r.title, this.vars()))));
+		copy.appendChild(el('p', 'zkc-r-intro', esc(tpl(r.intro, this.vars()))));
 		head.appendChild(copy);
 		var img = (this.cfg.images || {}).factuur || { src: '', alt: '' };
 		var media = el('div', 'zkc-r-media');
@@ -1009,8 +1050,8 @@
 
 		// Invoice panel.
 		var panel = el('div', 'zkc-r-invoice');
-		panel.appendChild(el('h2', 'zkc-r-invoice-title', esc(tpl(r.invoiceTitle, { total: fmt(total), invoice: fmt(total) }))));
-		panel.appendChild(el('p', 'zkc-r-invoice-text', esc(r.invoiceText)));
+		panel.appendChild(el('h2', 'zkc-r-invoice-title', esc(tpl(r.invoiceTitle, this.vars()))));
+		panel.appendChild(el('p', 'zkc-r-invoice-text', esc(tpl(r.invoiceText, this.vars()))));
 
 		var pctMin = Math.round((tot.lo / total) * 100);
 		var pctMax = Math.round((tot.hi / total) * 100);
@@ -1034,14 +1075,14 @@
 		var l1 = el('div', 'zkc-r-legend-item');
 		l1.appendChild(el('span', 'zkc-legend-dot zkc-legend-dot-reimb'));
 		var l1b = el('div', '');
-		l1b.appendChild(el('div', 'zkc-r-legend-title', esc(tpl(r.reimbursedLabel, { insurer: name, amount: amountLabel(tot.lo, tot.hi) }))));
-		l1b.appendChild(el('p', 'zkc-text-sm', esc(tpl(r.reimbursedText, { percentage: reimb.label, basis: reimb.basisLabel }))));
+		l1b.appendChild(el('div', 'zkc-r-legend-title', esc(tpl(r.reimbursedLabel, this.vars({ amount: amountLabel(tot.lo, tot.hi) })))));
+		l1b.appendChild(el('p', 'zkc-text-sm', esc(tpl(r.reimbursedText, this.vars({ amount: amountLabel(tot.lo, tot.hi) })))));
 		l1.appendChild(l1b);
 		var l2 = el('div', 'zkc-r-legend-item');
 		l2.appendChild(el('span', 'zkc-legend-dot zkc-legend-dot-waived'));
 		var l2b = el('div', '');
-		l2b.appendChild(el('div', 'zkc-r-legend-title', esc(tpl(r.waivedLabel, { amount: amountLabel(tot.notLo, tot.notHi) }))));
-		l2b.appendChild(el('p', 'zkc-text-sm', esc(r.waivedText)));
+		l2b.appendChild(el('div', 'zkc-r-legend-title', esc(tpl(r.waivedLabel, this.vars({ amount: amountLabel(tot.notLo, tot.notHi) })))));
+		l2b.appendChild(el('p', 'zkc-text-sm', esc(tpl(r.waivedText, this.vars({ amount: amountLabel(tot.notLo, tot.notHi) })))));
 		l2.appendChild(l2b);
 		legend.appendChild(l1);
 		legend.appendChild(l2);
@@ -1077,7 +1118,7 @@
 		panel.appendChild(tableWrap);
 
 		if (reimb.policyUnknown && reimb.hasRange) {
-			panel.appendChild(el('div', 'zkc-r-note', esc(tpl(r.rangeNotePolicy, { insurer: name, percentage: reimb.label }))));
+			panel.appendChild(el('div', 'zkc-r-note', esc(tpl(r.rangeNotePolicy, this.vars()))));
 		}
 		card.appendChild(panel);
 
@@ -1085,39 +1126,39 @@
 		var grid = el('div', 'zkc-r-grid');
 
 		var ownCard = el('div', 'zkc-r-own');
-		ownCard.appendChild(el('div', 'zkc-r-card-kicker', esc(r.ownKicker)));
+		ownCard.appendChild(el('div', 'zkc-r-card-kicker', esc(tpl(r.ownKicker, this.vars()))));
 		ownCard.appendChild(el('div', 'zkc-r-own-total zkc-display', esc(own.totalLabel)));
-		ownCard.appendChild(el('p', 'zkc-text-sm', esc(tpl(r.ownText, { total: fmt(total), invoice: fmt(total) }))));
+		ownCard.appendChild(el('p', 'zkc-text-sm', esc(tpl(r.ownText, this.vars({ amount: own.totalLabel })))));
 
 		var dl = el('dl', 'zkc-r-rows');
 		var row1 = el('div', 'zkc-r-row');
-		row1.appendChild(el('dt', '', '<span class="zkc-r-row-label">' + esc(r.contributionLabel) + '</span><span class="zkc-r-row-sub">' + esc(r.contributionText) + '</span>'));
+		row1.appendChild(el('dt', '', '<span class="zkc-r-row-label">' + esc(tpl(r.contributionLabel, this.vars())) + '</span><span class="zkc-r-row-sub">' + esc(tpl(r.contributionText, this.vars({ amount: fmt(c.contribution) }))) + '</span>'));
 		row1.appendChild(el('dd', '', esc(fmt(c.contribution))));
 		dl.appendChild(row1);
 		var row2 = el('div', 'zkc-r-row');
-		row2.appendChild(el('dt', '', '<span class="zkc-r-row-label">' + esc(r.deductibleLabel) + '</span><span class="zkc-r-row-sub">' + esc(tpl(direct ? r.deductibleTextDirect : r.deductibleTextSelf, { insurer: name })) + '</span>'));
+		row2.appendChild(el('dt', '', '<span class="zkc-r-row-label">' + esc(tpl(r.deductibleLabel, this.vars())) + '</span><span class="zkc-r-row-sub">' + esc(tpl(direct ? r.deductibleTextDirect : r.deductibleTextSelf, this.vars({ amount: own.deductibleLabel }))) + '</span>'));
 		row2.appendChild(el('dd', '', esc(own.deductibleLabel)));
 		dl.appendChild(row2);
 		ownCard.appendChild(dl);
 
 		if (!own.known) {
-			ownCard.appendChild(el('div', 'zkc-r-note', esc(r.usedUnknownNote)));
+			ownCard.appendChild(el('div', 'zkc-r-note', esc(tpl(r.usedUnknownNote, this.vars()))));
 		}
 		grid.appendChild(ownCard);
 
 		var selfCard = el('div', 'zkc-r-self');
-		selfCard.appendChild(el('div', 'zkc-r-card-kicker', esc(r.selfKicker)));
-		selfCard.appendChild(el('h3', 'zkc-r-self-title', esc(tpl(direct ? r.selfTitleDirect : r.selfTitleSelf, { insurer: name }))));
+		selfCard.appendChild(el('div', 'zkc-r-card-kicker', esc(tpl(r.selfKicker, this.vars()))));
+		selfCard.appendChild(el('h3', 'zkc-r-self-title', esc(tpl(direct ? r.selfTitleDirect : r.selfTitleSelf, this.vars()))));
 		if (direct) {
-			selfCard.appendChild(el('p', 'zkc-text-sm', esc(tpl(r.selfTextDirect, { insurer: name }))));
+			selfCard.appendChild(el('p', 'zkc-text-sm', esc(tpl(r.selfTextDirect, this.vars()))));
 		} else {
 			var ol = el('ol', 'zkc-r-steps');
 			(r.selfSteps || []).forEach(function (line) {
-				ol.appendChild(el('li', '', esc(tpl(line, { insurer: name, amount: tot.lo === tot.hi ? fmt(tot.lo) : fmt(tot.lo) + ' tot ' + fmt(tot.hi) }))));
+				ol.appendChild(el('li', '', esc(tpl(line, self.vars({ amount: tot.lo === tot.hi ? fmt(tot.lo) : fmt(tot.lo) + ' tot ' + fmt(tot.hi) })))));
 			});
 			selfCard.appendChild(ol);
 			if (ins && ins.declareUrl) {
-				var declare = el('a', 'zkc-btn-outline', esc(tpl(r.declareButton, { insurer: name })));
+				var declare = el('a', 'zkc-btn-outline', esc(tpl(r.declareButton, this.vars())));
 				declare.href = ins.declareUrl;
 				declare.target = '_blank';
 				declare.rel = 'noopener noreferrer';
@@ -1126,9 +1167,9 @@
 		}
 		if (ins && ins.machtiging) {
 			var mUrl = this.machtigingUrl();
-			var html = esc(tpl(r.machtigingText, { insurer: name }));
+			var html = esc(tpl(r.machtigingText, this.vars()));
 			if (mUrl) {
-				html += ' ' + link(mUrl, tpl(r.machtigingLink, { insurer: name })) + '.';
+				html += ' ' + link(mUrl, tpl(r.machtigingLink, this.vars())) + '.';
 			}
 			selfCard.appendChild(this.warnBox(r.machtigingLabel, html));
 		}
@@ -1138,16 +1179,16 @@
 		// Notes + disclaimer.
 		var notes = el('div', 'zkc-r-footnotes');
 		if (reimb.policyUnknown && !reimb.hasRange && r.notePolicyUnknown) {
-			notes.appendChild(this.warnBox(null, esc(r.notePolicyUnknown)));
+			notes.appendChild(this.warnBox(null, esc(tpl(r.notePolicyUnknown, this.vars()))));
 		}
-		notes.appendChild(el('p', 'zkc-r-disclaimer', esc(r.disclaimer)));
+		notes.appendChild(el('p', 'zkc-r-disclaimer', esc(tpl(r.disclaimer, this.vars()))));
 		card.appendChild(notes);
 
 		// CTA.
 		var cta = el('div', 'zkc-r-cta');
 		var ctaCopy = el('div', '');
-		ctaCopy.appendChild(el('h2', 'zkc-r-cta-title', esc(r.ctaTitle)));
-		ctaCopy.appendChild(el('p', 'zkc-text-sm', esc(r.ctaText)));
+		ctaCopy.appendChild(el('h2', 'zkc-r-cta-title', esc(tpl(r.ctaTitle, this.vars()))));
+		ctaCopy.appendChild(el('p', 'zkc-text-sm', esc(tpl(r.ctaText, this.vars()))));
 		cta.appendChild(ctaCopy);
 
 		var ctaActions = el('div', 'zkc-r-cta-actions');

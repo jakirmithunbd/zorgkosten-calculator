@@ -87,7 +87,7 @@ trait ZKC_Controls_Steps {
 
 		$this->add_control( 'step2_subtitle', [
 			'label'       => esc_html__( 'Subtitle', 'zorgkosten-calculator' ),
-			'description' => esc_html__( 'Use {insurer}.', 'zorgkosten-calculator' ),
+			'description' => esc_html__( 'Use {insurer}. Aliases: {invoice}/{factuur}/{traject} = {total}, {bijdrage} = {contribution}, {eigenrisico} = {deductible}, {verzekeraar} = {insurer}; {percentage}, {basis}, {vergoed}, {waived} are always available.', 'zorgkosten-calculator' ),
 			'type'        => Controls_Manager::TEXT,
 			'default'     => 'Beschikbare polissen bij {insurer}',
 			'label_block' => true,
